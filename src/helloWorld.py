@@ -13,6 +13,7 @@ class HelloWorldExample(object):
         with self._driver.session() as session:
             greeting = session.write_transaction(self._create_and_return_greeting, message)
             print(greeting)
+            return greeting
 
     @staticmethod
     def _create_and_return_greeting(tx, message):
@@ -22,7 +23,8 @@ class HelloWorldExample(object):
         return result.single()[0]
 
 
-database = HelloWorldExample('bolt://localhost:7687', 'neo4j', 'kinix951')
-database.print_greeting('Hello')
-database.print_greeting('world')
-database.close()
+if __name__ == "__main__":
+    database = HelloWorldExample('bolt://localhost:7687', 'neo4j', 'kinix951')
+    database.print_greeting('Hello')
+    database.print_greeting('world')
+    database.close()
