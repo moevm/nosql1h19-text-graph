@@ -1,30 +1,21 @@
-from neo4j import GraphDatabase
+from config.config import Config
+from neomodel import config as neo_config
+from models.helloNode import HelloNode
 
 
 class HelloWorldExample(object):
-
     def __init__(self, uri, user, password):
-        self._driver = GraphDatabase.driver(uri, auth=(user, password))
+        neo_config.DATABASE_URL = f"{uri[0:7]}{user}:{password}@{uri[7:]}"
+        print(neo_config.DATABASE_URL)
 
     def close(self):
-        self._driver.close()
+        pass
 
     def print_greeting(self, message):
-        with self._driver.session() as session:
-            greeting = session.write_transaction(self._create_and_return_greeting, message)
-            print(greeting)
-            return greeting
-
-    @staticmethod
-    def _create_and_return_greeting(tx, message):
-        result = tx.run("CREATE (a:Greeting) "
-                        "SET a.message = $message "
-                        "RETURN a.message + ', from node ' + id(a)", message=message)
-        return result.single()[0]
+        hello = HelloNode(hello_text=message)
+        hello.save()
+        return hello.__repr__()
 
 
 if __name__ == "__main__":
-    database = HelloWorldExample('bolt://localhost:7687', 'neo4j', 'kinix951')
-    database.print_greeting('Hello')
-    database.print_greeting('world')
-    database.close()
+    db = HelloWorldExample(Config.NEO4J_URI, Config.NEO4J_LOGIN, Config.NEO4J_PASSWORD)

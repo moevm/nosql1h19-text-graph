@@ -1,2 +1,3 @@
 PyQt5
-neo4j
+neomodel
+pyinstaller
