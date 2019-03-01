@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>748</width>
-    <height>483</height>
+    <width>833</width>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Text Graph</string>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -586,11 +589,11 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="namesIntersectTab">
        <attribute name="title">
         <string>Пересечения имён собственных</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_14">
+       <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,3">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
@@ -913,8 +916,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>748</width>
-     <height>22</height>
+     <width>833</width>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -924,6 +927,8 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenParams"/>
     <addaction name="separator"/>
     <addaction name="actionChangeDB"/>
     <addaction name="actionExit"/>
@@ -942,17 +947,10 @@
     <addaction name="actionStartProcess"/>
     <addaction name="actionStopProcess"/>
    </widget>
-   <widget class="QMenu" name="menu_4">
-    <property name="title">
-     <string>Результат</string>
-    </property>
-   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
    <addaction name="menu_3"/>
-   <addaction name="menu_4"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
@@ -974,11 +972,19 @@
    <addaction name="actionStopProcess"/>
   </widget>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/exit.png</normaloff>:/icons/exit.png</iconset>
+   </property>
    <property name="text">
     <string>Выход</string>
    </property>
   </action>
   <action name="actionChangeDB">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/logout.png</normaloff>:/icons/logout.png</iconset>
+   </property>
    <property name="text">
     <string>Сменить БД</string>
    </property>
@@ -987,21 +993,37 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+   </property>
    <property name="text">
     <string>Сохранить</string>
    </property>
   </action>
   <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/open.png</normaloff>:/icons/open.png</iconset>
+   </property>
    <property name="text">
     <string>Открыть</string>
    </property>
   </action>
   <action name="actionNew">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/create.png</normaloff>:/icons/create.png</iconset>
+   </property>
    <property name="text">
     <string>Новый</string>
    </property>
   </action>
   <action name="actionChangeFragments">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/stack.png</normaloff>:/icons/stack.png</iconset>
+   </property>
    <property name="text">
     <string>Изменить фрагменты</string>
    </property>
@@ -1010,22 +1032,45 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/trash.png</normaloff>:/icons/trash.png</iconset>
+   </property>
    <property name="text">
     <string>Очистить</string>
    </property>
   </action>
   <action name="actionStartProcess">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/start.png</normaloff>:/icons/start.png</iconset>
+   </property>
    <property name="text">
     <string>Начать обработку</string>
    </property>
   </action>
   <action name="actionStopProcess">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
+   </property>
    <property name="text">
     <string>Остановить обработку</string>
    </property>
   </action>
+  <action name="actionOpenParams">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/settings.png</normaloff>:/icons/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Параметры</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/pictures.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionExit</sender>

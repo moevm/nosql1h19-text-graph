@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>FragmentsWindow</class>
+ <widget class="QMainWindow" name="FragmentsWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
+    <width>800</width>
     <height>547</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Список фрагментов</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,2">
@@ -58,6 +58,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="processButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -83,8 +89,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>415</width>
-         <height>407</height>
+         <width>463</width>
+         <height>435</height>
         </rect>
        </property>
        <attribute name="label">
@@ -220,8 +226,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>430</width>
-         <height>423</height>
+         <width>463</width>
+         <height>435</height>
         </rect>
        </property>
        <attribute name="label">
@@ -346,23 +352,6 @@ p, li { white-space: pre-wrap; }
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>675</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>Файл</string>
-    </property>
-   </widget>
-   <addaction name="menu"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections>
