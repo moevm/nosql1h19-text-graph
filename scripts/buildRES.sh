@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+cd ..
 source venv/bin/activate;
 if ! [[ -d src/res ]]; then
     mkdir src/res;
