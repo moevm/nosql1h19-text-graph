@@ -3,6 +3,7 @@
     <file alias="logo.png">pictures/logo.png</file>
   </qresource>
   <qresource prefix="icons">
+    <file alias="shutdown.png">pictures/icons/shutdown.png</file>
     <file alias="stop.png">pictures/icons/stop.png</file>
     <file alias="logout.png">pictures/icons/logout.png</file>
     <file alias="open.png">pictures/icons/open.png</file>

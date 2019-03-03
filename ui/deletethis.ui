@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ResultsWindow</class>
+ <widget class="QMainWindow" name="ResultsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>706</width>
+    <height>531</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Text Graph</string>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Составление графа текста&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Авторы:&lt;br/&gt;Корытов Павел, 6304&lt;br/&gt;Пискунов Ярослав, 6304&lt;br/&gt;Цыганов Михаил, 6304&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Для начала работы создайте новый проект&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Copyright © 2019 MOEVM LETI&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNew"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionChangeFragments"/>
+   <addaction name="actionClear"/>
+   <addaction name="separator"/>
+   <addaction name="actionStartProcess"/>
+   <addaction name="actionStopProcess"/>
+   <addaction name="separator"/>
+   <addaction name="actionOpenParams"/>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>706</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenParams"/>
+    <addaction name="separator"/>
+    <addaction name="actionChangeDB"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Правка</string>
+    </property>
+    <addaction name="actionChangeFragments"/>
+    <addaction name="actionClear"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Обработка</string>
+    </property>
+    <addaction name="actionStartProcess"/>
+    <addaction name="actionStopProcess"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+  </widget>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/exit.png</normaloff>:/icons/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="actionChangeDB">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/logout.png</normaloff>:/icons/logout.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сменить БД</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/open.png</normaloff>:/icons/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Открыть</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/create.png</normaloff>:/icons/create.png</iconset>
+   </property>
+   <property name="text">
+    <string>Новый</string>
+   </property>
+  </action>
+  <action name="actionChangeFragments">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/stack.png</normaloff>:/icons/stack.png</iconset>
+   </property>
+   <property name="text">
+    <string>Изменить фрагменты</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/trash.png</normaloff>:/icons/trash.png</iconset>
+   </property>
+   <property name="text">
+    <string>Очистить</string>
+   </property>
+  </action>
+  <action name="actionStartProcess">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/start.png</normaloff>:/icons/start.png</iconset>
+   </property>
+   <property name="text">
+    <string>Начать обработку</string>
+   </property>
+  </action>
+  <action name="actionStopProcess">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Остановить обработку</string>
+   </property>
+  </action>
+  <action name="actionOpenParams">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/settings.png</normaloff>:/icons/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Параметры</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../res/pictures.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>ResultsWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
