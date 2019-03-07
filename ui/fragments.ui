@@ -6,12 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>547</height>
+    <width>762</width>
+    <height>444</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Список фрагментов</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QLabel[objectName*=&quot;Number&quot;]{
+	font-size: 12pt;
+	font-family: Consolas;
+	font-style: italic;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="1,2">
@@ -84,7 +92,7 @@
       <property name="currentIndex">
        <number>1</number>
       </property>
-      <widget class="QWidget" name="tabWidgetPage1" native="true">
+      <widget class="QWidget" name="tabWidgetPage1">
        <attribute name="title">
         <string>Добавить фрагмент</string>
        </attribute>
@@ -213,7 +221,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tabWidgetPage2" native="true">
+      <widget class="QWidget" name="tabWidgetPage2">
        <attribute name="title">
         <string>Информация о фрагменте</string>
        </attribute>
@@ -221,7 +229,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,1">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,2">
+           <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,0">
             <item>
              <widget class="QLabel" name="label_2">
               <property name="text">
@@ -230,19 +238,16 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="wordNumberEdit">
+             <widget class="QLabel" name="wordNumberLabel">
               <property name="text">
-               <string>1000</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
+               <string>10000</string>
               </property>
              </widget>
             </item>
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,2">
+           <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,0">
             <item>
              <widget class="QLabel" name="label_4">
               <property name="text">
@@ -251,12 +256,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="wordNumberEdit_3">
+             <widget class="QLabel" name="sentencesNumberLabel">
               <property name="text">
-               <string>100</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
+               <string>12345</string>
               </property>
              </widget>
             </item>
@@ -267,7 +269,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,2">
+           <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0">
             <item>
              <widget class="QLabel" name="label_6">
               <property name="text">
@@ -276,7 +278,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="fragmentsNumberEdit">
+             <widget class="QLabel" name="fragmentsNumberLabel">
               <property name="text">
                <string>3</string>
               </property>
@@ -285,7 +287,7 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,2">
+           <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="1,0">
             <item>
              <widget class="QLabel" name="label_3">
               <property name="text">
@@ -294,12 +296,9 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="symbolsNumberEdit">
+             <widget class="QLabel" name="symbolsNumberLabel">
               <property name="text">
-               <string>10000</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
+               <string>1234567</string>
               </property>
              </widget>
             </item>
