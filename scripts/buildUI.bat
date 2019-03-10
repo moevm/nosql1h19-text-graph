@@ -1,3 +1,4 @@
+cd ..
 call venv\Scripts\activate
 IF EXIST src\ui (
     rm -rf src\ui\*

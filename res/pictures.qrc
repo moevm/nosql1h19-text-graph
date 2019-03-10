@@ -1,0 +1,18 @@
+<RCC>
+  <qresource prefix="logo">
+    <file alias="logo.png">pictures/logo.png</file>
+  </qresource>
+  <qresource prefix="icons">
+    <file alias="shutdown.png">pictures/icons/shutdown.png</file>
+    <file alias="stop.png">pictures/icons/stop.png</file>
+    <file alias="logout.png">pictures/icons/logout.png</file>
+    <file alias="open.png">pictures/icons/open.png</file>
+    <file alias="save.png">pictures/icons/save.png</file>
+    <file alias="settings.png">pictures/icons/settings.png</file>
+    <file alias="stack.png">pictures/icons/stack.png</file>
+    <file alias="start.png">pictures/icons/start.png</file>
+    <file alias="trash.png">pictures/icons/trash.png</file>
+    <file alias="create.png">pictures/icons/create.png</file>
+    <file alias="exit.png">pictures/icons/exit.png</file>
+  </qresource>
+</RCC>

@@ -1,0 +1,1183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ResultsWindow</class>
+ <widget class="QMainWindow" name="ResultsWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>809</width>
+    <height>590</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Text Graph</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QLabel[objectName*=&quot;Number&quot;]{
+	font-size: 12pt;
+	font-family: Consolas;
+	font-style: italic;
+}</string>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="commonTab">
+       <attribute name="title">
+        <string>Общее</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QGroupBox" name="statsGroupBox">
+            <property name="title">
+             <string>Статистика</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0">
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Число фрагментов</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="fragmentsNumberLabel">
+                 <property name="accessibleName">
+                  <string>NumberLabel</string>
+                 </property>
+                 <property name="text">
+                  <string>123</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0">
+               <item>
+                <widget class="QLabel" name="label_2">
+                 <property name="text">
+                  <string>Предложений</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="sentencesNumberLabel">
+                 <property name="accessibleName">
+                  <string>NumberLabel</string>
+                 </property>
+                 <property name="text">
+                  <string>123</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
+               <item>
+                <widget class="QLabel" name="label_3">
+                 <property name="text">
+                  <string>Слов</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="wordsNumberLabel">
+                 <property name="accessibleName">
+                  <string>NumberLabel</string>
+                 </property>
+                 <property name="text">
+                  <string>123</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,0">
+               <item>
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Символов</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="symbolsNumberLabel">
+                 <property name="accessibleName">
+                  <string>NumberLabel</string>
+                 </property>
+                 <property name="text">
+                  <string>123</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0">
+               <item>
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Предл. на фрагмент</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="sentencesPerFragmentNumberLabel">
+                 <property name="accessibleName">
+                  <string>NumberLabel</string>
+                 </property>
+                 <property name="text">
+                  <string>1234</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,0">
+               <item>
+                <widget class="QLabel" name="label_6">
+                 <property name="text">
+                  <string>Слов на предложение</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="wordsPerSentenceNumberLabel">
+                 <property name="accessibleName">
+                  <string>NumberLabel</string>
+                 </property>
+                 <property name="text">
+                  <string>1234</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="controlsLayout">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QPushButton" name="startProcessButton">
+                <property name="text">
+                 <string>Начать обработку</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="stopProcessButton">
+                <property name="text">
+                 <string>Остановить обработку</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Список фрагментов</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QListWidget" name="listWidget">
+                <item>
+                 <property name="text">
+                  <string>Фрагмент #1</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Фрагмент #2</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Фрагмент #3</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="changeFragmentsButton">
+                <property name="text">
+                 <string>Изменить список фрагментов</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="processLayout">
+          <item>
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Ход обработки</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="progressBar">
+            <property name="value">
+             <number>0</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="invertedAppearance">
+             <bool>false</bool>
+            </property>
+            <property name="textDirection">
+             <enum>QProgressBar::TopToBottom</enum>
+            </property>
+            <property name="format">
+             <string>%p%</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="dictIntersectTab">
+       <attribute name="title">
+        <string>Пересечение словарей</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="2,3">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QLabel" name="label_9">
+              <property name="text">
+               <string>Топ-100 слов</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox">
+              <item>
+               <property name="text">
+                <string>Весь текст</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Фрагмент 1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Фрагмент 2</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Фрагмент 3</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QListWidget" name="listWidget_2">
+            <item>
+             <property name="text">
+              <string>Слово 1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Слово 2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Слово 3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Слово 4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Слово 5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Слово 6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Слово 7</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Матрица совпадений фрагментов</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="tableWidget">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <attribute name="horizontalHeaderCascadingSectionResizes">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="horizontalHeaderDefaultSectionSize">
+             <number>57</number>
+            </attribute>
+            <attribute name="verticalHeaderDefaultSectionSize">
+             <number>50</number>
+            </attribute>
+            <attribute name="verticalHeaderHighlightSections">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderMinimumSectionSize">
+             <number>21</number>
+            </attribute>
+            <row>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string>2</string>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string>3</string>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>1 </string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>2 </string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>3 </string>
+             </property>
+            </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>100%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>78</red>
+                <green>154</green>
+                <blue>6</blue>
+               </color>
+              </brush>
+             </property>
+             <property name="flags">
+              <set>ItemIsEnabled</set>
+             </property>
+            </item>
+            <item row="0" column="1">
+             <property name="text">
+              <string>45%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>206</red>
+                <green>92</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="0" column="2">
+             <property name="text">
+              <string>64%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>196</red>
+                <green>160</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="1" column="0">
+             <property name="text">
+              <string>45%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>206</red>
+                <green>92</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="1" column="1">
+             <property name="text">
+              <string>100%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>78</red>
+                <green>154</green>
+                <blue>6</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="1" column="2">
+             <property name="text">
+              <string>32%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>204</red>
+                <green>0</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="2" column="0">
+             <property name="text">
+              <string>64%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>196</red>
+                <green>160</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="2" column="1">
+             <property name="text">
+              <string>32%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>204</red>
+                <green>0</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="2" column="2">
+             <property name="text">
+              <string>100%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>78</red>
+                <green>154</green>
+                <blue>6</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>Порог связи</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="thresholdSlider">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Указывает минимальное значение, при котором фрагменты считаются связанными&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="value">
+               <number>45</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="tresholdLabel">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>45</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::PlainText</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_12">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>%</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="showDictIntersectGraphButton">
+              <property name="text">
+               <string>Показать граф</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="namesIntersectTab">
+       <attribute name="title">
+        <string>Пересечения имён собственных</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,3">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>Топ-20 имён</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBox_2">
+              <item>
+               <property name="text">
+                <string>Весь текст</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Фрагмент 1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Фрагмент 2</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Фрагмент 3</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QListWidget" name="listWidget_3">
+            <item>
+             <property name="text">
+              <string>Имя 1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Имя 2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Имя 3</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>Матрица совпадений фрагментов</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="tableWidget_2">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="editTriggers">
+             <set>QAbstractItemView::NoEditTriggers</set>
+            </property>
+            <attribute name="horizontalHeaderCascadingSectionResizes">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="horizontalHeaderDefaultSectionSize">
+             <number>57</number>
+            </attribute>
+            <attribute name="verticalHeaderDefaultSectionSize">
+             <number>50</number>
+            </attribute>
+            <attribute name="verticalHeaderHighlightSections">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderMinimumSectionSize">
+             <number>21</number>
+            </attribute>
+            <row>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string>2</string>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string>3</string>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>1 </string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>2 </string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>3 </string>
+             </property>
+            </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>100%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>78</red>
+                <green>154</green>
+                <blue>6</blue>
+               </color>
+              </brush>
+             </property>
+             <property name="flags">
+              <set>ItemIsEnabled</set>
+             </property>
+            </item>
+            <item row="0" column="1">
+             <property name="text">
+              <string>45%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>206</red>
+                <green>92</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="0" column="2">
+             <property name="text">
+              <string>64%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>196</red>
+                <green>160</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="1" column="0">
+             <property name="text">
+              <string>45%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>206</red>
+                <green>92</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="1" column="1">
+             <property name="text">
+              <string>100%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>78</red>
+                <green>154</green>
+                <blue>6</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="1" column="2">
+             <property name="text">
+              <string>32%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>204</red>
+                <green>0</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="2" column="0">
+             <property name="text">
+              <string>64%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>196</red>
+                <green>160</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="2" column="1">
+             <property name="text">
+              <string>32%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>204</red>
+                <green>0</green>
+                <blue>0</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+            <item row="2" column="2">
+             <property name="text">
+              <string>100%</string>
+             </property>
+             <property name="background">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>78</red>
+                <green>154</green>
+                <blue>6</blue>
+               </color>
+              </brush>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_13">
+            <item>
+             <widget class="QLabel" name="label_15">
+              <property name="text">
+               <string>Порог связи</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="thresholdSlider_2">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Указывает минимальное значение, при котором фрагменты считаются связанными&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="value">
+               <number>45</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="tresholdLabel_2">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>45</string>
+              </property>
+              <property name="textFormat">
+               <enum>Qt::PlainText</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_16">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>%</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="showNamesIntersectGraph">
+              <property name="text">
+               <string>Показать граф</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNew"/>
+   <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionChangeFragments"/>
+   <addaction name="actionClear"/>
+   <addaction name="separator"/>
+   <addaction name="actionStartProcess"/>
+   <addaction name="actionStopProcess"/>
+   <addaction name="separator"/>
+   <addaction name="actionOpenParams"/>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>809</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="action_2"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionOpenParams"/>
+    <addaction name="separator"/>
+    <addaction name="actionChangeDB"/>
+    <addaction name="actionExit"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Правка</string>
+    </property>
+    <addaction name="actionChangeFragments"/>
+    <addaction name="actionClear"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Обработка</string>
+    </property>
+    <addaction name="actionStartProcess"/>
+    <addaction name="actionStopProcess"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+  </widget>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/shutdown.png</normaloff>:/icons/shutdown.png</iconset>
+   </property>
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+  <action name="actionChangeDB">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/logout.png</normaloff>:/icons/logout.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сменить БД</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/open.png</normaloff>:/icons/open.png</iconset>
+   </property>
+   <property name="text">
+    <string>Открыть</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/create.png</normaloff>:/icons/create.png</iconset>
+   </property>
+   <property name="text">
+    <string>Новый</string>
+   </property>
+  </action>
+  <action name="actionChangeFragments">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/stack.png</normaloff>:/icons/stack.png</iconset>
+   </property>
+   <property name="text">
+    <string>Изменить фрагменты</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/trash.png</normaloff>:/icons/trash.png</iconset>
+   </property>
+   <property name="text">
+    <string>Очистить</string>
+   </property>
+  </action>
+  <action name="actionStartProcess">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/start.png</normaloff>:/icons/start.png</iconset>
+   </property>
+   <property name="text">
+    <string>Начать обработку</string>
+   </property>
+  </action>
+  <action name="actionStopProcess">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Остановить обработку</string>
+   </property>
+  </action>
+  <action name="actionOpenParams">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/settings.png</normaloff>:/icons/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Параметры</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/exit.png</normaloff>:/icons/exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Закрыть проект</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../res/pictures.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>ResultsWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>236</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>thresholdSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>tresholdLabel</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>518</x>
+     <y>416</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>655</x>
+     <y>416</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>startProcessButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionStartProcess</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>437</x>
+     <y>130</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stopProcessButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionStopProcess</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>603</x>
+     <y>130</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>changeFragmentsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionChangeFragments</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>520</x>
+     <y>438</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
