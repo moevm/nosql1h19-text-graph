@@ -158,3 +158,13 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+.idea/encodings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/nosql1h19-text-graph.iml
+.idea/vagrant.xml
+.idea/vcs.xml
+.idea/webResources.xml
+.scannerwork/
+src/res_compiled/
+src/ui_compiled/
