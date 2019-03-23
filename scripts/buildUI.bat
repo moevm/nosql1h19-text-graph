@@ -1,12 +1,12 @@
 cd ..
 call venv\Scripts\activate
-IF EXIST src\ui (
-    rm -rf src\ui\*
+IF EXIST src\ui_compiled (
+    rm -rf src\ui_compiled\*
 ) ELSE (
-    md src\ui
+    md src\ui_compiled
 )
 FOR %%I in (ui\*.*) DO (
 	echo Converting %%I
-	call pyuic5 %%I >> src\ui\%%~nI.py
+	call pyuic5 %%I >> src\ui_compiled\%%~nI.py
 )
 echo Finished
