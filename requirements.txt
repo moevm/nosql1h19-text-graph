@@ -2,3 +2,5 @@ PyQt5
 neomodel
 pyinstaller
 logutils
+nltk
+pymystem3
