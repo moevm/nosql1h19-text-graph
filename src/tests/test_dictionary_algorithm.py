@@ -54,8 +54,8 @@ class DictionaryAlgorithmTest(unittest.TestCase):
         self.assertLess(self.algorithm.compare_results(res1, res3)[0], 0.5)
         self.assertGreater(self.algorithm.compare_results(res1, res4)[0], 0.5)
         self.assertEqual(self.algorithm.compare_results(res1, res4)[0],
-                         self.algorithm.compare_results(res4, res1)[0]) # Транзитивность
+                         self.algorithm.compare_results(res4, res1)[0])  # Транзитивность
         res5 = [(i*5, i) for i in range(1, 10)]
         res6 = [(i*5, i) for i in range(5, 10)]
-        self.assertLess(abs(self.algorithm.compare_results(res1, res4)[0] -
-                        self.algorithm.compare_results(res5, res6)[0]), 0.00000001)
+        self.assertLess(abs(self.algorithm.compare_results(res1, res4)[0]
+                            - self.algorithm.compare_results(res5, res6)[0]), 0.00000001)

@@ -1,5 +1,7 @@
 import unittest
-from api.connection import DataBaseConnection
+
+from api.database.connection import DataBaseConnection
+
 config = {
     'uri': 'bolt://localhost:7687',
     'login': 'neo4j',

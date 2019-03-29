@@ -1,5 +1,6 @@
+from neomodel import db
+
 from logger import log
-from neomodel import config as neo_config, db
 
 
 class DataBaseConnection:

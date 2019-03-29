@@ -104,5 +104,24 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         avg /= len(res)
         return avg, [res_elem[2] for res_elem in res][:select_words]
 
-    def compare(self, res1: Dict, res2: Dict):
-        compare_res = self.compare_results(res1["top_words"], res2["top_words"])
+    def compare(self, res1: Dict, res2: Dict, *args, **kwargs):
+        """
+        Сравнивает результаты работы алгоритма для фрагментов
+        :param res1: Результат для фрагмента 1
+        :param res2: Результат для фрагмента 2
+        :param args, kwargs: Параметры, передающиеся в self.compare_results
+        :return: {
+            intersection: Численная харакетристика связи от 0 до 1
+            data: Прочие характеристики связи {
+                top_words: топ-select_words слов пересечения
+            }
+        }
+        """
+        intersection, top_words = self.compare_results(res1["data"]["top_words"],
+                                                       res2["data"]["top_words"], *args, **kwargs)
+        return {
+            "intersection": intersection,
+            "data": {
+                "top_words": top_words
+            }
+        }
