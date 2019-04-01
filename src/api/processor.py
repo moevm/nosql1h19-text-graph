@@ -1,17 +1,17 @@
 from typing import List
 from api.algorithm.abstract import AbstractAlgorithm
 from api.algorithm.dictionary import DictionaryAlgorithm
-from api.analyzer import TextAnalyzer
+from api.analyzer import FragmentsAnalyzer
 from models.text_node import TextNode
 
 
 class TextProcessor:
-    """Класс, выполняющие основные операции по работе с текстами"""
+    """Класс, выполняющие основные операции по работе с фрагментами"""
 
     def __init__(self):
         self.algorithm_classes = [DictionaryAlgorithm]
         self.algorithms: List[AbstractAlgorithm] = []
-        self.analyzer = TextAnalyzer()
+        self._analyzer = FragmentsAnalyzer()
         self.set_up_algorithms()
 
     def set_up_algorithms(self):
@@ -26,22 +26,25 @@ class TextProcessor:
         :param filename:
         :type filename: str
         """
-        self.analyzer.read_file(filename)
+        self._analyzer.read_file(filename)
 
-    def clear_df(self):
+    def clear_db(self):
         """Очищает БД"""
         nodes = TextNode.nodes.all()
         for node in nodes:
             node.delete()
 
-    def download_db(self):  # TODO
+    def download_db(self):
         """Загрузить данные из БД в список фрагментов"""
-        pass
+        self._analyzer.clear()
+        nodes = TextNode.nodes.all()
+        nodes.sort(key=lambda node: node.order_id)
+        for node in nodes:
+            self._analyzer.append(node.text)
 
-    def upload_db(self):  # TODO
+    def upload_db(self):
         """Загрузить данные в БД из анализатора"""
-        for index, fragment in zip(
-                range(len(self.analyzer.fragments)),
-                self.analyzer.fragments):
-            fragment = TextNode(order_id=index, text=fragment)
-            fragment.save()
+        self.clear_db()
+        for fragment in self._analyzer:
+            node = fragment.to_TextNode()
+            node.save()

@@ -1,12 +1,7 @@
 import unittest
 
 from api.database.connection import DataBaseConnection
-
-config = {
-    'uri': 'bolt://localhost:7687',
-    'login': 'neo4j',
-    'password': 'kinix951'
-}
+from tests.config import Config as TestConfig
 
 
 class DataBaseConnectionTest(unittest.TestCase):
@@ -14,5 +9,5 @@ class DataBaseConnectionTest(unittest.TestCase):
         """
             Проверка подключения. Если не подключается, будет Exception
         """
-        connection = DataBaseConnection(**config)
-        connection.connect(**config)
+        connection = DataBaseConnection(**TestConfig.NEO4J_DATA)
+        connection.connect(**TestConfig.NEO4J_DATA)
