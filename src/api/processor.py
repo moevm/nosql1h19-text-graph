@@ -2,16 +2,18 @@ from typing import List
 from api.algorithm.abstract import AbstractAlgorithm
 from api.algorithm.dictionary import DictionaryAlgorithm
 from api.analyzer import FragmentsAnalyzer
-from models.text_node import TextNode
 
 
 class TextProcessor:
-    """Класс, выполняющие основные операции по работе с фрагментами"""
+    """Класс, выполняющие основные операции по работе с фрагментами.
+    Внесение изменений в фрагменты требует явного выполнения синхронизации.
+    Таким образом в БД не будут занесены ошибочные данные"""
 
     def __init__(self):
         self.algorithm_classes = [DictionaryAlgorithm]
         self.algorithms: List[AbstractAlgorithm] = []
         self._analyzer = FragmentsAnalyzer()
+        self._analyzer.download_db()
         self.set_up_algorithms()
 
     def set_up_algorithms(self):
@@ -28,23 +30,30 @@ class TextProcessor:
         """
         self._analyzer.read_file(filename)
 
-    def clear_db(self):
-        """Очищает БД"""
-        nodes = TextNode.nodes.all()
-        for node in nodes:
-            node.delete()
+    def apply_algorithms(self):
+        """Применить набор алгоритмов к вершинам"""
+        for algorithm in self.algorithms:
+            for node in self._analyzer:
+                node.alg_results = algorithm.preprocess(node.text)
+        for i in range(len(self._analyzer)):
+            for j in range(i + 1, len(self._analyzer)):
+                node1 = self._analyzer[i]
+                node2 = self._analyzer[j]
+                for algorithm in self.algorithms:
+                    result = algorithm.compare(node1.alg_results,
+                                               node2.alg_results)
+                    node1.link.connect(
+                        node2, {
+                            "algorithm_name": algorithm.name,
+                            "intersection": result["intersection"],
+                            "results": result["data"]
+                        }
+                    )
 
-    def download_db(self):
-        """Загрузить данные из БД в список фрагментов"""
+    def clear_db(self):
+        """Очистить БД"""
         self._analyzer.clear()
-        nodes = TextNode.nodes.all()
-        nodes.sort(key=lambda node: node.order_id)
-        for node in nodes:
-            self._analyzer.append(node.text)
 
     def upload_db(self):
-        """Загрузить данные в БД из анализатора"""
-        self.clear_db()
-        for fragment in self._analyzer:
-            node = fragment.to_TextNode()
-            node.save()
+        """Загрузить изменения в БД"""
+        self._analyzer.upload_db()

@@ -16,6 +16,10 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         self.n = n
         self.word_regex = r'[а-яА-Я]'
 
+    @property
+    def name(self):
+        return 'Dictionary'
+
     def check_word(self, word: str) -> bool:
         """
         Проверяет, удовлетворяет ли слово заданным критерием
@@ -41,7 +45,8 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         Определяет частоту встречи слов в списке.
         Единственное условие - элементы списка должны быть хэшируемы
         :param tokens: Список из хэшируемых элементов
-        :return: Отсортированный список из кортежей вида (частота, элемент) из n элементов
+        :return: Отсортированный список из кортежей вида (частота, элемент)
+        из n элементов
         """
         hash_map = dict()
         for token in tokens:
@@ -49,9 +54,13 @@ class DictionaryAlgorithm(AbstractAlgorithm):
                 hash_map[token] += 1
             except KeyError:
                 hash_map[token] = 1
-        sorted_list = sorted(hash_map.items(), key=lambda x: x[1], reverse=True)
+        sorted_list = sorted(
+            hash_map.items(),
+            key=lambda x: x[1],
+            reverse=True)
         if len(sorted_list) > self.n:
-            return sorted_list[:self.n]
+            sorted_list = sorted_list[:self.n]
+        sorted_list = [elem for elem in sorted_list if elem[1] > 1]
         return sorted_list
 
     def preprocess(self, text: str) -> Dict:
@@ -76,24 +85,33 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         :param select_words: Количество элементов для характеристики сравнения
         :return: "Коэффициент похожести" и топ select_words похожих элементов
         """
-        compare_numbers = lambda a, b: 1 - abs(b - a) / max(b, a) if max(b, a) > 0 else 1.0
-        mean = lambda a, b: (a + b) / 2
-        res = []
+        def compare_numbers(a, b):
+            return 1 - abs(b - a) / max(b, a) if max(b, a) > 0 else 1.0
 
-        used_indexes_2 = [False for _ in range(len(top2))]  # Показывает использованные элементы top1
-        for index1, freq1, elem1 in zip(range(len(top1)), *zip(*top1)):
-            for index2, freq2, elem2 in zip(range(len(top2)), *zip(*top2)):
-                if elem1 == elem2:  # Если элемент есть в обеих списках, то добавить
-                    res.append((compare_numbers(freq1, freq2), mean(freq1, freq2), elem1))
+        def mean(a, b):
+            return (a + b) / 2
+        res = []
+        # Показывает использованные элементы top1
+        used_indexes_2 = [False for _ in range(len(top2))]
+        for index1, elem1, freq1 in zip(range(len(top1)), *zip(*top1)):
+            for index2, elem2, freq2 in zip(range(len(top2)), *zip(*top2)):
+                if elem1 == elem2:  # Если элемент есть в обеих списках
+                    res.append(
+                        (compare_numbers(
+                            freq1, freq2), mean(
+                            freq1, freq2), elem1))
                     used_indexes_2[index2] = True
                     break
             else:  # Если есть только в первом, но нет во втором
                 res.append((0, mean(freq1, 0), elem1))
-        for i, used, freq2, elem2 in zip(range(len(used_indexes_2)), used_indexes_2, *zip(*top2)):
+        for i, used, elem2, freq2 in zip(
+                range(len(used_indexes_2)),
+                used_indexes_2, *zip(*top2)):
             if not used:  # Есть только во втором, но не в первом
                 res.append((0, mean(freq2, 0), elem2))
 
-        # Элементы сортируются по схожести частот употребления, взвешенных относительно частоты употребления
+        # Элементы сортируются по схожести частот употребления, взвешенных
+        # относительно частоты употребления
         res = sorted(res, key=lambda e: e[0] * e[1], reverse=True)
 
         # Вычисляется средневзвешенное
@@ -117,8 +135,10 @@ class DictionaryAlgorithm(AbstractAlgorithm):
             }
         }
         """
-        intersection, top_words = self.compare_results(res1["data"]["top_words"],
-                                                       res2["data"]["top_words"], *args, **kwargs)
+        intersection, top_words = self.compare_results(
+            res1["top_words"], res2["top_words"],
+            *args, **kwargs
+        )
         return {
             "intersection": intersection,
             "data": {

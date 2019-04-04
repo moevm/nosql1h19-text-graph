@@ -14,20 +14,13 @@ class TestTextProcessor(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        TextProcessor().clear_db()
+        pass
 
     def test_parse_file(self):
         processor = TextProcessor()
-
         processor._analyzer.set_separator(r'\n')
-        processor.parse_file('../samples/denikin_sketch.txt')
-        self.assertGreater(len(processor._analyzer), 1)
+        processor.parse_file('../samples/short.txt')
         processor.upload_db()
-
-        processor2 = TextProcessor()
-        processor2.download_db()
-        self.assertEqual(processor._analyzer._fragments,
-                         processor2._analyzer._fragments)
-
-        processor.clear_db()
-
+        self.assertGreater(len(processor._analyzer), 1)
+        processor.apply_algorithms()
+        processor.upload_db()

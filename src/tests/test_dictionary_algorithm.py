@@ -19,7 +19,8 @@ class DictionaryAlgorithmTest(unittest.TestCase):
     def test_stem(self):
         res = self.algorithm.do_stem('Вставай, проклятьем заклейменный!')
         self.assertEqual(['вставать', 'проклятие', 'заклеймить'], res)
-        res = self.algorithm.do_stem('Je vois que je vous fais peur,[2 - Я вижу, что я вас пугаю.]')
+        res = self.algorithm.do_stem('Je vois que je vous fais peur, \
+                                     [2 - Я вижу, что я вас пугаю.]')
         self.assertEqual(['видеть', 'пугать'], res)
 
     def test_get_freq(self):
@@ -42,20 +43,21 @@ class DictionaryAlgorithmTest(unittest.TestCase):
         self.assertTrue(('мир', 3) in res)
         self.assertTrue(('весь', 2) in res)
         self.assertTrue(('наш', 2) in res)
-        self.assertTrue(('проклятие', 1) in res)
 
     def test_compare_results(self):
         res1 = [(i, i) for i in range(1, 10)]
-        res2 = [(i, i + 10) for i in range(1, 10)]
+        res2 = [(i + 10, i) for i in range(1, 10)]
         res3 = [(i, i) for i in range(1, 5)]
         res4 = [(i, i) for i in range(5, 10)]
         self.assertEqual(self.algorithm.compare_results(res1, res1)[0], 1)
         self.assertEqual(self.algorithm.compare_results(res1, res2)[0], 0)
         self.assertLess(self.algorithm.compare_results(res1, res3)[0], 0.5)
         self.assertGreater(self.algorithm.compare_results(res1, res4)[0], 0.5)
+        # Транзитивность
         self.assertEqual(self.algorithm.compare_results(res1, res4)[0],
-                         self.algorithm.compare_results(res4, res1)[0])  # Транзитивность
+                         self.algorithm.compare_results(res4, res1)[0])
         res5 = [(i*5, i) for i in range(1, 10)]
         res6 = [(i*5, i) for i in range(5, 10)]
         self.assertLess(abs(self.algorithm.compare_results(res1, res4)[0]
-                            - self.algorithm.compare_results(res5, res6)[0]), 0.00000001)
+                            - self.algorithm.compare_results(res5, res6)[0]),
+                        0.00000001)
