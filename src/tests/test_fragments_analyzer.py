@@ -1,7 +1,7 @@
 import unittest
-from api.analyzer import FragmentsAnalyzer, SeparatorNotSetException
-from api.database.connection import DataBaseConnection
-from models.text_node import TextNode
+from api import FragmentsAnalyzer, SeparatorNotSetException
+from api.database import DataBaseConnection
+from models import TextNode
 from tests.config import Config as TestConfig
 
 

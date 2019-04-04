@@ -1,6 +1,6 @@
 import unittest
 
-from api.database.connection import DataBaseConnection
+from api.database import DataBaseConnection
 from tests.config import Config as TestConfig
 
 

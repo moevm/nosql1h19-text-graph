@@ -1,7 +1,6 @@
 from typing import List
-from api.algorithm.abstract import AbstractAlgorithm
-from api.algorithm.dictionary import DictionaryAlgorithm
-from api.analyzer import FragmentsAnalyzer
+from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
+from api import FragmentsAnalyzer
 
 
 class TextProcessor:
@@ -9,8 +8,11 @@ class TextProcessor:
     Внесение изменений в фрагменты требует явного выполнения синхронизации.
     Таким образом в БД не будут занесены ошибочные данные"""
 
-    def __init__(self):
-        self.algorithm_classes = [DictionaryAlgorithm]
+    def __init__(self, algorithm_classes=None):
+        if not algorithm_classes:
+            self.algorithm_classes = [DictionaryAlgorithm]
+        else:
+            self.algorithm_classes = algorithm_classes
         self.algorithms: List[AbstractAlgorithm] = []
         self._analyzer = FragmentsAnalyzer()
         self._analyzer.download_db()
@@ -34,7 +36,13 @@ class TextProcessor:
         """Применить набор алгоритмов к вершинам"""
         for algorithm in self.algorithms:
             for node in self._analyzer:
-                node.alg_results = algorithm.preprocess(node.text)
+                if not node.alg_results:
+                    node.alg_results = algorithm.preprocess(node.text)
+                else:
+                    node.alg_results = {
+                        **node.alg_results,
+                        **algorithm.preprocess(node.text)
+                    }
         for i in range(len(self._analyzer)):
             for j in range(i + 1, len(self._analyzer)):
                 node1 = self._analyzer[i]

@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple, Any
 from nltk.corpus import stopwords
 from pymystem3 import Mystem
 
-from api.algorithm.abstract import AbstractAlgorithm
+from api.algorithm import AbstractAlgorithm
 
 FreqList = List[Tuple[int, Any]]
 

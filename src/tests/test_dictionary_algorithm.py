@@ -1,6 +1,6 @@
 import unittest
 
-from api.algorithm.dictionary import DictionaryAlgorithm
+from api.algorithm import DictionaryAlgorithm
 from tests.fake.prebuilt import internationale_generator
 
 

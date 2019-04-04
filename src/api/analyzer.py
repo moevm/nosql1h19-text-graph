@@ -1,7 +1,7 @@
 import re
 from typing import List, Pattern
-from api.exceptions import Error
-from models.text_node import TextNode
+from .exceptions import Error
+from models import TextNode
 
 
 class SeparatorNotSetException(Error):
