@@ -50,13 +50,14 @@ class TextProcessor:
                 for algorithm in self.algorithms:
                     result = algorithm.compare(node1.alg_results,
                                                node2.alg_results)
-                    node1.link.connect(
-                        node2, {
-                            "algorithm_name": algorithm.name,
-                            "intersection": result["intersection"],
-                            "results": result["data"]
-                        }
-                    )
+                    if result["intersection"] > 0:
+                        node1.link.connect(
+                            node2, {
+                                "algorithm_name": algorithm.name,
+                                "intersection": result["intersection"],
+                                "results": result["data"]
+                            }
+                        )
 
     def clear_db(self):
         """Очистить БД"""

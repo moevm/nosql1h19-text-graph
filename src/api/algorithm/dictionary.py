@@ -110,6 +110,9 @@ class DictionaryAlgorithm(AbstractAlgorithm):
             if not used:  # Есть только во втором, но не в первом
                 res.append((0, mean(freq2, 0), elem2))
 
+        # Здесь формат результата:
+        # List[(Пересечение употребления, частота употребления, слово)]
+
         # Элементы сортируются по схожести частот употребления, взвешенных
         # относительно частоты употребления
         res = sorted(res, key=lambda e: e[0] * e[1], reverse=True)
@@ -120,7 +123,8 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         for comp, weight, elem in res:
             avg += comp * weight / avg_weight
         avg /= len(res)
-        return avg, [res_elem[2] for res_elem in res][:select_words]
+        words = [str(res_elem[2]) for res_elem in res if res_elem[0] > 0]
+        return avg, words[:select_words]
 
     def compare(self, res1: Dict, res2: Dict, *args, **kwargs):
         """
