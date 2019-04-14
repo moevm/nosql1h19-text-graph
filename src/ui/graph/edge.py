@@ -19,10 +19,11 @@ class Edge(QGraphicsItem):
     dest_point: QPointF
     animations: List[AnimatedObject]
 
-    def __init__(self, source: Node, dest: Node, widget: GraphWidget):
+    def __init__(self, source: Node, dest: Node, widget: GraphWidget,
+                 arrow_size=10):
         super().__init__()
         self.source, self.dest = source, dest
-        self.arrow_size = 20
+        self.arrow_size = arrow_size
         source.addEdge(self)
         dest.addEdge(self)
         self.widget = widget
@@ -64,13 +65,13 @@ class Edge(QGraphicsItem):
         angle = math.acos(line.dx() / line.length())
         if line.dy() >= 0:
             angle = math.pi * 2 - angle
-        dest_arrow_p1 = self.dest_point + QPointF(math.sin(angle - math.pi / 3) * self.arrow_size,
-                                                  math.cos(angle - math.pi / 3) * self.arrow_size)
-        dest_arrow_p2 = self.dest_point + QPointF(math.sin(angle - math.pi + math.pi / 3) * self.arrow_size,
-                                                  math.cos(angle - math.pi + math.pi / 3) * self.arrow_size)
-
-        painter.setBrush(Qt.black)
-        painter.drawPolygon(QPolygonF([line.p2(), dest_arrow_p1, dest_arrow_p2]))
+        if self.arrow_size > 0:
+            dest_arrow_p1 = self.dest_point + QPointF(math.sin(angle - math.pi / 3) * self.arrow_size,
+                                                      math.cos(angle - math.pi / 3) * self.arrow_size)
+            dest_arrow_p2 = self.dest_point + QPointF(math.sin(angle - math.pi + math.pi / 3) * self.arrow_size,
+                                                      math.cos(angle - math.pi + math.pi / 3) * self.arrow_size)
+            painter.setBrush(Qt.black)
+            painter.drawPolygon(QPolygonF([line.p2(), dest_arrow_p1, dest_arrow_p2]))
         self.draw_animated_objects()
 
     def add_animation(self, item: QGraphicsItem, position: int):

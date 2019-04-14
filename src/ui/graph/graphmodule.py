@@ -2,13 +2,15 @@ from ui.graph import Node, Edge, GraphWidget
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QMainWindow
 import numpy as np
+import sys
 
 
 class GraphModule:
     """
     Класс, занимающийся работой с GraphWidget.
     """
-    def __init__(self, window: QMainWindow, nodes=None, edges=None):
+
+    def __init__(self, window: QMainWindow, nodes=None, edges=None, **kwargs):
         """Конструктор класса
 
         :param window: Окно-родитель для GraphWidget
@@ -21,26 +23,70 @@ class GraphModule:
             id: Id Ребра,
             args: Список аргументов для конструктора Edge
         }
+        :param kwargs: Аргументы для GraphWidget
         """
         self.window = window
-        self.widget = GraphWidget(self.window)
+        self.widget = GraphWidget(self.window, **kwargs)
 
-        self.nodes = {}  # Хранилище вершин
-        self.edges = {}  # Хранилище связей
+        self._nodes = {}  # Хранилище вершин
+        self._edges = {}  # Хранилище связей
 
         self.gravity_timer = None  # Таймер для работы с гравитацией
 
-    def _add_node(self, id, pos_x, pos_y, **kwargs):
+    def add_node(self, id, pos_x, pos_y, **kwargs):
+        """Добавить вершину
+
+        :param id: Уникальный идентификатор вершины
+        :param pos_x: x-координата вершины
+        :param pos_y: y-координата вершины
+        :param **kwargs: Аргументы конструктора Node
+        """
         node = Node(self.widget, **kwargs)
         node.setPos(pos_x, pos_y)
         self.widget.scene().addItem(node)
-        self.nodes[id] = node
+        self._nodes[id] = node
 
-    def _add_edge(self, id1, id2, **kwargs):
-        edge = Edge(self.nodes[id1], self.nodes[id2], self.widget, **kwargs)
+    def add_edge(self, id1, id2, **kwargs):
+        """Добавить ребро
+
+        :param id1: source id
+        :param id2: target id
+        :param **kwargs: Аргументы конструктора Edge
+        """
+        edge = Edge(self._nodes[id1], self._nodes[id2], self.widget, **kwargs)
         self.widget.scene().addItem(edge)
 
+    @property
+    def nodes(self):
+        """Вернуть список вершин.
+        Возможно (TODO), здесь будет реализовано скрытие вершин
+        """
+        return self._nodes.values()
+
+    @property
+    def edges(self):
+        """Вернуть список ребер"""
+        return self._edges.values()
+
+    def _adjust_scene(self):
+        """ Подровнять сцену под вершины """
+        if len(self.nodes) == 0:
+            self.widget.scene().setSceneRect(-200, -200, 400, 400)
+        min_x, min_y, max_x, max_y = sys.maxsize, sys.maxsize, \
+            -sys.maxsize, -sys.maxsize
+        for node in self.nodes:
+            min_x = min(node.x(), min_x)
+            min_y = min(node.y(), min_y)
+            max_x = max(node.x(), max_x)
+            max_y = max(node.y(), max_y)
+        margin = 30
+        x, y = min_x, min_y
+        w, h = max(max_x - min_x, 100), max(max_y - min_y, 100)
+        self.widget.scene().setSceneRect(x-margin, y-margin,
+                                         w+margin*2, h+margin*2)
+
     def start_gravity(self):
+        """ Запустить расчёт взаимодействия вершин """
         if self.gravity_timer:
             return
         self.gravity_timer = QTimer(self.widget)
@@ -48,13 +94,16 @@ class GraphModule:
         self.gravity_timer.timeout.connect(self._process_gravity)
 
     def _process_gravity(self):
+        """ Один тик обработки взаимодействия вершин """
         new_coords = {}
-        for id, node in self.nodes.items():
+        for id, node in self._nodes.items():
             new_coords[id] = self._calculate_forces(node)
-        for id in self.nodes:
+        for id in self._nodes:
             x, y = new_coords[id]
-            self.nodes[id].setX(x)
-            self.nodes[id].setY(y)
+            self._nodes[id].setX(x)
+            self._nodes[id].setY(y)
+        if not self.widget.scene().mouseGrabberItem():
+            self._adjust_scene()
 
     def _calculate_forces(self, node: Node):
         """ Вычислить новые координаты вершины  """
@@ -64,8 +113,8 @@ class GraphModule:
         vertex_weight = 250  # TODO Settings
 
         # Силы, отталкивающие вершины
-        for node2 in self.nodes.values():
-            if not node2 == node:
+        for node2 in self._nodes.values():
+            if node2 != node:
                 dx = node.x() - node2.x()
                 dy = node.y() - node2.y()
                 length = np.linalg.norm((dx, dy))
@@ -77,14 +126,14 @@ class GraphModule:
         for edge in node.edge_list:
             if edge.source == node:
                 dx = node.x() - edge.dest.x()
-                dy = node.y() - edge.dest.x()
+                dy = node.y() - edge.dest.y()
             else:
                 dx = node.x() - edge.source.x()
                 dy = node.y() - edge.source.y()
             xvel -= dx / weight
             yvel -= dy / weight
 
-        # TODO Силы, отталкивающие вершины от границ
+        # TODO (?) Силы, отталкивающие вершины от границ
 
         if np.linalg.norm((xvel, yvel)) < 0.2:
             xvel = yvel = 0

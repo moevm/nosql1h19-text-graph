@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QRectF, Qt, QTimer
-from PyQt5.QtGui import QPainter, QBrush, QKeyEvent
+from PyQt5.QtGui import QPainter, QBrush, QKeyEvent, QWheelEvent
 from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
 
 
@@ -14,15 +14,12 @@ class GraphWidget(QGraphicsView):
         self.setViewportUpdateMode(self.BoundingRectViewportUpdate)
         self.setRenderHint(QPainter.Antialiasing)
         self.setTransformationAnchor(self.AnchorUnderMouse)
-        self.scale(0.8, 0.8)
         animationTimer = QTimer(self)
         animationTimer.start(10)
         animationTimer.timeout.connect(self.process_animations)
 
     def drawBackground(self, painter: QPainter, rect: QRectF):
         scene_rect = self.sceneRect()
-        brush = QBrush(Qt.lightGray)
-        painter.fillRect(scene_rect, brush)
         painter.setBrush(Qt.NoBrush)
         painter.drawRect(scene_rect)
 
@@ -54,3 +51,6 @@ class GraphWidget(QGraphicsView):
             self.zoom_out()
         else:
             super().keyPressEvent(event)
+
+    def wheelEvent(self, event: QWheelEvent):
+        self.scale_view(2**(-event.angleDelta().y() / 240))
