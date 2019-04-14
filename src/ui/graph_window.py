@@ -11,4 +11,8 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
         self.graphicsView.setViewport(self.graph.widget)
         self.graph._add_node(1, 0, 0)
         self.graph._add_node(2, 100, 100)
+        self.graph._add_node(3, 100, -100)
         self.graph._add_edge(1, 2)
+        self.graph._add_edge(2, 3)
+        self.graph._add_edge(3, 1)
+        self.graph.start_gravity()
