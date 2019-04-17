@@ -4,3 +4,4 @@ pyinstaller
 logutils
 nltk
 pymystem3
+numpy

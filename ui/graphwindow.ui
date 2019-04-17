@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>717</width>
-    <height>566</height>
+    <width>1236</width>
+    <height>682</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -170,7 +170,14 @@
      </layout>
     </item>
     <item>
-     <widget class="QGraphicsView" name="graphicsView"/>
+     <widget class="QGraphicsView" name="graphicsView">
+      <property name="sizeAdjustPolicy">
+       <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+      </property>
+      <property name="dragMode">
+       <enum>QGraphicsView::NoDrag</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -179,8 +186,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>717</width>
-     <height>25</height>
+     <width>1236</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
