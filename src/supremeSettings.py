@@ -8,13 +8,22 @@ class SupremeSettings:
     def __init__(self):
         self.initialise_settings()
 
-    def get_settings(self, setting_names):
+    @staticmethod
+    def get_settings(setting_names):
         result = {}
         for setting in setting_names:
-            if setting in self.settings.keys():
-                result[setting] = self.settings[setting]
+            try:
+                result[setting] = SupremeSettings.settings[setting]
+            except KeyError:
+                # TODO KeyError Exception throw
+                pass
         return result
 
+    @staticmethod
+    def set_settings(settings_tuples):
+        for pair in settings_tuples:
+            SupremeSettings.settings[pair[0]] = pair[1]
+
     def initialise_settings(self):
-        """TODO вытащить настройки из интерфейса"""
+        # TODO вытащить настройки из интерфейса
         pass
