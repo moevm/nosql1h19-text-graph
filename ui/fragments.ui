@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>FragmentsWindow</class>
  <widget class="QMainWindow" name="FragmentsWindow">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -26,23 +29,7 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
-       <widget class="QListWidget" name="fragmentsListWidget">
-        <item>
-         <property name="text">
-          <string>Фрагмент #1</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Фрагмент #2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Фрагмент #3</string>
-         </property>
-        </item>
-       </widget>
+       <layout class="QHBoxLayout" name="fragmentsWidgetLayout"/>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -90,9 +77,9 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="tabWidgetPage1">
+      <widget class="QWidget" name="addFragmentPage">
        <attribute name="title">
         <string>Добавить фрагмент</string>
        </attribute>
@@ -107,7 +94,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit">
+           <widget class="QLineEdit" name="fileNameEdit">
             <property name="text">
              <string>Файл не загружен</string>
             </property>
@@ -137,7 +124,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="sepRegExEdit"/>
+              <widget class="QLineEdit" name="sepRegExEdit">
+               <property name="text">
+                <string>.*</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -221,7 +212,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tabWidgetPage2">
+      <widget class="QWidget" name="viewFragmentPage">
        <attribute name="title">
         <string>Информация о фрагменте</string>
        </attribute>
@@ -240,7 +231,7 @@
             <item>
              <widget class="QLabel" name="wordNumberLabel">
               <property name="text">
-               <string>10000</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -258,7 +249,7 @@
             <item>
              <widget class="QLabel" name="sentencesNumberLabel">
               <property name="text">
-               <string>12345</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -280,7 +271,7 @@
             <item>
              <widget class="QLabel" name="fragmentsNumberLabel">
               <property name="text">
-               <string>3</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -298,7 +289,7 @@
             <item>
              <widget class="QLabel" name="symbolsNumberLabel">
               <property name="text">
-               <string>1234567</string>
+               <string>0</string>
               </property>
              </widget>
             </item>
@@ -314,29 +305,13 @@
          </widget>
         </item>
         <item>
-         <widget class="QTextBrowser" name="textBrowser">
+         <widget class="QTextBrowser" name="fragmentTextBrowser">
           <property name="html">
            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;На мужском конце стола разговор всё более и более оживлялся. Полковник рассказал, что манифест об объявлении войны уже вышел в Петербурге и что экземпляр, который он сам видел, доставлен ныне курьером главнокомандующему.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;– И зачем нас нелегкая несет воевать с Бонапартом? – сказал Шиншин. – II a deja rabattu le caquet a l'Autriche. Je crains, que cette fois ce ne soit notre tour. [Он уже сбил спесь с Австрии. Боюсь, не пришел бы теперь наш черед.]&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Полковник был плотный, высокий и сангвинический немец, очевидно, служака и патриот. Он обиделся словами Шиншина.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;– А затэ м, мы лосты вый государ, – сказал он, выговаривая э вместо е и ъ вместо ь. – Затэм, что импэ ратор это знаэ т. Он в манифэ стэ сказал, что нэ можэ т смотрэт равнодушно на опасности, угрожающие России, и что бэ зопасност империи, достоинство ее и святост союзов, – сказал он, почему-то особенно налегая на слово «союзов», как будто в этом была вся сущность дела.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;И с свойственною ему непогрешимою, официальною памятью он повторил вступительные слова манифеста… «и желание, единственную и непременную цель государя составляющее: водворить в Европе на прочных основаниях мир – решили его двинуть ныне часть войска за границу и сделать к достижению „намерения сего новые усилия“.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;– Вот зачэм, мы лосты вый государ, – заключил он, назидательно выпивая стакан вина и оглядываясь на графа за поощрением.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;– Connaissez vous le proverbe: [Знаете пословицу:] «Ерема, Ерема, сидел бы ты дома, точил бы свои веретена», – сказал Шиншин, морщась и улыбаясь. – Cela nous convient a merveille. [Это нам кстати.] Уж на что Суворова – и того расколотили, a plate couture, [на голову,] а где y нас Суворовы теперь? Je vous demande un peu, [Спрашиваю я вас,] – беспрестанно перескакивая с русского на французский язык, говорил он.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;– Мы должны и драться до послэ днэ капли кров, – сказал полковник, ударяя по столу, – и умэ р-р-рэ т за своэ го импэ ратора, и тогда всэ й будэ т хорошо. А рассуждать как мо-о-ожно (он особенно вытянул голос на слове «можно»), как мо-о-ожно менше, – докончил он, опять обращаясь к графу. – Так старые гусары судим, вот и всё. А вы как судитэ, молодой человек и молодой гусар? – прибавил он, обращаясь к Николаю, который, услыхав, что дело шло о войне, оставил свою собеседницу и во все глаза смотрел и всеми ушами слушал полковника.&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;– Совершенно с вами согласен, – отвечал Николай, весь вспыхнув, вертя тарелку и переставляя стаканы с таким решительным и отчаянным видом, как будто в настоящую минуту он подвергался великой опасности, – я убежден, что русские должны умирать или побеждать, – сказал он, сам чувствуя так же, как и другие, после того как слово уже было сказано, что оно было слишком восторженно и напыщенно для настоящего случая и потому неловко.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
@@ -348,5 +323,38 @@ p, li { white-space: pre-wrap; }
   </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>entersRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>enterSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>393</x>
+     <y>152</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>583</x>
+     <y>150</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>otherRegExpRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>sepRegExEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>332</x>
+     <y>212</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>530</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -4,7 +4,8 @@ import sys
 import traceback
 
 from config.config import Config
-from ui import SetupDialog, LoginWindow, ExceptionDialog
+from ui import LoadingDialog, LoginWindow, ExceptionDialog, MainWindow
+from api import do_setup
 
 
 class App:
@@ -13,18 +14,27 @@ class App:
         logging.config.dictConfig(Config.LOGGING_CONFIG)
         self.log = logging.getLogger('root')
 
-        self.setup = SetupDialog()
-        self.setup.setupFinished.connect(self.onSetupFinished)
+        self.setup = LoadingDialog('Идет загрузка языковых пакетов', do_setup)
+        self.setup.loadingFinished.connect(self.showLogin)
+
+        self.window = None
+        self.login = None
 
     def start(self):
-        self.setup.show()
-        self.setup.start_setup()
+        self.setup.start()
         sys.exit(self.app.exec_())
 
-    def onSetupFinished(self):
-        self.log.debug('test')
+    def showLogin(self):
+        if self.window:
+            self.window.close()
         self.login = LoginWindow()
+        self.login.loginSuccesful.connect(self.showMainWindow)
         self.login.show()
+
+    def showMainWindow(self):
+        self.window = MainWindow()
+        self.window.actionChangeDB.triggered.connect(self.showLogin)
+        self.window.show()
 
     def onExceptionCaught(self, type_, value, traceback):
         self.exception = ExceptionDialog(type_, value, traceback)
@@ -36,6 +46,7 @@ def exceptionHook(type_, value, traceback_):
     app.log.error(''.join(
         traceback.format_exception(type_, value, traceback_))
     )
+
 
 if __name__ == "__main__":
     app = App()

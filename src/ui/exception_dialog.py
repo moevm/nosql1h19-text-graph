@@ -9,6 +9,6 @@ class ExceptionDialog(QDialog, Ui_ExceptionDialog):
         self.setupUi(self)
         self.typeEdit.setText(str(type_))
         self.valueEdit.setText(str(value))
-        self.stackTraceBrowser.setText(
-            ''.join(traceback.format_tb(traceback_))
-        )
+        traceback_html = ''.join(traceback.format_tb(traceback_))
+        traceback_html = f"<pre>{traceback_html}</pre>"
+        self.stackTraceBrowser.setText(traceback_html)

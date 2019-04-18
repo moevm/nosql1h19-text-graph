@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Pattern
 from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
 from api import FragmentsAnalyzer
+from neomodel import db
 
 
 class TextProcessor:
@@ -14,8 +15,8 @@ class TextProcessor:
         else:
             self.algorithm_classes = algorithm_classes
         self.algorithms: List[AbstractAlgorithm] = []
-        self._analyzer = FragmentsAnalyzer()
-        self._analyzer.download_db()
+        self.analyzer = FragmentsAnalyzer()
+        self.analyzer.download_db()
         self.set_up_algorithms()
 
     def set_up_algorithms(self):
@@ -24,18 +25,20 @@ class TextProcessor:
         for algorithm_class in self.algorithm_classes:
             self.algorithms.append(algorithm_class())
 
-    def parse_file(self, filename: str):
+    def parse_file(self, filename: str, regex: Pattern):
         """Считать файл и вытащить из него все фрагменты
 
         :param filename:
         :type filename: str
         """
-        self._analyzer.read_file(filename)
+        self.analyzer.set_separator(regex)
+        self.analyzer.read_file(filename)
+        self.upload_db()
 
     def apply_algorithms(self):
         """Применить набор алгоритмов к вершинам"""
         for algorithm in self.algorithms:
-            for node in self._analyzer:
+            for node in self.analyzer:
                 if not node.alg_results:
                     node.alg_results = algorithm.preprocess(node.text)
                 else:
@@ -43,10 +46,10 @@ class TextProcessor:
                         **node.alg_results,
                         **algorithm.preprocess(node.text)
                     }
-        for i in range(len(self._analyzer)):
-            for j in range(i + 1, len(self._analyzer)):
-                node1 = self._analyzer[i]
-                node2 = self._analyzer[j]
+        for i in range(len(self.analyzer)):
+            for j in range(i + 1, len(self.analyzer)):
+                node1 = self.analyzer[i]
+                node2 = self.analyzer[j]
                 for algorithm in self.algorithms:
                     result = algorithm.compare(node1.alg_results,
                                                node2.alg_results)
@@ -60,9 +63,17 @@ class TextProcessor:
                         )
 
     def clear_db(self):
-        """Очистить БД"""
-        self._analyzer.clear()
+        """Очистить  БД"""
+        try:  # TODO
+            self.analyzer.clear()
+        except:
+            db.set_connection('bolt://neo4j:kinix951@localhost:7687')
+            self.analyzer.upload_db()
 
     def upload_db(self):
         """Загрузить изменения в БД"""
-        self._analyzer.upload_db()
+        try:  # TODO
+            self.analyzer.upload_db()
+        except:
+            db.set_connection('bolt://neo4j:kinix951@localhost:7687')
+            self.analyzer.upload_db()

@@ -19,9 +19,9 @@ class TestTextProcessor(unittest.TestCase):
 
     def test_parse_file(self):
         processor = TextProcessor([DictionaryAlgorithm])
-        processor._analyzer.set_separator(r'\n')
+        processor.analyzer.set_separator(r'\n')
         processor.parse_file('../samples/short.txt')
         processor.upload_db()
-        self.assertGreater(len(processor._analyzer), 1)
+        self.assertGreater(len(processor.analyzer), 1)
         processor.apply_algorithms()
         processor.upload_db()
