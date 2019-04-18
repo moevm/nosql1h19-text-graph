@@ -7,9 +7,8 @@ from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem, QStyle, \
 class Node(QGraphicsItem):
     Type = QGraphicsItem.UserType + 1
 
-    # TODO Node info
     def __init__(self, graph_widget, label=None, info=None,
-                 color=QColor(Qt.yellow)):
+                 color=QColor(Qt.yellow), id=0):
         """Создание вершины
 
         :param graph_widget: объект класса GraphWidget
@@ -22,6 +21,8 @@ class Node(QGraphicsItem):
         self.label = label
         self.info = info
         self.size_value = 20  # TODO Settings
+        self.id = id
+
         self.size = QRect(-self.size_value, -self.size_value,
                           self.size_value * 2, self.size_value * 2)
 

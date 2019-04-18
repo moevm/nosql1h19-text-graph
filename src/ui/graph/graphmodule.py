@@ -1,6 +1,6 @@
 from ui.graph import Node, Edge, GraphWidget, TextItem
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QGraphicsItem
 import numpy as np
 import sys
 import re
@@ -34,20 +34,17 @@ class GraphModule:
         self._texts = {}  # Хранилище текстов
 
         self.gravity_timer = None  # Таймер для работы с гравитацией
+        self.widget.item_right_clicked.connect(self._on_item_clicked)
 
-    def add_text(self, id, pos_x, pos_y, parent_id=None, **kwargs):
+    def add_text(self, id, pos_x, pos_y, parent_node=None, **kwargs):
         """Добавить текст
 
         :param id: Уникальный id текста
         :param pos_x: x-координата
         :param pos_y: y-координата
+        :param parent_node: вершина-родитель
         :param **kwargs: Аргументы конструктора TextItem
         """
-        assert id not in self._texts
-        try:
-            parent_node = self._nodes[parent_id]
-        except KeyError:
-            parent_node = None
         text = TextItem(id=id, parent=parent_node, **kwargs)
         text.setPos(pos_x, pos_y)
         text.linkActivated.connect(self._on_text_link_clicked)
@@ -63,7 +60,7 @@ class GraphModule:
         :param **kwargs: Аргументы конструктора Node
         """
         assert id not in self._nodes
-        node = Node(self.widget, **kwargs)
+        node = Node(self.widget, id=id, **kwargs)
         node.setPos(pos_x, pos_y)
         self.widget.scene().addItem(node)
         self._nodes[id] = node
@@ -88,6 +85,12 @@ class GraphModule:
                     id = int(id)
                     self.widget.scene().removeItem(self._texts[id])
                 del self._texts[id]
+
+    def _on_item_clicked(self, item: QGraphicsItem):
+        if isinstance(item, Node):
+            if item.info and not item.id in self._texts:
+                self.add_text(item.id, item.x() + 15, item.y() + 15,
+                              item, html_text=item.label)
 
     @property
     def nodes(self):

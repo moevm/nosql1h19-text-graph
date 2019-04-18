@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-cd ..
+if ! [[ -d src ]]; then
+    cd ..
+fi
 source venv/bin/activate;
 if ! [[ -d src/res_compiled ]]; then
     mkdir src/res_compiled;

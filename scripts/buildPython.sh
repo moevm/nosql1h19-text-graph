@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-cd ..
+if ! [[ -d venv ]]; then
+    cd ..
+fi
 source venv/bin/activate;
 if [[ -d build ]]; then
     rm -rf build
@@ -11,10 +13,14 @@ fi
 paths=(
     src/
     src/api/
+    src/api/algorithm/
+    src/api/database/   
     src/config/
     src/models/
     src/res_compiled/
-    src/ui_compiled
+    src/ui_compiled/
+    src/ui/
+    src/ui/graph
 )
 
 final_path=""

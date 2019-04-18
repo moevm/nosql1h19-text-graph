@@ -170,14 +170,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QGraphicsView" name="graphicsView">
-      <property name="sizeAdjustPolicy">
-       <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
-      </property>
-      <property name="dragMode">
-       <enum>QGraphicsView::NoDrag</enum>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="graphWidgetLayout"/>
     </item>
    </layout>
   </widget>
@@ -187,7 +180,7 @@
      <x>0</x>
      <y>0</y>
      <width>1236</width>
-     <height>22</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

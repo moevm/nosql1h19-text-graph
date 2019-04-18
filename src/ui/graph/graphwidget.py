@@ -1,11 +1,13 @@
-from PyQt5.QtCore import QRectF, Qt, QTimer
-from PyQt5.QtGui import QPainter, QBrush, QKeyEvent, QWheelEvent
-from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene
+from PyQt5.QtCore import QRectF, Qt, QTimer, pyqtSignal
+from PyQt5.QtGui import QPainter, QKeyEvent, QWheelEvent, QMouseEvent
+from PyQt5.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsItem
 
 
 class GraphWidget(QGraphicsView):
+    item_right_clicked = pyqtSignal(QGraphicsItem)
+
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init __(parent)
         scene = QGraphicsScene(self)
         scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         scene.setSceneRect(-200, -200, 400, 400)
@@ -14,6 +16,7 @@ class GraphWidget(QGraphicsView):
         self.setViewportUpdateMode(self.BoundingRectViewportUpdate)
         self.setRenderHint(QPainter.Antialiasing)
         self.setTransformationAnchor(self.AnchorUnderMouse)
+        self.setSizeAdjustPolicy(self.AdjustToContents)
         animationTimer = QTimer(self)
         animationTimer.start(10)
         animationTimer.timeout.connect(self.process_animations)
@@ -33,7 +36,8 @@ class GraphWidget(QGraphicsView):
         return
 
     def scale_view(self, scale_factor):
-        factor = self.transform().scale(scale_factor, scale_factor).mapRect(QRectF(0, 0, 1, 1)).width()
+        factor = self.transform().scale(scale_factor, scale_factor) \
+                     .mapRect(QRectF(0, 0, 1, 1)).width()
         if factor < 0.07 or factor > 100:
             return
         self.scale(scale_factor, scale_factor)
@@ -54,3 +58,8 @@ class GraphWidget(QGraphicsView):
 
     def wheelEvent(self, event: QWheelEvent):
         self.scale_view(2**(-event.angleDelta().y() / 240))
+
+    def mousePressEvent(self, event: QMouseEvent):
+        super().mousePressEvent(event)
+        if event.button() == Qt.RightButton:
+            self.item_right_clicked.emit(self.scene().mouseGrabberItem())
