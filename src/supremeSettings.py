@@ -8,21 +8,20 @@ class SupremeSettings:
     def __init__(self):
         self.initialise_settings()
 
-    @staticmethod
-    def get_settings(setting_names):
+    @classmethod
+    def __getitem__(cls, setting_names):
         result = {}
         for setting in setting_names:
             try:
-                result[setting] = SupremeSettings.settings[setting]
+                result[setting] = cls.settings[setting]
             except KeyError:
                 # TODO KeyError Exception throw
                 pass
         return result
 
-    @staticmethod
-    def set_settings(settings_tuples):
-        for pair in settings_tuples:
-            SupremeSettings.settings[pair[0]] = pair[1]
+    @classmethod
+    def __setitem__(cls, key, value):
+        cls.settings[key] = value
 
     def initialise_settings(self):
         # TODO вытащить настройки из интерфейса
