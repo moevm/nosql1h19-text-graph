@@ -356,5 +356,21 @@ p, li { white-space: pre-wrap; }
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>processButton</sender>
+   <signal>clicked()</signal>
+   <receiver>FragmentsWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>299</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>

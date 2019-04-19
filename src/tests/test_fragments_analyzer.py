@@ -1,5 +1,5 @@
 import unittest
-from api import FragmentsAnalyzer, SeparatorNotSetException
+from api import FragmentsAnalyzer
 from api.database import DataBaseConnection
 from models import TextNode
 from tests.config import Config as TestConfig
@@ -12,11 +12,6 @@ class TestTextAnalyzer(unittest.TestCase):
     def setUpClass(cls):
         DataBaseConnection(**TestConfig.NEO4J_DATA)
         [node.delete() for node in TextNode.nodes.all()]
-
-    def test_parse_fragments_throws(self):
-        analyzer = FragmentsAnalyzer()
-        with self.assertRaises(SeparatorNotSetException):
-            analyzer._parse_fragments('test')
 
     def test_parse_fragments(self):
         analyzer = FragmentsAnalyzer()

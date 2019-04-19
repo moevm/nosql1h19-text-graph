@@ -13,6 +13,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.actionCloseProject.triggered.connect(self.removeProject)
         self.actionNew.triggered.connect(self.setNewProject)
+        self.actionChangeFragments.triggered.connect(self.editFragments)
+
+        self.en_project = [  # Включить, когда есть проект
+            self.actionCloseProject,
+            # self.actionSave,
+            self.actionChangeFragments,
+            self.actionClear
+        ]
 
         self.en_algorithm_results = [  # Включить, когда есть результаты
             self.dictIntersectTab,
@@ -35,8 +43,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.processor is None:
             [item.setEnabled(False) for item in self.en_algorithm_results]
             [item.setEnabled(False) for item in self.en_process_fragments]
-        elif len(self.processor.analyzer) > 0:
-            [item.setEnabled(True) for item in self.en_process_fragments]
+            [item.setEnabled(False) for item in self.en_project]
+        else:
+            [item.setEnabled(True) for item in self.en_project]
+            if len(self.processor.analyzer) > 0:
+                [item.setEnabled(True) for item in self.en_process_fragments]
 
     def removeProject(self):
         """Удаление проекта"""

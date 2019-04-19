@@ -31,7 +31,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -309,29 +309,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="tableWidget">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-            <attribute name="horizontalHeaderCascadingSectionResizes">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="horizontalHeaderDefaultSectionSize">
-             <number>57</number>
-            </attribute>
-            <attribute name="verticalHeaderDefaultSectionSize">
-             <number>50</number>
-            </attribute>
-            <attribute name="verticalHeaderHighlightSections">
-             <bool>true</bool>
-            </attribute>
-            <attribute name="verticalHeaderMinimumSectionSize">
-             <number>21</number>
-            </attribute>
-           </widget>
+           <layout class="QHBoxLayout" name="dictIntersectMatrixLayout"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
@@ -455,29 +433,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableWidget" name="tableWidget_2">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::NoEditTriggers</set>
-            </property>
-            <attribute name="horizontalHeaderCascadingSectionResizes">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="horizontalHeaderDefaultSectionSize">
-             <number>57</number>
-            </attribute>
-            <attribute name="verticalHeaderDefaultSectionSize">
-             <number>50</number>
-            </attribute>
-            <attribute name="verticalHeaderHighlightSections">
-             <bool>true</bool>
-            </attribute>
-            <attribute name="verticalHeaderMinimumSectionSize">
-             <number>21</number>
-            </attribute>
-           </widget>
+           <layout class="QHBoxLayout" name="anmesIntersectMatrixLayout"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_13">
@@ -773,12 +729,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>636</x>
-     <y>361</y>
+     <x>413</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
-     <x>664</x>
-     <y>367</y>
+     <x>644</x>
+     <y>341</y>
     </hint>
    </hints>
   </connection>
@@ -789,8 +745,8 @@
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>437</x>
-     <y>130</y>
+     <x>594</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -805,8 +761,8 @@
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>603</x>
-     <y>130</y>
+     <x>785</x>
+     <y>169</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -822,7 +778,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>785</x>
-     <y>310</y>
+     <y>306</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
