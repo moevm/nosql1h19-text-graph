@@ -1,4 +1,4 @@
-from .analyzer import FragmentsAnalyzer, SeparatorNotSetException
+from .analyzer import FragmentsAnalyzer
 from .exceptions import Error
 from .processor import TextProcessor
 from .setup import do_setup

@@ -7,7 +7,7 @@ class GraphWidget(QGraphicsView):
     item_right_clicked = pyqtSignal(QGraphicsItem)
 
     def __init__(self, parent=None):
-        super().__init __(parent)
+        super().__init__(parent)
         scene = QGraphicsScene(self)
         scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         scene.setSceneRect(-200, -200, 400, 400)

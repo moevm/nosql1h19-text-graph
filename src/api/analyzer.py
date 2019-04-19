@@ -4,10 +4,6 @@ from .exceptions import Error
 from models import TextNode
 
 
-class SeparatorNotSetException(Error):
-    pass
-
-
 class FragmentsAnalyzer:
     """Класс, выполняющий разбиение файлов на фрагменты и аггрегирующий
     эти фрагменты (т.е. ссылки на модели neomodel).
@@ -38,10 +34,11 @@ class FragmentsAnalyzer:
         :type text: str
         """
         if not self.separator:
-            raise SeparatorNotSetException("Separator regex is not set")
-        for candidate in re.split(self.separator, text):
-            if len(candidate) > 0:
-                self.append(candidate)
+            self.append(text)
+        else:
+            for candidate in re.split(self.separator, text):
+                if len(candidate) > 0:
+                    self.append(candidate)
 
     def set_separator(self, separator: Pattern):
         """Установить регулярное выражение, по которому следующий файл

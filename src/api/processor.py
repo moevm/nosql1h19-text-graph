@@ -2,6 +2,7 @@ from typing import List, Pattern
 from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
 from api import FragmentsAnalyzer
 from neomodel import db
+from neo4j.exceptions import AuthError
 
 
 class TextProcessor:
@@ -66,14 +67,14 @@ class TextProcessor:
         """Очистить  БД"""
         try:  # TODO
             self.analyzer.clear()
-        except:
+        except AuthError:
             db.set_connection('bolt://neo4j:kinix951@localhost:7687')
-            self.analyzer.upload_db()
+            self.analyzer.clear()
 
     def upload_db(self):
         """Загрузить изменения в БД"""
         try:  # TODO
             self.analyzer.upload_db()
-        except:
+        except AuthError:
             db.set_connection('bolt://neo4j:kinix951@localhost:7687')
             self.analyzer.upload_db()

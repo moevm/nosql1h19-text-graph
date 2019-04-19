@@ -65,3 +65,4 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def editFragments(self):
         self.fragments = FragmentsWindow(self.processor)
         self.fragments.show()
+        self.fragments.fragmentsChanged.connect(self.fragments_list.update)
