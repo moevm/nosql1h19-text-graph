@@ -2,7 +2,7 @@ from logger import log
 
 
 def do_setup():
-    log.debug('Starting nltk setup')
+    log.debug(f'Starting nltk setup')
     nltk = __import__('nltk')
     nltk.download('stopwords')
 
@@ -11,7 +11,3 @@ def do_setup():
     pymystem3.Mystem()
 
     log.debug('Setup finished')
-
-
-if __name__ == "__main__":
-    do_setup()

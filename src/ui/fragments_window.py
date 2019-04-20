@@ -2,13 +2,38 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 from PyQt5.QtCore import pyqtSignal
 from ui_compiled.fragments import Ui_FragmentsWindow
 from api import TextProcessor
+from .loading_dialog import LoadingWrapper
 from ui.widgets import FragmentsList
 from models import TextNode
 import re
-from .setup_dialog import LoadingDialog
+from loading_wrapper import LoadingThread
 
 
 class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
+    # TODO Пересмотреть структуру, чтобы можно было вывести прогресс
+    # FIXME Мб треды перетащить в TextProcessor всё же?
+    class AddFragmentsThread(LoadingThread):
+        def __init__(self, proc, file_name, regex, parent=None):
+            super().__init__(parent)
+            self.operation = 'Добавление фрагментов'
+            self.proc = proc
+            self.args = [file_name, regex]
+
+        def run(self):
+            self.proc.parse_file(*self.args)
+            self.loadingDone.emit()
+
+    # TODO То же самое
+    class ClearFragmentsThread(LoadingThread):
+        def __init__(self, proc, parent=None):
+            super().__init__(parent)
+            self.operation = 'Удаление фрагментов'
+            self.proc = proc
+
+        def run(self):
+            self.proc.clear_db()
+            self.loadingDone.emit()
+
     fragmentsChanged = pyqtSignal()
 
     def __init__(self, processor: TextProcessor, parent=None):
@@ -19,7 +44,7 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         self.fragmentsChanged.connect(self.fragments_list.update)
         self.fragmentsChanged.connect(lambda:
                                       self.fragmentsNumberLabel.setText(
-                                          str(len(self.processor.analyzer)+1)
+                                          str(len(self.processor.analyzer))
                                           ))
         self.regex = ''
         self.file_name = ''
@@ -53,6 +78,7 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         self.wordNumberLabel.setText(str(node.words_num()))
         self.sentencesNumberLabel.setText(str(node.sentences_num()))
         self.symbolsNumberLabel.setText(str(node.character_num()))
+        self.tabWidget.setCurrentIndex(1)
 
     def onFileOpen(self):
         self.file_name, filter = \
@@ -64,20 +90,20 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         regex = re.compile(self.sepRegExEdit.text()) \
                 if self.sepRegExEdit.text() != '.*' else None
         if len(self.file_name) > 0:
-            self.loading = LoadingDialog('Идет добавление фрагментов',
-                                         self.processor.parse_file)
-            self.loading.start(self.file_name, regex)
-            self.loading.loadingFinished.connect(self.fragmentsChanged.emit)
-            # self.processor.parse_file(self.file_name, regex)
+            self.thread = self.AddFragmentsThread(self.processor,
+                                                  self.file_name, regex)
+            self.loading = LoadingWrapper(self.thread)
+            self.thread.loadingDone.connect(self.fragmentsChanged.emit)
+            self.loading.start()
         else:
             QMessageBox.warning(self, 'Ошибка', 'Файл не выбран',
                                 QMessageBox.Ok)
 
     def onClearFragments(self):
-        self.loading = LoadingDialog('Идет удаление фрагментов',
-                                     self.processor.clear_db)
+        self.thread = self.ClearFragmentsThread(self.processor)
+        self.loading = LoadingWrapper(self.thread)
+        self.thread.loadingDone.connect(self.fragmentsChanged.emit)
         self.loading.start()
-        self.loading.loadingFinished.connect(self.fragmentsChanged.emit)
 
     def onRemoveSelected(self):
         for item in self.fragments_list.selectedItems():

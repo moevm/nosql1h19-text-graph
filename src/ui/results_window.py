@@ -4,6 +4,7 @@ from api import TextProcessor
 from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
 from ui.widgets import FragmentsList
+from .loading_dialog import LoadingDialog, LoadingWrapper
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -14,6 +15,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionCloseProject.triggered.connect(self.removeProject)
         self.actionNew.triggered.connect(self.setNewProject)
         self.actionChangeFragments.triggered.connect(self.editFragments)
+        self.actionClear.triggered.connect(self.clearResults)
+        self.actionStartProcess.triggered.connect(self.startAlgorithm)
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
@@ -70,6 +73,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fragments_list.update()
 
         self.processor = TextProcessor()
+
         self.updateEnabled()
         self.editFragments()
 
@@ -77,3 +81,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fragments = FragmentsWindow(self.processor)
         self.fragments.show()
         self.fragments.fragmentsChanged.connect(self.fragments_list.update)
+        self.fragments.fragmentsChanged.connect(self.updateEnabled)
+
+    def startAlgorithm(self):
+        self.thread = self.processor.PreprocessThread(self.processor)
+        self.loading = LoadingWrapper(self.thread)
+        self.loading.loadingDone.connect(self._continueAlgorithm)
+        self.loading.start()
+
+    def _continueAlgorithm(self):
+        # TODO Сюда впихнуть промежуточные настройки
+        self.thread = self.processor.ProcessThread(self.processor)
+        self.loading = LoadingWrapper(self.thread)
+        self.loading.loadingDone.connect(self.uploadDB)
+        self.loading.start()
+
+    def uploadDB(self):
+        self.thread = self.processor.UploadDBThread(self.processor)
+        self.loading = LoadingWrapper(self.thread)
+        self.loading.loadingDone.connect(self.updateResults)
+        self.loading.start()
+
+    def updateResults(self):
+        pass  # TODO
+
+    def clearResults(self):
+        self.thread = self.processor.ClearResultsThread(self.processor)
+        self.loading = LoadingWrapper(self.thread)
+        self.loading.loadingDone.connect(self.uploadDB)
+        self.loading.start()

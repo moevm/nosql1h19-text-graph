@@ -91,6 +91,10 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         def mean(a, b):
             return (a + b) / 2
         res = []
+
+        if len(top1) == 0 or len(top2):
+            return 0, []
+
         # Показывает использованные элементы top1
         used_indexes_2 = [False for _ in range(len(top2))]
         for index1, elem1, freq1 in zip(range(len(top1)), *zip(*top1)):

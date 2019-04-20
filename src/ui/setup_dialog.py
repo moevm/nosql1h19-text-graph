@@ -18,13 +18,12 @@ class LoadingThread(QThread):
         self.actionReady.emit(0)
 
 
-class LoadingDialog(QDialog, Ui_SetupDialog):
+class LoadingDialog_old(QDialog, Ui_SetupDialog):
     loadingFinished = pyqtSignal()
 
     def __init__(self, label, action, parent=None):
         """Обертка для выполнения тяжеловесных действий в отдельном потоке.
-        Из-за GIL нет выигрыша в производительности, но UI не зависает.
-        TODO исправить отсутствие подключения к neo4j в отдельном потоке"""
+        Из-за GIL нет выигрыша в производительности, но UI не зависает."""
         super().__init__(parent)
         self.setupUi(self)
         self.action = action

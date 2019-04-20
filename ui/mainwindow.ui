@@ -31,7 +31,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="tabsClosable">
        <bool>false</bool>
@@ -221,6 +221,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="changeFragmentsButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="text">
                  <string>Изменить список фрагментов</string>
                 </property>
@@ -631,7 +634,7 @@
   </action>
   <action name="actionChangeFragments">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
@@ -643,7 +646,7 @@
   </action>
   <action name="actionClear">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
