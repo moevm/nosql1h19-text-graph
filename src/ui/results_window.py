@@ -1,9 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow
-
 from api import TextProcessor
 from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
-from ui.widgets import FragmentsList, MatrixWidget
+from ui.widgets import FragmentsList
 from .loading_dialog import LoadingWrapper
 
 
@@ -40,12 +39,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.processor = None  # Обработчик текста
         self.fragments_list = None  # Виджет с фрагментами
 
-        # TODO Сделать отдельный виджет для результатов алгоритма
-        self.dictMatrix = None  # Матрица для алгоритма со словарём
-        self.dictHideEmpty = False
-        self.dictHideEmptyCheckBox.stateChanged.connect(
-            lambda s: setattr(self, 'dictHideEmpty', s))
-        self.dictHideEmptyCheckBox.stateChanged.connect(self.updateResults)
         self.removeProject()
 
     def updateEnabled(self):
@@ -116,24 +109,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loading.loadingDone.connect(self.fragments_list.update)
         self.loading.start()
 
-    def updateMatrices(self):
-        dictMatrixModel, head = self.processor.get_matrix('Dictionary',
-                                                          self.dictHideEmpty)
-        min_val = self.dictThresholdSlider.value() / 100
-        if self.dictMatrix:
-            self.dictIntersectMatrixLayout.removeWidget(self.dictMatrix)
-            self.dictMatrix.deleteLater()
-            self.dictMatrix = MatrixWidget(dictMatrixModel, head, min_val, self)
-        else:
-            self.dictMatrix = MatrixWidget(dictMatrixModel, head, min_val, self)
-            self.dictThresholdSlider.valueChanged.connect(
-                lambda val: self.dictMatrix.setMinVal(val / 100))
-
-        self.dictIntersectMatrixLayout.addWidget(self.dictMatrix)
-
-    def updateResults(self):  # TODO Это в отдельный тред
+    def updateResults(self):
         [item.setEnabled(True) for item in self.en_algorithm_results]
-        self.updateMatrices()
+        # TODO
 
     def clearResults(self):
         self.thread = self.processor.ClearResultsThread(self.processor)

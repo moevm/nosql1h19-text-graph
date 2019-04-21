@@ -12,8 +12,34 @@ class TextNode(StructuredNode):
     link = Relationship('TextNode', 'ALG', model=TextRelation)
 
     def short(self):
-        res = ''.join([word + ' ' for word in self.text.split(' ')[:5]])
+        res = ''.join([word.strip() + ' ' for word in self.text.split(' ')[:5]])
         return res
+
+    def describe(self):
+        return f"""
+            <h1>Фрагмент: {self.order_id} </h1>
+            <table border="1" width=100%>
+                <caption>
+                    Информация о вершине
+                </caption>
+                <tr>
+                    <th>Количество символов</th>
+                    <td>{self.character_num()}</td>
+                </tr>
+                <tr>
+                    <th>Количество слов</th>
+                    <td>{self.words_num()}</td>
+                </tr>
+                <tr>
+                    <th>Количество предложений</th>
+                    <td>{self.sentences_num()}</td>
+                </tr>
+                <tr>
+                    <th>Количество связей</th>
+                    <td>{len(self.link)}</td>
+                </tr>
+            </table>
+        """
 
     def preview(self, frag_num=0):
         leading = 3

@@ -63,7 +63,6 @@ class DictionaryAlgorithmTest(unittest.TestCase):
                             - self.algorithm.compare_results(res5, res6)[0]),
                         0.00000001)
 
-    @unittest.skip('Пока не работает')
     def test_describe(self):
         text1 = " ".join([t for t in internationale_generator()])
         text2 = " ".join([t for t in war_and_peace_generator()])

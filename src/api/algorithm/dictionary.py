@@ -77,13 +77,14 @@ class DictionaryAlgorithm(AbstractAlgorithm):
             "top_words": freq
         }
 
-    def compare_results(self, top1: FreqList, top2: FreqList, select_words=5):
+    def compare_results(self, top1: FreqList, top2: FreqList, select_words=20):
         """
         Производит сравнение списов частоты
         :param top1: Результат 1 в виде (частота, элемент)
         :param top2: Результат 2
         :param select_words: Количество элементов для характеристики сравнения
-        :return: "Коэффициент похожести" и топ select_words похожих элементов
+        :return: "Коэффициент похожести" и список из пересечений слов в виде:
+            [Пересечение употребления, частота употребления, слово]
         """
         def compare_numbers(a, b):
             return 1 - abs(b - a) / max(b, a) if max(b, a) > 0 else 1.0
@@ -127,7 +128,8 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         for comp, weight, elem in res:
             avg += comp * weight / avg_weight
         avg /= len(res)
-        words = [str(res_elem[2]) for res_elem in res if res_elem[0] > 0]
+        words = [res_elem for res_elem in res if res_elem[0] > 0]
+
         return avg, words[:select_words]
 
     def compare(self, res1: Dict, res2: Dict, *args, **kwargs):
@@ -160,7 +162,7 @@ class DictionaryAlgorithm(AbstractAlgorithm):
     def describe_preprocess(self, prep_dict):
         text = """
         <h3>Алгоритм сравнения словарей</h3>
-        <table>
+        <table border="1" width=100%>
             <caption>Наиболее часто встречающиеся слова:</caption>
             <thead>
                 <tr>
@@ -168,7 +170,7 @@ class DictionaryAlgorithm(AbstractAlgorithm):
                     <th>Частота</th>
                 </tr>
             </thead>"""
-        for freq, word in prep_dict['top_words']:
+        for word, freq in prep_dict['top_words']:
             text += f"""
             <tr>
                 <td>{word}</td>
@@ -180,24 +182,25 @@ class DictionaryAlgorithm(AbstractAlgorithm):
 
     def describe_comparison(self, comp_dict):
         text = f"""
-        <h3>Результаты сравнения:</h3>
-        <b>Пересечение</b> {comp_dict['intersection']}<br>
-        <table>
+        <h1>Результаты сравнения:</h1>
+        <h2>Пересечение: {comp_dict['intersection']*100:.2f}% </h2>
+        <table border="1">
             <caption>
                 Наиболее часто встречающиеся слова из пересечения
             </caption>
             <thead>
                 <tr>
                     <th>Слово</th>
+                    <th>Пересечение</th>
                     <th>Частота</th>
                 </tr>
             </thead>"""
-        __import__('pudb').set_trace()
-        for freq, word in comp_dict['data']['top_words']:
+        for inter, freq, word in comp_dict['data']['top_words']:
             text += f"""
             <tr>
                 <td>{word}</td>
-                <td>{freq}</td>
+                <td>{inter:.2f}</td>
+                <td>{int(freq)}</td>
             </tr>"""
         text += """
         </table>"""

@@ -3,11 +3,18 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor
 from typing import List, Tuple, Union, Dict
 from ui.misc import get_foreground_color
-from models import TextRelation
 
 
 class IntersectionItem(QTableWidgetItem):
     def __init__(self, value: float, min_val=0, relation=None):
+        """
+
+        :param value: Значение от 0 до 1, показывает процент связи
+        :type value: float
+        :param min_val: Значение отсечения связи
+        :param relation: Объект, передаваемый при активации вершины
+        """
+
         super().__init__()
         self.val = value
         self.updateText(min_val)
@@ -29,17 +36,36 @@ class IntersectionItem(QTableWidgetItem):
 
 class MatrixWidget(QTableWidget):
     updateMinVal = pyqtSignal(float)
+    item_clicked = pyqtSignal(object)
+    relation_clicked = pyqtSignal(object)
 
     def __init__(self, matrix: List[List[
-                Tuple[float, Union[TextRelation, Dict, None]]
-            ]], head, min_val=0, parent=None):
+                Tuple[float, Union[Dict, None]]
+            ]], head, head_dicts, min_val=0, parent=None):
+        """
+        :param matrix: Отображаемая матрица из элементов вида:
+            [Процент пересечения, Передаваемый при клике словарь]
+        :type matrix: List[List[Tuple[float, Union[TextRelation, Dict, None]]]]
+        :param head: Заголовки матрицы
+        :param head_objects: Элементы, передаваемые при клике на соответсвующие
+            заголовки матрицы
+        :param min_val: Минимальное значение для подсветки
+        :param parent: Родитель
+        """
         super().__init__(parent)
         self.setEditTriggers(self.NoEditTriggers)
+        self.setSelectionMode(self.SingleSelection)
         self.min_val = min_val
         self.head = [str(i) for i in head]
+        self.head_objects = head_dicts
         self.setItems(matrix)
         self.setHorizontalHeaderLabels(self.head)
         self.setVerticalHeaderLabels(self.head)
+        self.horizontalHeader().sectionClicked.connect(
+            lambda i: self.item_clicked.emit(self.head_objects[i]))
+        self.verticalHeader().sectionClicked.connect(
+            lambda i: self.item_clicked.emit(self.head_objects[i]))
+        self.itemActivated.connect(self.onRelationActivated)
 
     def setItems(self, matrix):
         self.setRowCount(len(matrix))
@@ -56,3 +82,7 @@ class MatrixWidget(QTableWidget):
     def setMinVal(self, min_val):
         self.min_val = min_val
         self.updateMinVal.emit(min_val)
+
+    def onRelationActivated(self, item):
+        if item.rel:
+            self.relation_clicked.emit(item.rel)

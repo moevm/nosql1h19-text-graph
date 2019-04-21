@@ -4,6 +4,8 @@ from api import FragmentsAnalyzer
 from logger import log
 from loading_wrapper import LoadingThread
 from neomodel import db
+import json
+from models import TextNode
 
 
 class TextProcessor:
@@ -112,7 +114,7 @@ class TextProcessor:
         thread.run()
         thread.wait()
 
-    def get_matrix(self, algorithm_name: str, exclude_zeros=False):
+    def get_matrix(self, algorithm_name: str, exclude_zeros=False, min_val=0):
         """Получить матрицу, пригодную для обработки в MatrixWidget
 
         :param algorithm_name: имя алгоритма
@@ -124,13 +126,13 @@ class TextProcessor:
         query = f"""
             MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
             WHERE r.algorithm_name = '{algorithm_name}'
-            RETURN n.order_id, n2.order_id, r
+            RETURN n.order_id, n2.order_id, r, n.alg_results
         """
         res, meta = db.cypher_query(query)
-        # head - список вершин для матрицы
+        # head - список номеров вершин для матрицы
         if exclude_zeros:  # Убрать нули
-            head = list(set([id1 for id1, id2, r in res]) \
-                    .intersection([id2 for id1, id2, r in res]))
+            head = list(set(id1 for id1, id2, r, res_a in res
+                            if r['intersection'] > min_val))
             head.sort()
         else:
             head = [node.order_id for node in self.analyzer]
@@ -140,15 +142,31 @@ class TextProcessor:
         for i, id_ in enumerate(head):
             head_rev[id_] = i
 
+        # Сама матрица
         matrix = [[(0, None) for _ in range(len(head))]
                   for _ in range(len(head))]
-        for id1, id2, r in res:
-            matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], dict(r)
+        for id1, id2, r, result in res:
+            if r['intersection'] > min_val or not exclude_zeros:
+                matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], \
+                        (id1, id2, r)
 
         for i in range(len(matrix)):
             matrix[i][i] = (1, None)
 
         return matrix, head
+
+    def get_node_list(self, head):
+        """Получение """
+        # query = f"""
+        #     MATCH (n:TextNode)
+        #     WHERE n.order_id in {str(head)}
+        #     return n.alg_results
+        #     ORDER BY n.order_id
+        # """
+        # res, meta = db.cypher_query(query)
+        # return [json.loads(res_[0]) for res_ in res if res_[0]]
+        return [self.analyzer[i] for i in head]
+
 
     def clear_db(self):
         """Очистить  БД"""
