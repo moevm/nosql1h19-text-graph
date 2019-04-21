@@ -153,3 +153,52 @@ class DictionaryAlgorithm(AbstractAlgorithm):
                 "top_words": top_words
             }
         }
+
+    def describe_result(self):
+        return "TODO"  # TODO
+
+    def describe_preprocess(self, prep_dict):
+        text = """
+        <h3>Алгоритм сравнения словарей</h3>
+        <table>
+            <caption>Наиболее часто встречающиеся слова:</caption>
+            <thead>
+                <tr>
+                    <th>Слово</th>
+                    <th>Частота</th>
+                </tr>
+            </thead>"""
+        for freq, word in prep_dict['top_words']:
+            text += f"""
+            <tr>
+                <td>{word}</td>
+                <td>{freq}</td>
+            </tr>"""
+        text += """
+        </table>"""
+        return text
+
+    def describe_comparison(self, comp_dict):
+        text = f"""
+        <h3>Результаты сравнения:</h3>
+        <b>Пересечение</b> {comp_dict['intersection']}<br>
+        <table>
+            <caption>
+                Наиболее часто встречающиеся слова из пересечения
+            </caption>
+            <thead>
+                <tr>
+                    <th>Слово</th>
+                    <th>Частота</th>
+                </tr>
+            </thead>"""
+        __import__('pudb').set_trace()
+        for freq, word in comp_dict['data']['top_words']:
+            text += f"""
+            <tr>
+                <td>{word}</td>
+                <td>{freq}</td>
+            </tr>"""
+        text += """
+        </table>"""
+        return text
