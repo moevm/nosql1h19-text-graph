@@ -1,7 +1,8 @@
 import unittest
 
 from api.algorithm import DictionaryAlgorithm
-from tests.fake.prebuilt import internationale_generator
+from tests.fake.prebuilt import internationale_generator, \
+        war_and_peace_generator
 
 
 # noinspection SpellCheckingInspection
@@ -61,3 +62,16 @@ class DictionaryAlgorithmTest(unittest.TestCase):
         self.assertLess(abs(self.algorithm.compare_results(res1, res4)[0]
                             - self.algorithm.compare_results(res5, res6)[0]),
                         0.00000001)
+
+    @unittest.skip('Пока не работает')
+    def test_describe(self):
+        text1 = " ".join([t for t in internationale_generator()])
+        text2 = " ".join([t for t in war_and_peace_generator()])
+        res1 = self.algorithm.preprocess(text1)
+        res2 = self.algorithm.preprocess(text2)
+        desc1 = self.algorithm.describe_preprocess(res1)
+        self.assertGreater(len(desc1), 0)
+
+        comp = self.algorithm.compare(res1, res2)
+        desc2 = self.algorithm.describe_comparison(comp)
+        self.assertGreater(len(desc2), 0)
