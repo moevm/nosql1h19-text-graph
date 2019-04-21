@@ -5,3 +5,4 @@ logutils
 nltk
 pymystem3
 numpy
+natasha
