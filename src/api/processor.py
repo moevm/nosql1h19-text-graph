@@ -74,16 +74,6 @@ class TextProcessor:
                 self.checkPercent(index)
             self.loadingDone.emit()
 
-    class UploadDBThread(LoadingThread):  # TODO Тут бы тоже прогресс неплохо
-        def __init__(self, proc, parent=None):
-            super().__init__(parent)
-            self.operation = 'Сихронизация с БД'
-            self.proc = proc
-
-        def run(self):
-            self.proc.analyzer.upload_db()
-            self.loadingDone.emit()
-
     def __init__(self, algorithm_classes=None):
         super().__init__()
         if not algorithm_classes:
@@ -127,7 +117,7 @@ class TextProcessor:
 
     def upload_db(self):
         """Загрузить изменения в БД"""
-        thread = self.UploadDBThread(self)
+        thread = self.analyzer.UploadDBThread(self.analyzer)
         thread.run()
         thread.wait()
 

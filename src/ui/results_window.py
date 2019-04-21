@@ -4,7 +4,7 @@ from api import TextProcessor
 from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
 from ui.widgets import FragmentsList
-from .loading_dialog import LoadingDialog, LoadingWrapper
+from .loading_dialog import LoadingWrapper
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -97,7 +97,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loading.start()
 
     def uploadDB(self):
-        self.thread = self.processor.UploadDBThread(self.processor)
+        self.thread = self.processor.analyzer.UploadDBThread(
+            self.processor.analyzer)
         self.loading = LoadingWrapper(self.thread)
         self.loading.loadingDone.connect(self.updateResults)
         self.loading.start()

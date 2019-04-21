@@ -58,6 +58,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QCheckBox" name="checkBox">
+           <property name="text">
+            <string>Скрыть вершины без связей</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_13">
            <item>
             <widget class="QSlider" name="thresholdSlider">
@@ -180,7 +187,7 @@
      <x>0</x>
      <y>0</y>
      <width>1236</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

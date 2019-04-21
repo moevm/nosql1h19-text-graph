@@ -1,7 +1,8 @@
 import re
 from typing import List, Pattern
-from .exceptions import Error
 from models import TextNode
+from loading_wrapper import LoadingThread
+from logger import log
 
 
 class FragmentsAnalyzer:
@@ -9,6 +10,24 @@ class FragmentsAnalyzer:
     эти фрагменты (т.е. ссылки на модели neomodel).
     Дает интерфейс контейнера для фрагментов.
     """
+    class UploadDBThread(LoadingThread):
+        def __init__(self, analyzer, parent=None):
+            super().__init__(parent)
+            self.anayler = analyzer
+            self.operation = 'Загрузка данных в БД'
+            self.setInterval(len(analyzer))
+
+        def run(self):
+            log.info('Uploading data')
+            self.updateStatus.emit('Нумерация вершин')
+            for i, node in enumerate(self.anayler):
+                self.checkPercent(i)
+                node.order_id = i
+            self.updateStatus.emit('Сохранение')
+            for i, node in enumerate(self.anayler):
+                self.checkPercent(i)
+                node.save()
+            self.loadingDone.emit()
 
     def __init__(self):
         self.separator = None
@@ -63,14 +82,11 @@ class FragmentsAnalyzer:
         self._fragments.append(node)
         node.order_id = len(self._fragments)-1
 
-    def update_order_id(self):
-        for index, node in zip(range(len(self._fragments)), self._fragments):
-            node.order_id = index
-
     def upload_db(self):
         """Загрузить фрагменты в БД"""
-        self.update_order_id()
-        [node.save() for node in self._fragments]
+        thread = self.UploadDBThread(self)
+        thread.run()
+        thread.wait()
 
     def download_db(self):
         """Скачать фрагменты из БД"""

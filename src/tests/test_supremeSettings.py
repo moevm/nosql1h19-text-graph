@@ -1,6 +1,6 @@
 import unittest
 
-from src.supremeSettings import SupremeSettings
+from supremeSettings import SupremeSettings
 
 
 class SupremeSettingsTest(unittest.TestCase):

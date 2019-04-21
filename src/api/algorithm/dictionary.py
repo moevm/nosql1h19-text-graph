@@ -92,7 +92,7 @@ class DictionaryAlgorithm(AbstractAlgorithm):
             return (a + b) / 2
         res = []
 
-        if len(top1) == 0 or len(top2):
+        if len(top1) == 0 or len(top2) == 0:
             return 0, []
 
         # Показывает использованные элементы top1
