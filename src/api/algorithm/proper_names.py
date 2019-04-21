@@ -104,20 +104,19 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
 
     def describe_comparison(self, comp_dict) -> str:
         data = comp_dict["top_proper_names"]
-        result = "<div>"
+        result = "<div>" + self.extract_html(data)
 
+        return result
+
+    def extract_html(self, data):
+        result = ""
         for item in data:
             result += "<p>" + item[1] + " - " + item[0] + "</p>"
-
         result += "</div>"
         return result
 
     def describe_preprocess(self, prep_dict) -> str:
         data = prep_dict["top_proper_names"]
-        result = "<div>"
+        result = "<div>" + self.extract_html(data)
 
-        for item in data:
-            result += "<p>" + item[1] + " - " + item[0] + "</p>"
-
-        result += "</div>"
         return result
