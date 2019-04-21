@@ -74,6 +74,10 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
 
         return result
 
+    def compare_results(self, top1: Dict, top2: Dict, select_words=5):
+        # TODO То же сравнение, что и в dictionary
+        return 0, []
+
     def preprocess(self, text: str) -> Dict:
         self.nameMatches = self.nameExtractor(text)
         self.locationMatches = self.locationExtractor(text)
@@ -84,4 +88,13 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
         return {'top_proper_names': sorted_result}
 
     def compare(self, res1: Dict, res2: Dict, *args, **kwargs):
-        pass
+        intersection, top_words = self.compare_results(
+            res1["top_proper_names"], res2["top_proper_names"],
+            *args, **kwargs
+        )
+        return {
+            "intersection": intersection,
+            "data": {
+                "top_words": top_words
+            }
+        }
