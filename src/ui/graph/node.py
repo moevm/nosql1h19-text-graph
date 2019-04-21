@@ -3,6 +3,8 @@ from PyQt5.QtGui import QPainterPath, QPainter, QColor, QPen
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem, QStyle, \
                             QGraphicsSceneMouseEvent
 
+from ui.misc import get_foreground_color
+
 
 class Node(QGraphicsItem):
     Type = QGraphicsItem.UserType + 1
@@ -56,9 +58,7 @@ class Node(QGraphicsItem):
         painter.drawEllipse(self.size)
 
         if self.label:
-            text_color = QColor.fromHslF((color.hslHueF() + 0.5) % 1,
-                                         (color.hslSaturationF() + 0.5) % 1,
-                                         (color.lightnessF() + 0.5) % 1)
+            text_color = get_foreground_color(color)
             factor = (self.size.width() - 2) \
                 / painter.fontMetrics().width(self.label)
             font = painter.font()

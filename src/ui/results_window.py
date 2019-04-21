@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow
 from api import TextProcessor
 from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
-from ui.widgets import FragmentsList
+from ui.widgets import FragmentsList, MatrixWidget
 from .loading_dialog import LoadingWrapper
 
 
@@ -20,14 +20,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
-            # self.actionSave,
+            # self.actionSave,  # TODO
             self.actionChangeFragments,
             self.actionClear
         ]
 
         self.en_algorithm_results = [  # Включить, когда есть результаты
             self.dictIntersectTab,
-            self.namesIntersectTab
+            self.namesIntersectTab,
+            self.dictThresholdSlider  # FIXME в mainwindow.ui что-то сломалось
         ]
 
         self.en_process_fragments = [  # Включить, когда загружены фрагменты
@@ -39,6 +40,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.processor = None  # Обработчик текста
         self.fragments_list = None  # Виджет с фрагментами
 
+        # TODO Сделать отдельный виджет для результатов алгоритма
+        self.dictMatrix = None  # Матрица для алгоритма со словарём
+        self.dictHideEmpty = False
+        self.dictHideEmptyCheckBox.stateChanged.connect(
+            lambda s: setattr(self, 'dictHideEmpty', s))
+        self.dictHideEmptyCheckBox.stateChanged.connect(self.updateResults)
         self.removeProject()
 
     def updateEnabled(self):
@@ -75,21 +82,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.processor = TextProcessor()
 
         self.updateEnabled()
+        self.updateResults()
         self.editFragments()
 
     def editFragments(self):
-        self.fragments = FragmentsWindow(self.processor)
+        """Запустить редактирование фрагментов"""
+        self.fragments = FragmentsWindow(self.processor, self)
         self.fragments.show()
         self.fragments.fragmentsChanged.connect(self.fragments_list.update)
+        self.fragments.fragmentsChanged.connect(self.updateResults)
         self.fragments.fragmentsChanged.connect(self.updateEnabled)
 
     def startAlgorithm(self):
+        """Запустить алгоритм"""
         self.thread = self.processor.PreprocessThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
         self.loading.loadingDone.connect(self._continueAlgorithm)
         self.loading.start()
 
     def _continueAlgorithm(self):
+        """Продолжить выполнение алгоритма"""
         # TODO Сюда впихнуть промежуточные настройки
         self.thread = self.processor.ProcessThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
@@ -101,10 +113,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.processor.analyzer)
         self.loading = LoadingWrapper(self.thread)
         self.loading.loadingDone.connect(self.updateResults)
+        self.loading.loadingDone.connect(self.fragments_list.update)
         self.loading.start()
 
-    def updateResults(self):
-        pass  # TODO
+    def updateMatrices(self):
+        dictMatrixModel, head = self.processor.get_matrix('Dictionary',
+                                                          self.dictHideEmpty)
+        min_val = self.dictThresholdSlider.value() / 100
+        if self.dictMatrix:
+            self.dictIntersectMatrixLayout.removeWidget(self.dictMatrix)
+            self.dictMatrix.deleteLater()
+            self.dictMatrix = MatrixWidget(dictMatrixModel, head, min_val, self)
+        else:
+            self.dictMatrix = MatrixWidget(dictMatrixModel, head, min_val, self)
+            self.dictThresholdSlider.valueChanged.connect(
+                lambda val: self.dictMatrix.setMinVal(val / 100))
+
+        self.dictIntersectMatrixLayout.addWidget(self.dictMatrix)
+
+    def updateResults(self):  # TODO Это в отдельный тред
+        [item.setEnabled(True) for item in self.en_algorithm_results]
+        self.updateMatrices()
 
     def clearResults(self):
         self.thread = self.processor.ClearResultsThread(self.processor)

@@ -3,6 +3,7 @@ from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
 from api import FragmentsAnalyzer
 from logger import log
 from loading_wrapper import LoadingThread
+from neomodel import db
 
 
 class TextProcessor:
@@ -21,7 +22,7 @@ class TextProcessor:
 
         def run(self):
             for index, algorithm in enumerate(self.proc.algorithms):
-                self.updateStatus.emit(f'Обработка алгоритма {index}')
+                self.updateStatus.emit(f'Обработка алгоритма {algorithm.name}')
                 log.info(f'Preprocessing for {algorithm}')
                 for index, node in enumerate(self.proc.analyzer):
                     self.checkPercent(index)
@@ -55,7 +56,7 @@ class TextProcessor:
                                 node2, {
                                     "algorithm_name": algorithm.name,
                                     "intersection": result["intersection"],
-                                    "results": result["data"]
+                                    "data": result["data"]
                                 }
                             )
                 self.checkPercent(i)
@@ -110,6 +111,44 @@ class TextProcessor:
         thread = self.ProcessThread(self)
         thread.run()
         thread.wait()
+
+    def get_matrix(self, algorithm_name: str, exclude_zeros=False):
+        """Получить матрицу, пригодную для обработки в MatrixWidget
+
+        :param algorithm_name: имя алгоритма
+        :type algorithm_name: str
+        """
+        if (len(self.analyzer)) == 0:
+            return [], []
+
+        query = f"""
+            MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
+            WHERE r.algorithm_name = '{algorithm_name}'
+            RETURN n.order_id, n2.order_id, r
+        """
+        res, meta = db.cypher_query(query)
+        # head - список вершин для матрицы
+        if exclude_zeros:  # Убрать нули
+            head = list(set([id1 for id1, id2, r in res]) \
+                    .intersection([id2 for id1, id2, r in res]))
+            head.sort()
+        else:
+            head = [node.order_id for node in self.analyzer]
+
+        # Оптимизация для O(n)
+        head_rev = list(range(max(head) + 1))
+        for i, id_ in enumerate(head):
+            head_rev[id_] = i
+
+        matrix = [[(0, None) for _ in range(len(head))]
+                  for _ in range(len(head))]
+        for id1, id2, r in res:
+            matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], dict(r)
+
+        for i in range(len(matrix)):
+            matrix[i][i] = (1, None)
+
+        return matrix, head
 
     def clear_db(self):
         """Очистить  БД"""
