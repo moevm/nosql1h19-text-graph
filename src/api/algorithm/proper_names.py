@@ -88,13 +88,36 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
         return {'top_proper_names': sorted_result}
 
     def compare(self, res1: Dict, res2: Dict, *args, **kwargs):
-        intersection, top_words = self.compare_results(
+        intersection, top_proper_names = self.compare_results(
             res1["top_proper_names"], res2["top_proper_names"],
             *args, **kwargs
         )
         return {
             "intersection": intersection,
             "data": {
-                "top_words": top_words
+                "top_proper_names": top_proper_names
             }
         }
+
+    def describe_result(self) -> str:
+        pass
+
+    def describe_comparison(self, comp_dict) -> str:
+        data = comp_dict["top_proper_names"]
+        result = "<div>"
+
+        for item in data:
+            result += "<p>" + item[1] + " - " + item[0] + "</p>"
+
+        result += "</div>"
+        return result
+
+    def describe_preprocess(self, prep_dict) -> str:
+        data = prep_dict["top_proper_names"]
+        result = "<div>"
+
+        for item in data:
+            result += "<p>" + item[1] + " - " + item[0] + "</p>"
+
+        result += "</div>"
+        return result
