@@ -68,4 +68,3 @@ class LoadingWrapper(QObject):
     def start(self):
         self.dialog.show()
         self.thread.start()
-

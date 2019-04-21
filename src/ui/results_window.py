@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QMainWindow
 from api import TextProcessor
 from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
-from ui.widgets import FragmentsList
+from ui.widgets import FragmentsList, AlgorithmResults
 from .loading_dialog import LoadingWrapper
 
 
@@ -38,8 +38,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.processor = None  # Обработчик текста
         self.fragments_list = None  # Виджет с фрагментами
+        self.tabs = []  # Вкладки с результатами алгоритмов
 
         self.removeProject()
+
+    def initalizeAlgorithms(self):
+        while self.mainTab.count() > 1:
+            self.mainTab.removeTab(self.mainTab.count() - 1)
+        self.tabs.clear()
+        for algorithm in self.processor.algorithms:
+            tab = AlgorithmResults(algorithm, self.processor)
+            self.tabs.append(tab)
+            self.mainTab.addTab(tab, algorithm.name)
 
     def updateEnabled(self):
         """Установить enabled для виджетов, action'ов и т.п. """
@@ -73,9 +83,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fragments_list.update()
 
         self.processor = TextProcessor()
-
+        self.initalizeAlgorithms()
         self.updateEnabled()
-        self.updateResults()
         self.editFragments()
 
     def editFragments(self):
@@ -111,7 +120,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def updateResults(self):
         [item.setEnabled(True) for item in self.en_algorithm_results]
-        # TODO
+        [tab.updateResults() for tab in self.tabs]
 
     def clearResults(self):
         self.thread = self.processor.ClearResultsThread(self.processor)

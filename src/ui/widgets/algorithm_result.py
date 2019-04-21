@@ -21,11 +21,11 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
             self.onHideEmptyCheckBoxStateChanged)
         self.splitter.setStretchFactor(0, 1)
         self.splitter.setStretchFactor(1, 2)
-        self.updateMatrix()
+        self.updateResults()
 
     def onHideEmptyCheckBoxStateChanged(self, value):
         self.hideEmpty = value
-        self.updateMatrix()
+        self.updateResults()
 
     def onThresholdSliderValueChanged(self, value):
         self.min_val = value / 100
@@ -33,7 +33,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
             if not self.hideEmpty:
                 self.resultMatrix.setMinVal(self.min_val)
             else:
-                self.updateMatrix()
+                self.updateResults()
 
     def onItemClicked(self, item):
         html_body = item.describe()
@@ -55,7 +55,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.textBrowser.setHtml(encapsulate_html(html_body))
 
 
-    def updateMatrix(self):  # TODO Это в отдельный тред
+    def updateResults(self):  # TODO Это в отдельный тред
         min_val = self.thresholdSlider.value() / 100
         matrixModel, head = self.processor.get_matrix(
             self.algorithm.name, self.hideEmpty, min_val)

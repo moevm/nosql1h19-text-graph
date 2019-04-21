@@ -1,11 +1,9 @@
 from typing import List, Pattern
-from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
+from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm, DummyAlgorithm
 from api import FragmentsAnalyzer
 from logger import log
 from loading_wrapper import LoadingThread
 from neomodel import db
-import json
-from models import TextNode
 
 
 class TextProcessor:
@@ -137,6 +135,8 @@ class TextProcessor:
         else:
             head = [node.order_id for node in self.analyzer]
 
+        if len(head) == 0:
+            return [], []
         # Оптимизация для O(n)
         head_rev = list(range(max(head) + 1))
         for i, id_ in enumerate(head):
@@ -166,7 +166,6 @@ class TextProcessor:
         # res, meta = db.cypher_query(query)
         # return [json.loads(res_[0]) for res_ in res if res_[0]]
         return [self.analyzer[i] for i in head]
-
 
     def clear_db(self):
         """Очистить  БД"""

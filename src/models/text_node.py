@@ -1,6 +1,7 @@
 from neomodel import StructuredNode, StringProperty, JSONProperty, \
                      Relationship, IntegerProperty
 import numpy as np
+import re
 
 from models.text_relation import TextRelation
 
@@ -12,7 +13,8 @@ class TextNode(StructuredNode):
     link = Relationship('TextNode', 'ALG', model=TextRelation)
 
     def short(self):
-        res = ''.join([word.strip() + ' ' for word in self.text.split(' ')[:5]])
+        res = ''.join([word.strip() + ' '
+                       for word in re.split(r'[\n ]', self.text, 5)[:5]])
         return res
 
     def describe(self):
