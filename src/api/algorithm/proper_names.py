@@ -78,7 +78,10 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
         self.nameMatches = self.nameExtractor(text)
         self.locationMatches = self.locationExtractor(text)
 
-        return self.make_dict()
+        result = self.make_dict()
+        sorted_result = sorted(result.items(), key=lambda x: x[1], reverse=True)
+
+        return {'top_proper_names': sorted_result}
 
     def compare(self, res1: Dict, res2: Dict, *args, **kwargs):
         pass
