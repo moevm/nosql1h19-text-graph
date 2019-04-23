@@ -25,9 +25,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ]
 
         self.en_algorithm_results = [  # Включить, когда есть результаты
-            self.dictIntersectTab,
-            self.namesIntersectTab,
-            self.dictThresholdSlider  # FIXME в mainwindow.ui что-то сломалось
         ]
 
         self.en_process_fragments = [  # Включить, когда загружены фрагменты
@@ -91,8 +88,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Запустить редактирование фрагментов"""
         self.fragments = FragmentsWindow(self.processor, self)
         self.fragments.show()
-        self.fragments.fragmentsChanged.connect(self.fragments_list.update)
-        self.fragments.fragmentsChanged.connect(self.updateResults)
+        self.fragments.fragmentsChanged.connect(self.uploadDB)
         self.fragments.fragmentsChanged.connect(self.updateEnabled)
 
     def startAlgorithm(self):

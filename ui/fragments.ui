@@ -52,7 +52,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="processButton">
+         <widget class="QPushButton" name="okButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -357,7 +357,7 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>processButton</sender>
+   <sender>okButton</sender>
    <signal>clicked()</signal>
    <receiver>FragmentsWindow</receiver>
    <slot>close()</slot>

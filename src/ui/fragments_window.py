@@ -71,7 +71,8 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         )
 
         self.fragmentsWidgetLayout.addWidget(self.fragments_list)
-        self.fragmentsChanged.emit()
+        self.okButton.clicked.connect(self.close)
+        self.fragments_list.update()
 
     def onFragmentsItemChanged(self, node: TextNode):
         self.fragmentTextBrowser.setText(node.text)
@@ -93,7 +94,7 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
             self.thread = self.AddFragmentsThread(self.processor,
                                                   self.file_name, regex)
             self.loading = LoadingWrapper(self.thread)
-            self.thread.loadingDone.connect(self.fragmentsChanged.emit)
+            self.loading.loadingDone.connect(self.fragments_list.update)
             self.loading.start()
         else:
             QMessageBox.warning(self, 'Ошибка', 'Файл не выбран',
@@ -102,11 +103,15 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
     def onClearFragments(self):
         self.thread = self.ClearFragmentsThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
-        self.thread.loadingDone.connect(self.fragmentsChanged.emit)
+        self.loading.loadingDone.connect(self.fragments_list.update)
         self.loading.start()
 
     def onRemoveSelected(self):
         for item in self.fragments_list.selectedItems():
             node = item.node
             node.delete()
+        self.fragments_list.update()
+
+    def closeEvent(self, event):
         self.fragmentsChanged.emit()
+        super().closeEvent(event)

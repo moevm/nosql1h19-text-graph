@@ -36,7 +36,7 @@ class GraphModule:
         self.gravity_timer = None  # Таймер для работы с гравитацией
         self.widget.item_right_clicked.connect(self._on_item_clicked)
 
-    def add_text(self, id, pos_x, pos_y, parent_node=None, **kwargs):
+    def add_text(self, id, pos_x, pos_y, parent_item=None, **kwargs):
         """Добавить текст
 
         :param id: Уникальный id текста
@@ -45,11 +45,15 @@ class GraphModule:
         :param parent_node: вершина-родитель
         :param **kwargs: Аргументы конструктора TextItem
         """
-        text = TextItem(id=id, parent=parent_node, **kwargs)
+        text = TextItem(id=id, parent=parent_item, **kwargs)
+        if parent_item:
+            print(parent_item)
+            pos_x -= parent_item.x()
+            pos_y -= parent_item.y()
         text.setPos(pos_x, pos_y)
         text.linkActivated.connect(self._on_text_link_clicked)
         self._texts[id] = text
-        self.widget.scene().addItem(text)
+        # self.widget.scene().addItem(text)
 
     def add_node(self, id, pos_x, pos_y, **kwargs):
         """Добавить вершину
@@ -65,20 +69,25 @@ class GraphModule:
         self.widget.scene().addItem(node)
         self._nodes[id] = node
 
-    def add_edge(self, id1, id2, **kwargs):
+    def add_edge(self, id1, id2, ud=False, **kwargs):
         """Добавить ребро
 
         :param id1: source id
         :param id2: target id
+        :param ud: не добавлять связь, если уже есть связь в другую сторону
         :param **kwargs: Аргументы конструктора Edge
         """
+        assert (id1, id2) not in self._edges
+        if ud and (id2, id1) in self._edges:
+            return
         edge = Edge(self._nodes[id1], self._nodes[id2], self.widget, **kwargs)
+        self._edges[(id1, id2)] = edge
         self.widget.scene().addItem(edge)
 
     def _on_text_link_clicked(self, link):
         if link[:11] == 'internal://':
-            if re.search(r'close\?id=[0-9]+', link):
-                id = link[re.search(r'id=[0-9]+', link).start()+3:]
+            if re.search(r'close\?id=[0-9\-]+', link):
+                id = link[re.search(r'id=[0-9\-]+', link).start()+3:]
                 try:
                     self.widget.scene().removeItem(self._texts[id])
                 except KeyError:
@@ -87,10 +96,21 @@ class GraphModule:
                 del self._texts[id]
 
     def _on_item_clicked(self, item: QGraphicsItem):
-        if isinstance(item, Node):
-            if item.info and not item.id in self._texts:
-                self.add_text(item.id, item.x() + 15, item.y() + 15,
-                              item, html_text=item.label)
+        if isinstance(item, Node) and item.info \
+                and item.id not in self._texts:
+            self.add_text(item.id, item.x() + 15, item.y() + 15,
+                          item, html_text=item.info)
+        elif isinstance(item, Edge) and item.info \
+                and item.id not in self._texts:
+            x = (item.dest.x() - item.source.x()) / 2
+            y = (item.dest.y() - item.source.x()) / 2
+            self.add_text(item.id, x, y, item.source, html_text=item.info)
+
+    def clear(self):
+        self._nodes.clear()
+        self._edges.clear()
+        self._texts.clear()
+        self.widget.scene().clear()
 
     @property
     def nodes(self):
@@ -151,7 +171,7 @@ class GraphModule:
             self._adjust_scene()
 
     def _calculate_forces(self, node: Node):
-        """ Вычислить новые координаты вершины  """
+        """ Вычислить новые координаты вершины """
         if self.widget.scene().mouseGrabberItem() == node:
             return node.x(), node.y()
         xvel, yvel = 0, 0

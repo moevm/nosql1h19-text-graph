@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QRect, QRectF, Qt
 from PyQt5.QtGui import QPainterPath, QPainter, QColor, QPen
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem, QStyle, \
-                            QGraphicsSceneMouseEvent
+                            QGraphicsSceneMouseEvent, QGraphicsSceneHoverEvent
 
 from ui.misc import get_foreground_color
 
@@ -30,7 +30,8 @@ class Node(QGraphicsItem):
 
         self.setFlag(self.ItemIsMovable)
         self.setFlag(self.ItemSendsGeometryChanges)
-        self.setZValue(-1)
+        self.setAcceptHoverEvents(True)
+        self.setZValue(1)
         self.color = color
         self.edge_list = []
 
@@ -53,6 +54,8 @@ class Node(QGraphicsItem):
         color = self.color
         if option.state & QStyle.State_Sunken:
             color = color.darker(200)
+        elif option.state & QStyle.State_MouseOver:
+            color = color.lighter(150)
         painter.setBrush(color)
         painter.setPen(QPen(Qt.black, 0))
         painter.drawEllipse(self.size)
@@ -62,6 +65,8 @@ class Node(QGraphicsItem):
             factor = (self.size.width() - 2) \
                 / painter.fontMetrics().width(self.label)
             font = painter.font()
+            if len(self.label) == 1:
+                factor *= 0.5
             font.setPointSizeF(font.pointSizeF() * factor)
             painter.setFont(font)
             painter.setPen(QPen(text_color, 0))
@@ -82,3 +87,9 @@ class Node(QGraphicsItem):
                 edge.adjust()
             self.graph.item_moved()
         return super().itemChange(change, value)
+
+    def hoverEnterEvent(self, event: QGraphicsSceneHoverEvent):
+        super().hoverEnterEvent(event)
+
+    def hoverLeaveEvent(self, event: QGraphicsSceneHoverEvent):
+        super().hoverLeaveEvent(event)

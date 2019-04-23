@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QWidget
 from ui_compiled.algorithm_result import Ui_AlgorithmResult
+from api import Describer
 from api.algorithm import AbstractAlgorithm
 from .matrix import MatrixWidget
-from ui.misc import encapsulate_html, describe_link
-import json
+from models import TextNode
 
 
 class AlgorithmResults(QWidget, Ui_AlgorithmResult):
@@ -12,6 +12,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.setupUi(self)
         self.algorithm = algorithm
         self.processor = processor
+        self.describer = Describer(algorithm, processor)
 
         self.resultMatrix = None
         self.hideEmpty = False
@@ -35,25 +36,14 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
             else:
                 self.updateResults()
 
-    def onItemClicked(self, item):
-        html_body = item.describe()
-        html_body += f"""
-            <h2>Результаты работы алгоритма</h2>
-            {self.algorithm.describe_preprocess(item.alg_results)}
-        """
-        html_body += f"""
-            <h2>Текст фрагмента</h2>
-            {item.text}
-        """
-        self.textBrowser.setHtml(encapsulate_html(html_body))
+    def onItemClicked(self, item: TextNode):
+        self.textBrowser.setHtml(
+            self.describer.describeNode(item))
 
     def onRelationClicked(self, item):
         id1, id2, item = item
-        item = dict(item)
-        item['data'] = json.loads(item['data'])
-        html_body = self.algorithm.describe_comparison(item)
-        self.textBrowser.setHtml(encapsulate_html(html_body))
-
+        self.textBrowser.setHtml(
+            self.describer.describeQueryRelation(item, id1, id2))
 
     def updateResults(self):  # TODO Это в отдельный тред
         min_val = self.thresholdSlider.value() / 100

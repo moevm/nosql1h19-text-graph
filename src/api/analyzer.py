@@ -13,18 +13,18 @@ class FragmentsAnalyzer:
     class UploadDBThread(LoadingThread):
         def __init__(self, analyzer, parent=None):
             super().__init__(parent)
-            self.anayler = analyzer
+            self.anaylzer = analyzer
             self.operation = 'Загрузка данных в БД'
             self.setInterval(len(analyzer))
 
         def run(self):
-            log.info('Uploading data')
+            log.info('Uploading data')  # FIXME Нумерация не работает
             self.updateStatus.emit('Нумерация вершин')
-            for i, node in enumerate(self.anayler):
+            for i, node in enumerate(self.analyzer):
                 self.checkPercent(i)
                 node.order_id = i
             self.updateStatus.emit('Сохранение')
-            for i, node in enumerate(self.anayler):
+            for i, node in enumerate(self.anaylzer):
                 self.checkPercent(i)
                 node.save()
             self.loadingDone.emit()

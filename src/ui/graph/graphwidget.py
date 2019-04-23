@@ -61,5 +61,5 @@ class GraphWidget(QGraphicsView):
 
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
-        if event.button() == Qt.RightButton:
+        if event.button() == Qt.RightButton and self.scene().mouseGrabberItem():
             self.item_right_clicked.emit(self.scene().mouseGrabberItem())

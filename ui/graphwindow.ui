@@ -58,7 +58,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox">
+          <widget class="QCheckBox" name="excludeZerosCheckBox">
            <property name="text">
             <string>Скрыть вершины без связей</string>
            </property>
@@ -73,6 +73,9 @@
              </property>
              <property name="value">
               <number>45</number>
+             </property>
+             <property name="tracking">
+              <bool>false</bool>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -107,13 +110,6 @@
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>Обновить</string>
-           </property>
-          </widget>
          </item>
         </layout>
        </widget>

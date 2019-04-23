@@ -182,8 +182,6 @@ class DictionaryAlgorithm(AbstractAlgorithm):
 
     def describe_comparison(self, comp_dict):
         text = f"""
-        <h1>Результаты сравнения:</h1>
-        <h2>Пересечение: {comp_dict['intersection']*100:.2f}% </h2>
         <table border="1">
             <caption>
                 Наиболее часто встречающиеся слова из пересечения

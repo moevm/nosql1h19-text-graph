@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QGraphicsTextItem
-from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem, QStyle
-from PyQt5.QtGui import QPainterPath, QPainter, QColor, QPen
+from PyQt5.QtWidgets import QStyleOptionGraphicsItem
+from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtCore import Qt
+
 
 class TextItem(QGraphicsTextItem):
     def __init__(self, html_text, id, parent=None):
@@ -9,7 +10,7 @@ class TextItem(QGraphicsTextItem):
         self.setFlag(self.ItemIsMovable)
         self.setFlag(self.ItemSendsGeometryChanges)
         self.setTextInteractionFlags(Qt.TextBrowserInteraction)
-        self.setZValue(1)
+        self.setZValue(2)
         text = f"""
         <div align="right">
         <a href="internal://close?id={id}">Закрыть</a>
@@ -17,6 +18,7 @@ class TextItem(QGraphicsTextItem):
         </div>
         """
         self.setHtml(text + html_text)
+        self.setTextWidth(400)
 
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem,
               widget=None):

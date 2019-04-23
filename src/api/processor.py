@@ -112,30 +112,35 @@ class TextProcessor:
         thread.run()
         thread.wait()
 
+    def get_node_id_list(self, algorithm_name: str, exclude_zeros=False, min_val=0):
+        if len(self.analyzer) == 0:
+            return None, None
+        query = f"""
+            MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
+            WHERE r.algorithm_name = '{algorithm_name}'
+                AND r.intersection >= {min_val}
+            RETURN n.order_id, n2.order_id, r, n.alg_results
+        """
+        res, meta = db.cypher_query(query)
+        # head - список номеров вершин для матрицы
+        if exclude_zeros:  # Убрать нули
+            head = list(set(id1 for id1, id2, r, res_a in res))
+            head.sort()
+        else:
+            head = [node.order_id for node in self.analyzer]
+
+        if len(head) == 0:
+            return None, None
+        return head, res
+
     def get_matrix(self, algorithm_name: str, exclude_zeros=False, min_val=0):
         """Получить матрицу, пригодную для обработки в MatrixWidget
 
         :param algorithm_name: имя алгоритма
         :type algorithm_name: str
         """
-        if (len(self.analyzer)) == 0:
-            return [], []
-
-        query = f"""
-            MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
-            WHERE r.algorithm_name = '{algorithm_name}'
-            RETURN n.order_id, n2.order_id, r, n.alg_results
-        """
-        res, meta = db.cypher_query(query)
-        # head - список номеров вершин для матрицы
-        if exclude_zeros:  # Убрать нули
-            head = list(set(id1 for id1, id2, r, res_a in res
-                            if r['intersection'] > min_val))
-            head.sort()
-        else:
-            head = [node.order_id for node in self.analyzer]
-
-        if len(head) == 0:
+        head, res = self.get_node_id_list(algorithm_name, exclude_zeros, min_val)
+        if not head:
             return [], []
         # Оптимизация для O(n)
         head_rev = list(range(max(head) + 1))
@@ -145,10 +150,11 @@ class TextProcessor:
         # Сама матрица
         matrix = [[(0, None) for _ in range(len(head))]
                   for _ in range(len(head))]
-        for id1, id2, r, result in res:
-            if r['intersection'] > min_val or not exclude_zeros:
-                matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], \
-                        (id1, id2, r)
+        if res:
+            for id1, id2, r, result in res:
+                if r['intersection'] > min_val or not exclude_zeros:
+                    matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], \
+                            (id1, id2, r)
 
         for i in range(len(matrix)):
             matrix[i][i] = (1, None)
@@ -165,6 +171,8 @@ class TextProcessor:
         # """
         # res, meta = db.cypher_query(query)
         # return [json.loads(res_[0]) for res_ in res if res_[0]]
+        if not head:
+            return []
         return [self.analyzer[i] for i in head]
 
     def clear_db(self):
