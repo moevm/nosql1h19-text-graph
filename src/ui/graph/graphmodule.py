@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QGraphicsItem
 import numpy as np
 import sys
 import re
+from fa2 import ForceAtlas2
 
 
 class GraphModule:
@@ -28,10 +29,17 @@ class GraphModule:
         """
         self.window = window
         self.widget = GraphWidget(self.window, **kwargs)
+        self.fa2 = ForceAtlas2(
+            outboundAttractionDistribution=False,
+            scalingRatio=100.0,
+            verbose=False
+        )
 
         self._nodes = {}  # Хранилище вершин
         self._edges = {}  # Хранилище связей
         self._texts = {}  # Хранилище текстов
+        self.matrix = None
+        self.positions = None
 
         self.gravity_timer = None  # Таймер для работы с гравитацией
         self.widget.item_right_clicked.connect(self._on_item_clicked)
@@ -95,6 +103,20 @@ class GraphModule:
                     self.widget.scene().removeItem(self._texts[id])
                 del self._texts[id]
 
+    def calculate_matrix(self):
+        head = list(self._nodes.keys())
+        self.head = head
+        self.matrix = np.zeros(len(head)**2).reshape((len(head), len(head)))
+        self.positions = [[0, 0] for _ in range(len(head))]
+        for key, edge in self._edges.items():
+            id1, id2 = key
+            id1, id2 = head.index(id1), head.index(id2)
+            self.matrix[id1][id2] = edge.weight
+            self.matrix[id2][id1] = edge.weight
+        for id_, node in self._nodes.items():
+            self.positions[head.index(id_)] = [node.x(), node.y()]
+        self.positions = np.array(self.positions)
+
     def _on_item_clicked(self, item: QGraphicsItem):
         if isinstance(item, Node) and item.info \
                 and item.id not in self._texts:
@@ -110,6 +132,7 @@ class GraphModule:
         self._nodes.clear()
         self._edges.clear()
         self._texts.clear()
+        self.matrix = None
         self.widget.scene().clear()
 
     @property
@@ -158,48 +181,60 @@ class GraphModule:
         for _ in range(ticks):
             self._process_gravity()
 
-    def _process_gravity(self):
+    def _process_gravity(self, ticks=1):
         """ Один тик обработки взаимодействия вершин """
-        new_coords = {}
-        for id, node in self._nodes.items():
-            new_coords[id] = self._calculate_forces(node)
-        for id in self._nodes:
-            x, y = new_coords[id]
-            self._nodes[id].setX(x)
-            self._nodes[id].setY(y)
-        if not self.widget.scene().mouseGrabberItem():
-            self._adjust_scene()
+        # new_coords = {}
+        # for id, node in self._nodes.items():
+        #     new_coords[id] = self._calculate_forces(node)
+        # for id in self._nodes:
+        #     x, y = new_coords[id]
+        #     self._nodes[id].setX(x)
+        #     self._nodes[id].setY(y)
+        # if not self.widget.scene().mouseGrabberItem():
+        #     self._adjust_scene()
 
-    def _calculate_forces(self, node: Node):
-        """ Вычислить новые координаты вершины """
-        if self.widget.scene().mouseGrabberItem() == node:
-            return node.x(), node.y()
-        xvel, yvel = 0, 0
-        vertex_weight = 250  # TODO Settings
+        # if self.matrix is None:
+        self.calculate_matrix()
+        positions = self.fa2.forceatlas2(
+            self.matrix, pos=self.positions, iterations=ticks)
+        for index, position in enumerate(positions):
+            x, y = position
+            node = self._nodes[self.head[index]]
+            node.setX(x)
+            node.setY(y)
+        self.positions = np.array(positions)
+        self._adjust_scene()
 
-        # Силы, отталкивающие вершины
-        for node2 in self._nodes.values():
-            if node2 != node:
-                dx = node.x() - node2.x()
-                dy = node.y() - node2.y()
-                length = np.linalg.norm((dx, dy))
-                xvel += dx * vertex_weight / length**2
-                yvel += dy * vertex_weight / length**2
+    # def _calculate_forces(self, node: Node):
+    #     """ Вычислить новые координаты вершины """
+    #     if self.widget.scene().mouseGrabberItem() == node:
+    #         return node.x(), node.y()
+    #     xvel, yvel = 0, 0
+    #     vertex_weight = 250  # TODO Settings
 
-        # Силы, притягивающие вершины
-        weight = (len(node.edge_list) + 1)**1.3 * 10
-        for edge in node.edge_list:
-            if edge.source == node:
-                dx = node.x() - edge.dest.x()
-                dy = node.y() - edge.dest.y()
-            else:
-                dx = node.x() - edge.source.x()
-                dy = node.y() - edge.source.y()
-            xvel -= dx / weight
-            yvel -= dy / weight
+    #     # Силы, отталкивающие вершины
+    #     for node2 in self._nodes.values():
+    #         if node2 != node:
+    #             dx = node.x() - node2.x()
+    #             dy = node.y() - node2.y()
+    #             length = np.linalg.norm((dx, dy))
+    #             xvel += dx * vertex_weight / length**2
+    #             yvel += dy * vertex_weight / length**2
 
-        if np.linalg.norm((xvel, yvel)) < 0.2:
-            xvel = yvel = 0
+    #     # Силы, притягивающие вершины
+    #     weight = (len(node.edge_list) + 1)**1.3 * 10
+    #     for edge in node.edge_list:
+    #         if edge.source == node:
+    #             dx = node.x() - edge.dest.x()
+    #             dy = node.y() - edge.dest.y()
+    #         else:
+    #             dx = node.x() - edge.source.x()
+    #             dy = node.y() - edge.source.y()
+    #         xvel -= dx / weight
+    #         yvel -= dy / weight
 
-        new_x, new_y = node.x() + xvel, node.y() + yvel
-        return new_x, new_y
+    #     if np.linalg.norm((xvel, yvel)) < 0.2:
+    #         xvel = yvel = 0
+
+    #     new_x, new_y = node.x() + xvel, node.y() + yvel
+    #     return new_x, new_y

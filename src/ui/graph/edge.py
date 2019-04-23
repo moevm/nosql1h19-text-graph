@@ -20,10 +20,11 @@ class Edge(QGraphicsItem):
     animations: List[AnimatedObject]
 
     def __init__(self, source: Node, dest: Node,
-                 widget: GraphWidget, info=None, arrow_size=10):
+                 widget: GraphWidget, info=None, weight=1, arrow_size=10):
         super().__init__()
         self.source, self.dest = source, dest
         self.id = f"{source.id}-{dest.id}"
+        self.weight = weight
         self.arrow_size = arrow_size
         self.setAcceptHoverEvents(True)
         self.info = info

@@ -53,8 +53,9 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
                                 label=str(node.order_id), info=info)
         if res:
             for id1, id2, rel, res_a in res:
+                weight=rel['intersection']
                 info = self.describer.describeQueryRelation(rel, id1, id2)
-                self.graph.add_edge(id1, id2, ud=True, info=info)
+                self.graph.add_edge(id1, id2, ud=True, info=info, weight=weight)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
