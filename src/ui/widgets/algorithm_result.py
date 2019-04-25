@@ -4,9 +4,22 @@ from api import Describer
 from api.algorithm import AbstractAlgorithm
 from .matrix import MatrixWidget
 from models import TextNode
+from loading_wrapper import LoadingThread
 
 
 class AlgorithmResults(QWidget, Ui_AlgorithmResult):
+    class PrepareMatrixThread(LoadingThread):
+        def __init__(self, min_val, processor, alg_name, hide_empty,
+                     parent=None):
+            super().__init__(parent)
+            self.min_val = min_val
+            self.processor = processor
+            self.alg_name = alg_name
+            self.hide_empty = hide_empty
+
+        def run(self):
+            pass
+
     def __init__(self, algorithm: AbstractAlgorithm, processor, parent=None):
         super().__init__(parent)
         self.setupUi(self)
@@ -20,6 +33,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
             self.onThresholdSliderValueChanged)
         self.hideEmptyCheckBox.stateChanged.connect(
             self.onHideEmptyCheckBoxStateChanged)
+        self.graphButton.clicked.connect(self.onShowGraph)
         self.splitter.setStretchFactor(0, 1)
         self.splitter.setStretchFactor(1, 2)
         self.updateResults()
@@ -39,6 +53,11 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
     def onItemClicked(self, item: TextNode):
         self.textBrowser.setHtml(
             self.describer.describeNode(item))
+
+    def onShowGraph(self):
+        from ui import GraphWindow
+        self.graph_window = GraphWindow(self.processor, self.algorithm, self)
+        self.graph_window.show()
 
     def onRelationClicked(self, item):
         id1, id2, item = item

@@ -1,5 +1,5 @@
 from typing import List, Pattern
-from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm, DummyAlgorithm
+from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
 from api import FragmentsAnalyzer
 from logger import log
 from loading_wrapper import LoadingThread
@@ -91,6 +91,13 @@ class TextProcessor:
         self.algorithms = []
         for algorithm_class in self.algorithm_classes:
             self.algorithms.append(algorithm_class())
+
+    def alg_by_name(self, name):
+        for algorithm in self.algorithms:
+            if algorithm.name == name:
+                return algorithm
+
+        raise KeyError(f'No algorithm {name}')
 
     def parse_file(self, filename: str, regex: Pattern):
         """Считать файл и вытащить из него все фрагменты

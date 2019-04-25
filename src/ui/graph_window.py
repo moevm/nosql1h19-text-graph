@@ -1,9 +1,7 @@
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtGui import QColor
 from ui_compiled.graphwindow import Ui_GraphWindow
 from ui.graph import GraphModule
-from api.algorithm import AbstractAlgorithm
 from api import TextProcessor, Describer
 from models import TextNode
 
@@ -11,15 +9,16 @@ import numpy as np
 
 
 class GraphWindow(QMainWindow, Ui_GraphWindow):
-    def __init__(self, algorithm: AbstractAlgorithm,
-                 processor: TextProcessor, parent=None):
+    def __init__(self, processor: TextProcessor,
+                 algorithm=None, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.graph = GraphModule(self)
         self.graphWidgetLayout.addWidget(self.graph.widget)
-        self.algorithm = algorithm
         self.processor = processor
-        self.describer = Describer(algorithm, processor)
+        self.setupAlgorithms(algorithm)
+
+        self.describer = Describer(self.algorithm, processor)
         self.populateGraph()
 
         self.excludeZerosCheckBox.stateChanged.connect(
@@ -28,6 +27,18 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             self.updateGraph)
         #  self.graph.do_gravity_ticks(1000)
         self.graph.start_gravity()
+
+    def setupAlgorithms(self, algorithm=None):
+        alg_list = [alg.name for alg in self.processor.algorithms]
+        self.algorithmComboBox.addItems(alg_list)
+        self.algorithmComboBox.setCurrentIndex(0)
+        if algorithm:
+            self.algorithm = algorithm
+        else:
+            self.onChangeAlgorithms(alg_list[0])
+
+    def onChangeAlgorithms(self, name: str):
+        self.algorithm = self.processor.alg_by_name(name)
 
     def getNodeParams(self, node: TextNode):
         x = np.random.random() * 200 - 100
@@ -52,9 +63,10 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
                                 label=str(node.order_id), info=info)
         if res:
             for id1, id2, rel, res_a in res:
-                weight=rel['intersection']
+                weight = rel['intersection']
                 info = self.describer.describeQueryRelation(rel, id1, id2)
-                self.graph.add_edge(id1, id2, ud=True, info=info, weight=weight)
+                self.graph.add_edge(id1, id2, ud=True, info=info,
+                                    weight=weight)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

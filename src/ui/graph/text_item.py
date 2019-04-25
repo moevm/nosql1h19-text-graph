@@ -7,6 +7,11 @@ from PyQt5.QtCore import Qt
 class TextItem(QGraphicsTextItem):
     def __init__(self, html_text, id, parent=None):
         super().__init__(parent)
+        self.parent = parent
+
+        if parent:
+            parent.setZValue(parent.zValue() + 5)
+
         self.setFlag(self.ItemIsMovable)
         self.setFlag(self.ItemSendsGeometryChanges)
         self.setTextInteractionFlags(Qt.TextBrowserInteraction)
@@ -25,3 +30,7 @@ class TextItem(QGraphicsTextItem):
         painter.setBrush(QColor(255, 204, 0))
         painter.drawRect(self.boundingRect())
         super().paint(painter, option, widget)
+
+    def __del__(self):
+        if self.parent:
+            self.parent.setZValue(self.parent.zValue() - 5)
