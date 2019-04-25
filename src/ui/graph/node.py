@@ -76,6 +76,7 @@ class Node(QGraphicsItem):
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
         self.update()
         super().mousePressEvent(event)
+        pass
 
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
         self.update()

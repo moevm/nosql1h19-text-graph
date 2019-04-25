@@ -17,6 +17,7 @@ class GraphWidget(QGraphicsView):
         self.setRenderHint(QPainter.Antialiasing)
         self.setTransformationAnchor(self.AnchorUnderMouse)
         self.setSizeAdjustPolicy(self.AdjustToContents)
+        self._pan = False
         animationTimer = QTimer(self)
         animationTimer.start(10)
         animationTimer.timeout.connect(self.process_animations)
@@ -61,5 +62,28 @@ class GraphWidget(QGraphicsView):
 
     def mousePressEvent(self, event: QMouseEvent):
         super().mousePressEvent(event)
-        if event.button() == Qt.RightButton and self.scene().mouseGrabberItem():
+        if event.button() == Qt.RightButton \
+                and self.scene().mouseGrabberItem():
             self.item_right_clicked.emit(self.scene().mouseGrabberItem())
+        elif event.button() == Qt.LeftButton \
+                and not self.scene().mouseGrabberItem():
+            self._pan = True
+            self._pan_start_pos = event.pos()
+            self.setCursor(Qt.ClosedHandCursor)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        if event.button() == Qt.LeftButton:
+            self._pan = False
+            self.setCursor(Qt.ArrowCursor)
+        super().mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        if self._pan:
+            dx = event.x() - self._pan_start_pos.x()
+            dy = event.y() - self._pan_start_pos.y()
+            self.horizontalScrollBar().setValue(
+                self.horizontalScrollBar().value() - dx)
+            self.verticalScrollBar().setValue(
+                self.verticalScrollBar().value() - dy)
+            self._pan_start_pos = event.pos()
+        super().mouseMoveEvent(event)

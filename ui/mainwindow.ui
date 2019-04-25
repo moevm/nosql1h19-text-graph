@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>809</width>
-    <height>590</height>
+    <height>742</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1">
     <item>
      <widget class="QTabWidget" name="mainTab">
       <property name="enabled">
@@ -43,9 +43,9 @@
        <attribute name="title">
         <string>Общее</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QGroupBox" name="statsGroupBox">
             <property name="title">
@@ -182,54 +182,67 @@
            </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="controlsLayout">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="controlsLayout">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <item>
-               <widget class="QPushButton" name="startProcessButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Начать обработку</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="stopProcessButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Остановить обработку</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QPushButton" name="startProcessButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Начать обработку</string>
+              </property>
+             </widget>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>Список фрагментов</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="fragmentsWidgetLayout"/>
-              </item>
-              <item>
-               <widget class="QPushButton" name="changeFragmentsButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Изменить список фрагментов</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QPushButton" name="stopProcessButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Остановить обработку</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Список фрагментов</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="fragmentsWidgetLayout"/>
+            </item>
+            <item>
+             <widget class="QPushButton" name="changeFragmentsButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Изменить список фрагментов</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -276,7 +289,7 @@
      <x>0</x>
      <y>0</y>
      <width>809</width>
-     <height>22</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

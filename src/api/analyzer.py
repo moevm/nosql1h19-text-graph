@@ -11,20 +11,24 @@ class FragmentsAnalyzer:
     Дает интерфейс контейнера для фрагментов.
     """
     class UploadDBThread(LoadingThread):
-        def __init__(self, analyzer, parent=None):
+        def __init__(self, analyzer, download_first=False, parent=None):
             super().__init__(parent)
-            self.anaylzer = analyzer
+            self.analyzer = analyzer
             self.operation = 'Загрузка данных в БД'
             self.setInterval(len(analyzer))
+            self.download_first = download_first
 
         def run(self):
-            log.info('Uploading data')  # FIXME Нумерация не работает
-            self.updateStatus.emit('Нумерация вершин')
+            log.info('Uploading data')
+            self.updateStatus.emit('Загрузка')
+            if self.download_first:
+                self.analyzer.download_db()
+            self.updateStatus.emit('Нумерация')
             for i, node in enumerate(self.analyzer):
                 self.checkPercent(i)
                 node.order_id = i
             self.updateStatus.emit('Сохранение')
-            for i, node in enumerate(self.anaylzer):
+            for i, node in enumerate(self.analyzer):
                 self.checkPercent(i)
                 node.save()
             self.loadingDone.emit()

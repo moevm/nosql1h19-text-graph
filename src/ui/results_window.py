@@ -88,7 +88,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Запустить редактирование фрагментов"""
         self.fragments = FragmentsWindow(self.processor, self)
         self.fragments.show()
-        self.fragments.fragmentsChanged.connect(self.uploadDB)
+        self.fragments.fragmentsChanged.connect(self.fragments_list.update)
+        self.fragments.fragmentsChanged.connect(self.updateResults)
         self.fragments.fragmentsChanged.connect(self.updateEnabled)
 
     def startAlgorithm(self):

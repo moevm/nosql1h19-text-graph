@@ -55,7 +55,6 @@ class GraphModule:
         """
         text = TextItem(id=id, parent=parent_item, **kwargs)
         if parent_item:
-            print(parent_item)
             pos_x -= parent_item.x()
             pos_y -= parent_item.y()
         text.setPos(pos_x, pos_y)
@@ -195,14 +194,16 @@ class GraphModule:
 
         # if self.matrix is None:
         self.calculate_matrix()
-        positions = self.fa2.forceatlas2(
-            self.matrix, pos=self.positions, iterations=ticks)
-        for index, position in enumerate(positions):
-            x, y = position
-            node = self._nodes[self.head[index]]
-            node.setX(x)
-            node.setY(y)
-        self.positions = np.array(positions)
+        if len(self.matrix) > 0:
+            positions = self.fa2.forceatlas2(
+                self.matrix, pos=self.positions, iterations=ticks)
+            for index, position in enumerate(positions):
+                x, y = position
+                node = self._nodes[self.head[index]]
+                if node != self.widget.scene().mouseGrabberItem():
+                    node.setX(x)
+                    node.setY(y)
+            self.positions = np.array(positions)
         self._adjust_scene()
 
     # def _calculate_forces(self, node: Node):

@@ -48,6 +48,7 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
                                           ))
         self.regex = ''
         self.file_name = ''
+        self.uploadOnClose = False
 
         self.fragments_list.fragmentItemActivated.connect(
             self.onFragmentsItemChanged)
@@ -110,8 +111,18 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         for item in self.fragments_list.selectedItems():
             node = item.node
             node.delete()
+        self.uploadOnClose = True
         self.fragments_list.update()
 
     def closeEvent(self, event):
-        self.fragmentsChanged.emit()
-        super().closeEvent(event)
+        if self.uploadOnClose:
+            self.thread = self.processor.analyzer.UploadDBThread(
+                self.processor.analyzer, download_first=True)
+            self.loading = LoadingWrapper(self.thread)
+            self.loading.loadingDone.connect(self.fragmentsChanged.emit)
+            self.loading.loadingDone.connect(
+                lambda: QMainWindow.closeEvent(self, event))
+            self.loading.start()
+        else:
+            self.fragmentsChanged.emit()
+            super().closeEvent(event)

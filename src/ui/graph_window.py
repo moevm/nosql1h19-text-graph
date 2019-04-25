@@ -26,7 +26,6 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             self.updateGraph)
         self.thresholdSlider.valueChanged.connect(
             self.updateGraph)
-
         #  self.graph.do_gravity_ticks(1000)
         self.graph.start_gravity()
 
