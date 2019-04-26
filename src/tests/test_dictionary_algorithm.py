@@ -3,13 +3,15 @@ import unittest
 from api.algorithm import DictionaryAlgorithm
 from tests.fake.prebuilt import internationale_generator, \
         war_and_peace_generator
+from supremeSettings import SupremeSettings
 
 
 # noinspection SpellCheckingInspection
 class DictionaryAlgorithmTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.algorithm = DictionaryAlgorithm(n=10)
+        SupremeSettings()['dictionary_words_num'] = 10
+        cls.algorithm = DictionaryAlgorithm()
 
     def test_check_word(self):
         self.assertTrue(self.algorithm.check_word('Проклятие'))

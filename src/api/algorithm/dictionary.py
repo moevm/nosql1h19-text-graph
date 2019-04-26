@@ -5,15 +5,16 @@ from nltk.corpus import stopwords
 from pymystem3 import Mystem
 
 from api.algorithm import AbstractAlgorithm
+from supremeSettings import SupremeSettings
 
 FreqList = List[Tuple[int, Any]]
 
 
 class DictionaryAlgorithm(AbstractAlgorithm):
-    def __init__(self, n=100):
+    def __init__(self):
         self.stem = Mystem()
         self.stopwords = stopwords.words('russian')
-        self.n = n
+        self.n = SupremeSettings()['dictionary_words_num']
         self.word_regex = r'[а-яА-Я]'
 
     @property

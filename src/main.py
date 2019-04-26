@@ -8,6 +8,7 @@ from config.config import Config
 from ui import LoginWindow, ExceptionDialog, MainWindow, LoadingWrapper
 from api import do_setup
 from loading_wrapper import LoadingThread
+from supremeSettings import SupremeSettings
 
 
 class App:
@@ -23,6 +24,8 @@ class App:
     def __init__(self):
         super().__init__()
         self.app = QApplication(sys.argv)
+        self.settings = SupremeSettings()
+        self.settings.check_settings()
         logging.config.dictConfig(Config.LOGGING_CONFIG)
         self.log = logging.getLogger('root')
 

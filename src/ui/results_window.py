@@ -4,6 +4,8 @@ from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
 from ui.widgets import FragmentsList, AlgorithmResults
 from .loading_dialog import LoadingWrapper
+from .settings import SettingsDialog
+from supremeSettings import SupremeSettings
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -17,6 +19,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionClear.triggered.connect(self.clear_results)
         self.actionStartProcess.triggered.connect(self.start_algorithm)
         self.actionUpdateResults.triggered.connect(self.update_results)
+        self.actionOpenParams.triggered.connect(self.open_settings)
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
@@ -38,8 +41,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.processor = None  # Обработчик текста
         self.fragments_list = None  # Виджет с фрагментами
         self.tabs = []  # Вкладки с результатами алгоритмов
-        self.auto_update = False  # Автоматически обновлять результаты
-        # TODO Settings
+        self.auto_update = SupremeSettings()['result_auto_update']
+        # Автоматически обновлять результаты
 
         self.remove_project()
 
@@ -62,6 +65,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             [item.setEnabled(True) for item in self.en_project]
             if len(self.processor.analyzer) > 0:
                 [item.setEnabled(True) for item in self.en_process_fragments]
+
+    def open_settings(self):
+        self.settings = SettingsDialog()
+        self.settings.accepted.connect(self.on_settings_accepted)
+        self.settings.show()
+
+    def on_settings_accepted(self):
+        self.remove_project()
 
     def remove_project(self):
         """Удаление проекта"""
@@ -121,7 +132,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def auto_update_results(self):
         [item.setEnabled(True) for item in self.en_algorithm_results]
-        if self.auto_update:
+        if SupremeSettings()['result_auto_update']:
             [tab.update_results() for tab in self.tabs]
 
     def update_results(self):
