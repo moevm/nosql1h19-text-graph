@@ -35,7 +35,7 @@ class IntersectionItem(QTableWidgetItem):
 
 
 class MatrixWidget(QTableWidget):
-    updateMinVal = pyqtSignal(float)
+    update_min_val = pyqtSignal(float)
     item_clicked = pyqtSignal(object)
     relation_clicked = pyqtSignal(object)
 
@@ -76,12 +76,12 @@ class MatrixWidget(QTableWidget):
             for j, matrix_item in enumerate(row):
                 value, relation = matrix_item
                 item = IntersectionItem(value, self.min_val, relation)
-                self.updateMinVal.connect(item.updateText)
+                self.update_min_val.connect(item.updateText)
                 self.setItem(i, j, item)
 
     def setMinVal(self, min_val):
         self.min_val = min_val
-        self.updateMinVal.emit(min_val)
+        self.update_min_val.emit(min_val)
 
     def onRelationActivated(self, item):
         if item.rel:
