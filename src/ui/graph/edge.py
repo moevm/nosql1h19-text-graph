@@ -1,12 +1,14 @@
 import math
+import numpy as np
 from typing import List
 from PyQt5.QtCore import QLineF, QPointF, QRectF, QSizeF, Qt
-from PyQt5.QtGui import QPainter, QPen, QPolygonF, QColor, QBrush
+from PyQt5.QtGui import QPainter, QPen, QPolygonF, QColor, QBrush, QPainterPath
 from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem, QStyle, \
                             QGraphicsSceneMouseEvent
 
 from .graphwidget import GraphWidget
 from .node import Node
+from supremeSettings import SupremeSettings
 
 
 class AnimatedObject:
@@ -26,6 +28,7 @@ class Edge(QGraphicsItem):
         self.id = f"{source.id}-{dest.id}"
         self.weight = weight
         self.arrow_size = arrow_size
+        self.selection_offset = 5
         self.setAcceptHoverEvents(True)
         self.info = info
         source.addEdge(self)
@@ -52,15 +55,43 @@ class Edge(QGraphicsItem):
         else:
             self.source_point = self.dest_point = line.p1()
 
+    def getSelectionPolygon(self):
+        line = QLineF(self.source_point, self.dest_point)
+        angle = line.angle() * np.pi / 180
+        dx = self.selection_offset * np.sin(angle)
+        dy = self.selection_offset * np.cos(angle)
+        offset1 = QPointF(dx, dy)
+        offset2 = QPointF(-dx, -dy)
+        points = [line.p1() + offset1,
+                  line.p1() + offset2,
+                  line.p2() + offset2,
+                  line.p2() + offset1]
+        polygon = QPolygonF(points)
+        return polygon
+
     def boundingRect(self):
+        return self.getSelectionPolygon().boundingRect()
+
+    def shape(self):
+        path = QPainterPath()
+        path.addPolygon(self.getSelectionPolygon())
+        return path
+
+    def boundingRect_old(self):
         if not self.source_point or not self.dest_point:
             return QRectF()
         pen_width = 1
         extra = (pen_width + self.arrow_size) / 2.0
-        return QRectF(self.source_point, QSizeF(self.dest_point.x() - self.source_point.x(),
-                                                self.dest_point.y() - self.source_point.y())) \
+        return QRectF(self.source_point,
+                      QSizeF(self.dest_point.x() - self.source_point.x(),
+                      self.dest_point.y() - self.source_point.y())) \
             .normalized() \
             .adjusted(-extra, -extra, extra, extra)
+
+    def get_color(self):
+        hue = 120 * self.weight / 360
+        color = QColor.fromHslF(hue, 1, 0.5)
+        return color
 
     def paint(self, painter: QPainter, option: QStyleOptionGraphicsItem,
               widget=None):
@@ -69,9 +100,12 @@ class Edge(QGraphicsItem):
         line = QLineF(self.source_point, self.dest_point)
         if line.length() == 0.0:
             return
-        color, width = Qt.black, 1
+        color = self.get_color()
+        width = SupremeSettings()['edge_width']
         if option.state & QStyle.State_Sunken:
             color, width = Qt.red, 2
+            painter.setPen(QPen(Qt.black, 2, Qt.DashLine))
+            painter.drawPolygon(self.getSelectionPolygon())
         elif option.state & QStyle.State_MouseOver:
             color, width = Qt.blue, 2
         painter.setPen(QPen(color, width, Qt.SolidLine,
@@ -91,7 +125,7 @@ class Edge(QGraphicsItem):
                     angle - math.pi + math.pi / 3) * self.arrow_size,
                 math.cos(
                     angle - math.pi + math.pi / 3) * self.arrow_size)
-            painter.setBrush(Qt.black)
+            painter.setBrush(color)
             painter.drawPolygon(
                 QPolygonF([line.p2(), dest_arrow_p1, dest_arrow_p2]))
         self.draw_animated_objects()

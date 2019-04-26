@@ -63,7 +63,10 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
                                 label=str(node.order_id), info=info)
         if res:
             for id1, id2, rel, res_a in res:
-                weight = rel['intersection']
+                if min_val < 1:
+                    weight = (rel['intersection'] - min_val) / (1 - min_val)
+                else:
+                    weight = 1
                 info = self.describer.describe_query_relation(rel, id1, id2)
                 self.graph.add_edge(id1, id2, ud=True, info=info,
                                     weight=weight)

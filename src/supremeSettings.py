@@ -4,6 +4,7 @@ import pprint
 class SupremeSettings:
     settings = {
         'vertex_size_value': 20,
+        'edge_width': 2,
         'graphmodule_timer_interval': 20,
         'graphmodule_gravity_enabled': True,
         'dictionary_words_num': 100,
@@ -14,6 +15,7 @@ class SupremeSettings:
     settings_gui = {
         'Отображение графа': {
             'vertex_size_value': 'Размер вершины',
+            'edge_width': 'Ширина стрелок',
             'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
             'graphmodule_gravity_enabled': 'Включить гравитацию',
             'vertex_weight': 'Вес вершины',
