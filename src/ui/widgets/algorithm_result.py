@@ -59,6 +59,12 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         if self.result_matrix:
             self.resultMatrixLayout.removeWidget(self.result_matrix)
             self.result_matrix.deleteLater()
+        else:
+            for i in range(self.resultMatrixLayout.count()):
+                self.resultMatrixLayout.removeItem(
+                    self.resultMatrixLayout.itemAt(i))
+            self.loadLabel.deleteLater()
+
         self.result_matrix = MatrixWidget(matrixModel, head, head_items,
                                           min_val, self)
         self.result_matrix.item_clicked.connect(self.on_item_clicked)

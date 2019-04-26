@@ -61,7 +61,47 @@
          <property name="title">
           <string>Матрица результатов</string>
          </property>
-         <layout class="QVBoxLayout" name="resultMatrixLayout"/>
+         <layout class="QVBoxLayout" name="resultMatrixLayout">
+          <item>
+           <spacer name="loadSpacer1">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="loadLabel">
+            <property name="text">
+             <string>Автоматическое обновление результатов отключено в настройках. Нажмите &quot;Загрузить/обновить&quot;</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="loadSpacer2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
