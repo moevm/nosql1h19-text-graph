@@ -280,6 +280,7 @@
    <addaction name="separator"/>
    <addaction name="actionStartProcess"/>
    <addaction name="actionStopProcess"/>
+   <addaction name="actionUpdateResults"/>
    <addaction name="separator"/>
    <addaction name="actionOpenParams"/>
   </widget>
@@ -289,7 +290,7 @@
      <x>0</x>
      <y>0</y>
      <width>809</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -320,6 +321,7 @@
     </property>
     <addaction name="actionStartProcess"/>
     <addaction name="actionStopProcess"/>
+    <addaction name="actionUpdateResults"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -452,6 +454,15 @@
    </property>
    <property name="text">
     <string>Закрыть проект</string>
+   </property>
+  </action>
+  <action name="actionUpdateResults">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/update.png</normaloff>:/icons/update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Обновить результаты</string>
    </property>
   </action>
  </widget>

@@ -16,6 +16,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionChangeFragments.triggered.connect(self.editFragments)
         self.actionClear.triggered.connect(self.clearResults)
         self.actionStartProcess.triggered.connect(self.startAlgorithm)
+        self.actionUpdateResults.triggered.connect(self.updateResults)
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
@@ -31,11 +32,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.actionStartProcess,
             self.actionClear,
             self.startProcessButton,
+            self.actionUpdateResults
         ]
 
         self.processor = None  # Обработчик текста
         self.fragments_list = None  # Виджет с фрагментами
         self.tabs = []  # Вкладки с результатами алгоритмов
+        self.auto_update = False  # Автоматически обновлять результаты
+        # TODO Settings
 
         self.removeProject()
 
@@ -89,7 +93,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fragments = FragmentsWindow(self.processor, self)
         self.fragments.show()
         self.fragments.fragmentsChanged.connect(self.fragments_list.update)
-        self.fragments.fragmentsChanged.connect(self.updateResults)
+        self.fragments.fragmentsChanged.connect(self.autoUpdateResults)
         self.fragments.fragmentsChanged.connect(self.updateEnabled)
 
     def startAlgorithm(self):
@@ -111,9 +115,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.thread = self.processor.analyzer.UploadDBThread(
             self.processor.analyzer)
         self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.updateResults)
+        self.loading.loadingDone.connect(self.autoUpdateResults)
         self.loading.loadingDone.connect(self.fragments_list.update)
         self.loading.start()
+
+    def autoUpdateResults(self):
+        [item.setEnabled(True) for item in self.en_algorithm_results]
+        if self.auto_update:
+            [tab.updateResults() for tab in self.tabs]
 
     def updateResults(self):
         [item.setEnabled(True) for item in self.en_algorithm_results]
