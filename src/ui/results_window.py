@@ -4,6 +4,8 @@ from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
 from ui.widgets import FragmentsList, AlgorithmResults
 from .loading_dialog import LoadingWrapper
+from .settings import SettingsDialog
+from supremeSettings import SupremeSettings
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -11,11 +13,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
 
-        self.actionCloseProject.triggered.connect(self.removeProject)
-        self.actionNew.triggered.connect(self.setNewProject)
-        self.actionChangeFragments.triggered.connect(self.editFragments)
-        self.actionClear.triggered.connect(self.clearResults)
-        self.actionStartProcess.triggered.connect(self.startAlgorithm)
+        self.actionCloseProject.triggered.connect(self.remove_project)
+        self.actionNew.triggered.connect(self.set_new_project)
+        self.actionChangeFragments.triggered.connect(self.edit_fragments)
+        self.actionClear.triggered.connect(self.clear_results)
+        self.actionStartProcess.triggered.connect(self.start_algorithm)
+        self.actionUpdateResults.triggered.connect(self.update_results)
+        self.actionOpenParams.triggered.connect(self.open_settings)
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
@@ -31,15 +35,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.actionStartProcess,
             self.actionClear,
             self.startProcessButton,
+            self.actionUpdateResults
         ]
 
         self.processor = None  # Обработчик текста
         self.fragments_list = None  # Виджет с фрагментами
         self.tabs = []  # Вкладки с результатами алгоритмов
+        self.auto_update = SupremeSettings()['result_auto_update']
+        # Автоматически обновлять результаты
 
-        self.removeProject()
+        self.remove_project()
 
-    def initalizeAlgorithms(self):
+    def initalize_algorithms(self):
         while self.mainTab.count() > 1:
             self.mainTab.removeTab(self.mainTab.count() - 1)
         self.tabs.clear()
@@ -48,7 +55,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.tabs.append(tab)
             self.mainTab.addTab(tab, algorithm.name)
 
-    def updateEnabled(self):
+    def update_enabled(self):
         """Установить enabled для виджетов, action'ов и т.п. """
         if self.processor is None:
             [item.setEnabled(False) for item in self.en_algorithm_results]
@@ -59,15 +66,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if len(self.processor.analyzer) > 0:
                 [item.setEnabled(True) for item in self.en_process_fragments]
 
-    def removeProject(self):
+    def open_settings(self):
+        self.settings = SettingsDialog()
+        self.settings.accepted.connect(self.on_settings_accepted)
+        self.settings.show()
+
+    def on_settings_accepted(self):
+        self.remove_project()
+
+    def remove_project(self):
         """Удаление проекта"""
         self.mainTab.hide()
         self.infoLabel.show()
         if self.processor:
             self.processor = None
-        self.updateEnabled()
+        self.update_enabled()
 
-    def setNewProject(self):
+    def set_new_project(self):
         """Установка нового проекта"""
         self.mainTab.setCurrentIndex(0)
         self.mainTab.show()
@@ -80,47 +95,52 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fragments_list.update()
 
         self.processor = TextProcessor()
-        self.initalizeAlgorithms()
-        self.updateEnabled()
-        self.editFragments()
+        self.initalize_algorithms()
+        self.update_enabled()
+        self.edit_fragments()
 
-    def editFragments(self):
+    def edit_fragments(self):
         """Запустить редактирование фрагментов"""
         self.fragments = FragmentsWindow(self.processor, self)
         self.fragments.show()
         self.fragments.fragmentsChanged.connect(self.fragments_list.update)
-        self.fragments.fragmentsChanged.connect(self.updateResults)
-        self.fragments.fragmentsChanged.connect(self.updateEnabled)
+        self.fragments.fragmentsChanged.connect(self.auto_update_results)
+        self.fragments.fragmentsChanged.connect(self.update_enabled)
 
-    def startAlgorithm(self):
+    def start_algorithm(self):
         """Запустить алгоритм"""
         self.thread = self.processor.PreprocessThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self._continueAlgorithm)
+        self.loading.loadingDone.connect(self._continue_algorithm)
         self.loading.start()
 
-    def _continueAlgorithm(self):
+    def _continue_algorithm(self):
         """Продолжить выполнение алгоритма"""
         # TODO Сюда впихнуть промежуточные настройки
         self.thread = self.processor.ProcessThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.uploadDB)
+        self.loading.loadingDone.connect(self.upload_db)
         self.loading.start()
 
-    def uploadDB(self):
+    def upload_db(self):
         self.thread = self.processor.analyzer.UploadDBThread(
             self.processor.analyzer)
         self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.updateResults)
+        self.loading.loadingDone.connect(self.auto_update_results)
         self.loading.loadingDone.connect(self.fragments_list.update)
         self.loading.start()
 
-    def updateResults(self):
+    def auto_update_results(self):
         [item.setEnabled(True) for item in self.en_algorithm_results]
-        [tab.updateResults() for tab in self.tabs]
+        if SupremeSettings()['result_auto_update']:
+            [tab.update_results() for tab in self.tabs]
 
-    def clearResults(self):
+    def update_results(self):
+        [item.setEnabled(True) for item in self.en_algorithm_results]
+        [tab.update_results() for tab in self.tabs]
+
+    def clear_results(self):
         self.thread = self.processor.ClearResultsThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.uploadDB)
+        self.loading.loadingDone.connect(self.upload_db)
         self.loading.start()

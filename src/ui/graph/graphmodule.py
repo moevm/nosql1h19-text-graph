@@ -5,6 +5,7 @@ import numpy as np
 import sys
 import re
 from fa2 import ForceAtlas2
+from supremeSettings import SupremeSettings
 
 
 class GraphModule:
@@ -165,10 +166,12 @@ class GraphModule:
 
     def start_gravity(self):
         """ Запустить расчёт взаимодействия вершин """
-        if self.gravity_timer:
+        if self.gravity_timer \
+                or not SupremeSettings()['graphmodule_gravity_enabled']:
             return
         self.gravity_timer = QTimer(self.widget)
-        self.gravity_timer.start(20)
+        self.gravity_timer.start(
+            SupremeSettings()['graphmodule_timer_interval'])
         self.gravity_timer.timeout.connect(self._process_gravity)
 
     def do_gravity_ticks(self, ticks):
@@ -182,17 +185,6 @@ class GraphModule:
 
     def _process_gravity(self, ticks=1):
         """ Один тик обработки взаимодействия вершин """
-        # new_coords = {}
-        # for id, node in self._nodes.items():
-        #     new_coords[id] = self._calculate_forces(node)
-        # for id in self._nodes:
-        #     x, y = new_coords[id]
-        #     self._nodes[id].setX(x)
-        #     self._nodes[id].setY(y)
-        # if not self.widget.scene().mouseGrabberItem():
-        #     self._adjust_scene()
-
-        # if self.matrix is None:
         self.calculate_matrix()
         if len(self.matrix) > 0:
             positions = self.fa2.forceatlas2(
@@ -205,37 +197,3 @@ class GraphModule:
                     node.setY(y)
             self.positions = np.array(positions)
         self._adjust_scene()
-
-    # def _calculate_forces(self, node: Node):
-    #     """ Вычислить новые координаты вершины """
-    #     if self.widget.scene().mouseGrabberItem() == node:
-    #         return node.x(), node.y()
-    #     xvel, yvel = 0, 0
-    #     vertex_weight = 250  # TODO Settings
-
-    #     # Силы, отталкивающие вершины
-    #     for node2 in self._nodes.values():
-    #         if node2 != node:
-    #             dx = node.x() - node2.x()
-    #             dy = node.y() - node2.y()
-    #             length = np.linalg.norm((dx, dy))
-    #             xvel += dx * vertex_weight / length**2
-    #             yvel += dy * vertex_weight / length**2
-
-    #     # Силы, притягивающие вершины
-    #     weight = (len(node.edge_list) + 1)**1.3 * 10
-    #     for edge in node.edge_list:
-    #         if edge.source == node:
-    #             dx = node.x() - edge.dest.x()
-    #             dy = node.y() - edge.dest.y()
-    #         else:
-    #             dx = node.x() - edge.source.x()
-    #             dy = node.y() - edge.source.y()
-    #         xvel -= dx / weight
-    #         yvel -= dy / weight
-
-    #     if np.linalg.norm((xvel, yvel)) < 0.2:
-    #         xvel = yvel = 0
-
-    #     new_x, new_y = node.x() + xvel, node.y() + yvel
-    #     return new_x, new_y

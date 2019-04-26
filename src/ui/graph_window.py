@@ -57,14 +57,17 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             min_val)
         nodes = self.processor.get_node_list(head)
         for node in nodes:
-            info = self.describer.describeNode(node)
+            info = self.describer.describe_node(node)
             x, y, color = self.getNodeParams(node)
             self.graph.add_node(node.order_id, x, y, color=color,
                                 label=str(node.order_id), info=info)
         if res:
             for id1, id2, rel, res_a in res:
-                weight = rel['intersection']
-                info = self.describer.describeQueryRelation(rel, id1, id2)
+                if min_val < 1:
+                    weight = (rel['intersection'] - min_val) / (1 - min_val)
+                else:
+                    weight = 1
+                info = self.describer.describe_query_relation(rel, id1, id2)
                 self.graph.add_edge(id1, id2, ud=True, info=info,
                                     weight=weight)
 

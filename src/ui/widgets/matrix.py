@@ -17,10 +17,10 @@ class IntersectionItem(QTableWidgetItem):
 
         super().__init__()
         self.val = value
-        self.updateText(min_val)
+        self.update_text(min_val)
         self.rel = relation
 
-    def updateText(self, min_val):
+    def update_text(self, min_val):
         self.min_val = min_val
         if self.val < self.min_val:
             self.back = QColor(Qt.lightGray)
@@ -35,7 +35,7 @@ class IntersectionItem(QTableWidgetItem):
 
 
 class MatrixWidget(QTableWidget):
-    updateMinVal = pyqtSignal(float)
+    update_min_val = pyqtSignal(float)
     item_clicked = pyqtSignal(object)
     relation_clicked = pyqtSignal(object)
 
@@ -58,16 +58,16 @@ class MatrixWidget(QTableWidget):
         self.min_val = min_val
         self.head = [str(i) for i in head]
         self.head_objects = head_dicts
-        self.setItems(matrix)
+        self.set_items(matrix)
         self.setHorizontalHeaderLabels(self.head)
         self.setVerticalHeaderLabels(self.head)
         self.horizontalHeader().sectionClicked.connect(
             lambda i: self.item_clicked.emit(self.head_objects[i]))
         self.verticalHeader().sectionClicked.connect(
             lambda i: self.item_clicked.emit(self.head_objects[i]))
-        self.itemActivated.connect(self.onRelationActivated)
+        self.itemActivated.connect(self.on_relation_activated)
 
-    def setItems(self, matrix):
+    def set_items(self, matrix):
         self.setRowCount(len(matrix))
         if len(matrix) > 0:
             self.setColumnCount(len(matrix[0]))
@@ -76,13 +76,13 @@ class MatrixWidget(QTableWidget):
             for j, matrix_item in enumerate(row):
                 value, relation = matrix_item
                 item = IntersectionItem(value, self.min_val, relation)
-                self.updateMinVal.connect(item.updateText)
+                self.update_min_val.connect(item.update_text)
                 self.setItem(i, j, item)
 
-    def setMinVal(self, min_val):
+    def set_min_val(self, min_val):
         self.min_val = min_val
-        self.updateMinVal.emit(min_val)
+        self.update_min_val.emit(min_val)
 
-    def onRelationActivated(self, item):
+    def on_relation_activated(self, item):
         if item.rel:
             self.relation_clicked.emit(item.rel)

@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem, QStyle, \
                             QGraphicsSceneMouseEvent, QGraphicsSceneHoverEvent
 
 from ui.misc import get_foreground_color
+from supremeSettings import SupremeSettings
 
 
 class Node(QGraphicsItem):
@@ -22,7 +23,7 @@ class Node(QGraphicsItem):
         self.graph = graph_widget
         self.label = label
         self.info = info
-        self.size_value = 20  # TODO Settings
+        self.size_value = SupremeSettings()['vertex_size_value']
         self.id = id
 
         self.size = QRect(-self.size_value, -self.size_value,

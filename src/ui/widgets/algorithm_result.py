@@ -4,22 +4,9 @@ from api import Describer
 from api.algorithm import AbstractAlgorithm
 from .matrix import MatrixWidget
 from models import TextNode
-from loading_wrapper import LoadingThread
 
 
 class AlgorithmResults(QWidget, Ui_AlgorithmResult):
-    class PrepareMatrixThread(LoadingThread):
-        def __init__(self, min_val, processor, alg_name, hide_empty,
-                     parent=None):
-            super().__init__(parent)
-            self.min_val = min_val
-            self.processor = processor
-            self.alg_name = alg_name
-            self.hide_empty = hide_empty
-
-        def run(self):
-            pass
-
     def __init__(self, algorithm: AbstractAlgorithm, processor, parent=None):
         super().__init__(parent)
         self.setupUi(self)
@@ -27,53 +14,62 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.processor = processor
         self.describer = Describer(algorithm, processor)
 
-        self.resultMatrix = None
-        self.hideEmpty = False
+        self.result_matrix = None
+        self.hide_empty = False
         self.thresholdSlider.valueChanged.connect(
-            self.onThresholdSliderValueChanged)
+            self.on_thresholdslider_value_changed)
         self.hideEmptyCheckBox.stateChanged.connect(
-            self.onHideEmptyCheckBoxStateChanged)
-        self.graphButton.clicked.connect(self.onShowGraph)
+            self.on_hide_empty_checkbox_state_changed)
+        self.graphButton.clicked.connect(self.on_show_graph)
         self.splitter.setStretchFactor(0, 1)
         self.splitter.setStretchFactor(1, 2)
-        self.updateResults()
+        self.updateButton.clicked.connect(self.update_results)
 
-    def onHideEmptyCheckBoxStateChanged(self, value):
-        self.hideEmpty = value
-        self.updateResults()
+    def on_hide_empty_checkbox_state_changed(self, value):
+        self.hide_empty = value
+        self.update_results()
 
-    def onThresholdSliderValueChanged(self, value):
+    def on_thresholdslider_value_changed(self, value):
         self.min_val = value / 100
-        if self.resultMatrix:
-            if not self.hideEmpty:
-                self.resultMatrix.setMinVal(self.min_val)
+        if self.result_matrix:
+            if not self.hide_empty:
+                self.result_matrix.set_min_val(self.min_val)
             else:
-                self.updateResults()
+                self.update_results()
 
-    def onItemClicked(self, item: TextNode):
+    def on_item_clicked(self, item: TextNode):
         self.textBrowser.setHtml(
-            self.describer.describeNode(item))
+            self.describer.describe_node(item))
 
-    def onShowGraph(self):
+    def on_show_graph(self):
         from ui import GraphWindow
         self.graph_window = GraphWindow(self.processor, self.algorithm, self)
         self.graph_window.show()
 
-    def onRelationClicked(self, item):
+    def on_relation_clicked(self, item):
         id1, id2, item = item
         self.textBrowser.setHtml(
-            self.describer.describeQueryRelation(item, id1, id2))
+            self.describer.describe_query_relation(item, id1, id2))
 
-    def updateResults(self):  # TODO Это в отдельный тред
+    def update_results(self):
         min_val = self.thresholdSlider.value() / 100
         matrixModel, head = self.processor.get_matrix(
-            self.algorithm.name, self.hideEmpty, min_val)
+            self.algorithm.name, self.hide_empty, min_val)
         head_items = self.processor.get_node_list(head)
-        if self.resultMatrix:
-            self.resultMatrixLayout.removeWidget(self.resultMatrix)
-            self.resultMatrix.deleteLater()
-        self.resultMatrix = MatrixWidget(matrixModel, head, head_items,
-                                         min_val, self)
-        self.resultMatrix.item_clicked.connect(self.onItemClicked)
-        self.resultMatrix.relation_clicked.connect(self.onRelationClicked)
-        self.resultMatrixLayout.addWidget(self.resultMatrix)
+        if self.result_matrix:
+            self.resultMatrixLayout.removeWidget(self.result_matrix)
+            self.result_matrix.deleteLater()
+        self.result_matrix = MatrixWidget(matrixModel, head, head_items,
+                                          min_val, self)
+        self.result_matrix.item_clicked.connect(self.on_item_clicked)
+        self.result_matrix.relation_clicked.connect(self.on_relation_clicked)
+        self.resultMatrixLayout.addWidget(self.result_matrix)
+
+    def _set_matrix_widget(self, widget: MatrixWidget):
+        if self.result_matrix:
+            self.resultMatrixLayout.removeWidget(self.result_matrix)
+            self.result_matrix.deleteLater()
+        self.result_matrix = widget
+        self.result_matrix.item_clicked.connect(self.on_item_clicked)
+        self.result_matrix.relation_clicked.connect(self.on_relation_clicked)
+        self.resultMatrixLayout.addWidget(self.result_matrix)

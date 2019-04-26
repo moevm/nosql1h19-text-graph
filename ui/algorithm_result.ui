@@ -35,11 +35,22 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="graphButton">
-         <property name="text">
-          <string>Показать граф</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="graphButton">
+           <property name="text">
+            <string>Показать граф</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="updateButton">
+           <property name="text">
+            <string>Загрузить/обновить</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
