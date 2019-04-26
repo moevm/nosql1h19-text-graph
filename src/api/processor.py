@@ -18,14 +18,14 @@ class TextProcessor:
             super().__init__(parent)
             self.proc = proc
             self.operation = 'Выполнение предобработки'
-            self.setInterval(len(proc.analyzer))
+            self.set_interval(len(proc.analyzer))
 
         def run(self):
             for index, algorithm in enumerate(self.proc.algorithms):
                 self.updateStatus.emit(f'Обработка алгоритма {algorithm.name}')
                 log.info(f'Preprocessing for {algorithm}')
                 for index, node in enumerate(self.proc.analyzer):
-                    self.checkPercent(index)
+                    self.check_percent(index)
                     if not node.alg_results:
                         node.alg_results = algorithm.preprocess(node.text)
                     else:
@@ -40,7 +40,7 @@ class TextProcessor:
             super().__init__(parent)
             self.proc = proc
             self.operation = 'Выполнение алгоритмов'
-            self.setInterval(len(proc.analyzer))
+            self.set_interval(len(proc.analyzer))
 
         def run(self):
             log.info('Started processing')
@@ -59,7 +59,7 @@ class TextProcessor:
                                     "data": result["data"]
                                 }
                             )
-                self.checkPercent(i)
+                self.check_percent(i)
             self.loadingDone.emit()
 
     class ClearResultsThread(LoadingThread):
@@ -67,12 +67,12 @@ class TextProcessor:
             super().__init__(parent)
             self.operation = 'Очистка результатов'
             self.proc = proc
-            self.setInterval(len(self.proc.analyzer))
+            self.set_interval(len(self.proc.analyzer))
 
         def run(self):
             for index, node in enumerate(self.proc.analyzer):
                 node.link.disconnect_all()
-                self.checkPercent(index)
+                self.check_percent(index)
             self.loadingDone.emit()
 
     def __init__(self, algorithm_classes=None):

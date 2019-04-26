@@ -28,7 +28,7 @@ class Describer:
         self.algorithm = algorithm
         self.processor = processor
 
-    def describeNode(self, node: TextNode):
+    def describe_node(self, node: TextNode):
         html_body = node.describe()
         html_body += f"""
             <h2>Результаты работы алгоритма</h2>
@@ -40,7 +40,7 @@ class Describer:
         """
         return encapsulate_html(html_body)
 
-    def describeQueryRelation(self, rel, id1=None, id2=None):
+    def describe_query_relation(self, rel, id1=None, id2=None):
         rel = dict(rel)
         rel['data'] = json.loads(rel['data'])
         html_body = f"""

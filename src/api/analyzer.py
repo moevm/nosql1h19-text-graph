@@ -15,7 +15,7 @@ class FragmentsAnalyzer:
             super().__init__(parent)
             self.analyzer = analyzer
             self.operation = 'Загрузка данных в БД'
-            self.setInterval(len(analyzer))
+            self.set_interval(len(analyzer))
             self.download_first = download_first
 
         def run(self):
@@ -25,11 +25,11 @@ class FragmentsAnalyzer:
                 self.analyzer.download_db()
             self.updateStatus.emit('Нумерация')
             for i, node in enumerate(self.analyzer):
-                self.checkPercent(i)
+                self.check_percent(i)
                 node.order_id = i
             self.updateStatus.emit('Сохранение')
             for i, node in enumerate(self.analyzer):
-                self.checkPercent(i)
+                self.check_percent(i)
                 node.save()
             self.loadingDone.emit()
 

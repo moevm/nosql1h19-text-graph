@@ -12,14 +12,14 @@ class LoadingThread(QThread):
         self.i = 0
         self.interval = -1
 
-    def setInterval(self, iter_num):
+    def set_interval(self, iter_num):
         self.total = iter_num
         if iter_num <= 100:
             self.interval = 1
         else:
             self.interval = int(iter_num / 100)
 
-    def checkPercent(self, iter_):  # TODO is this optimal?
+    def check_percent(self, iter_):  # TODO is this optimal?
         if self.interval == 1:
             self.updatePercent.emit(int(iter_ / self.total * 100))
         elif self.interval < 0:

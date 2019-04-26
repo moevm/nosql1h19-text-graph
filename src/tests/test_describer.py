@@ -20,5 +20,5 @@ class TestDescriber(unittest.TestCase):
         self.processor.upload_db()
 
         desc = Describer(self.algorithm, self.processor)
-        node_desc = desc.describeNode(self.processor.analyzer[0])
+        node_desc = desc.describe_node(self.processor.analyzer[0])
         self.assertGreater(len(node_desc), 0)

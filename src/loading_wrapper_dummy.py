@@ -9,11 +9,11 @@ class DummyThread(LoadingThread):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.operation = 'Dummy Operation'
-        self.setInterval(1000)
+        self.set_interval(1000)
 
     def run(self):
         for i in range(1000):
-            self.checkPercent(i)
+            self.check_percent(i)
             time.sleep(0.005)
         self.loadingDone.emit()
 

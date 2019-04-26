@@ -17,41 +17,41 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.result_matrix = None
         self.hide_empty = False
         self.thresholdSlider.valueChanged.connect(
-            self.onThresholdSliderValueChanged)
+            self.on_thresholdslider_value_changed)
         self.hideEmptyCheckBox.stateChanged.connect(
-            self.onHideEmptyCheckBoxStateChanged)
-        self.graphButton.clicked.connect(self.onShowGraph)
+            self.on_hide_empty_checkbox_state_changed)
+        self.graphButton.clicked.connect(self.on_show_graph)
         self.splitter.setStretchFactor(0, 1)
         self.splitter.setStretchFactor(1, 2)
-        self.updateButton.clicked.connect(self.updateResults)
+        self.updateButton.clicked.connect(self.update_results)
 
-    def onHideEmptyCheckBoxStateChanged(self, value):
+    def on_hide_empty_checkbox_state_changed(self, value):
         self.hide_empty = value
-        self.updateResults()
+        self.update_results()
 
-    def onThresholdSliderValueChanged(self, value):
+    def on_thresholdslider_value_changed(self, value):
         self.min_val = value / 100
         if self.result_matrix:
             if not self.hide_empty:
-                self.result_matrix.setMinVal(self.min_val)
+                self.result_matrix.set_min_val(self.min_val)
             else:
-                self.updateResults()
+                self.update_results()
 
-    def onItemClicked(self, item: TextNode):
+    def on_item_clicked(self, item: TextNode):
         self.textBrowser.setHtml(
-            self.describer.describeNode(item))
+            self.describer.describe_node(item))
 
-    def onShowGraph(self):
+    def on_show_graph(self):
         from ui import GraphWindow
         self.graph_window = GraphWindow(self.processor, self.algorithm, self)
         self.graph_window.show()
 
-    def onRelationClicked(self, item):
+    def on_relation_clicked(self, item):
         id1, id2, item = item
         self.textBrowser.setHtml(
-            self.describer.describeQueryRelation(item, id1, id2))
+            self.describer.describe_query_relation(item, id1, id2))
 
-    def updateResults(self):
+    def update_results(self):
         min_val = self.thresholdSlider.value() / 100
         matrixModel, head = self.processor.get_matrix(
             self.algorithm.name, self.hide_empty, min_val)
@@ -61,15 +61,15 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
             self.result_matrix.deleteLater()
         self.result_matrix = MatrixWidget(matrixModel, head, head_items,
                                           min_val, self)
-        self.result_matrix.item_clicked.connect(self.onItemClicked)
-        self.result_matrix.relation_clicked.connect(self.onRelationClicked)
+        self.result_matrix.item_clicked.connect(self.on_item_clicked)
+        self.result_matrix.relation_clicked.connect(self.on_relation_clicked)
         self.resultMatrixLayout.addWidget(self.result_matrix)
 
-    def _setMatrixWidget(self, widget: MatrixWidget):
+    def _set_matrix_widget(self, widget: MatrixWidget):
         if self.result_matrix:
             self.resultMatrixLayout.removeWidget(self.result_matrix)
             self.result_matrix.deleteLater()
         self.result_matrix = widget
-        self.result_matrix.item_clicked.connect(self.onItemClicked)
-        self.result_matrix.relation_clicked.connect(self.onRelationClicked)
+        self.result_matrix.item_clicked.connect(self.on_item_clicked)
+        self.result_matrix.relation_clicked.connect(self.on_relation_clicked)
         self.resultMatrixLayout.addWidget(self.result_matrix)

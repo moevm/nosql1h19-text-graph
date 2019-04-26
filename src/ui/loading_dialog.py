@@ -32,15 +32,15 @@ class LoadingDialog(QDialog, Ui_LoadingDialog):
         self.start_time = datetime.now()
         self.startTimeShow.setText(format_time(self.start_time))
 
-    def setStatus(self, status):
+    def set_status(self, status):
         self.statusLabel.show()
         self.statusDescLabel.show()
         self.statusLabel.setText(status)
 
-    def setOperation(self, operation):
+    def set_operation(self, operation):
         self.operationLabel.setText(operation)
 
-    def setDone(self, value: int):
+    def set_done(self, value: int):
         if value > 0:
             self.progressBar.setValue(value)
             delta = datetime.now() - self.start_time
@@ -60,8 +60,8 @@ class LoadingWrapper(QObject):
         self.thread = thread
         operations = 100 if thread.interval > 0 else 0
         self.dialog = LoadingDialog(thread.operation, operations)
-        thread.updateStatus.connect(self.dialog.setStatus)
-        thread.updatePercent.connect(self.dialog.setDone)
+        thread.updateStatus.connect(self.dialog.set_status)
+        thread.updatePercent.connect(self.dialog.set_done)
         thread.loadingDone.connect(self.dialog.ready)
         thread.loadingDone.connect(lambda: self.loadingDone.emit())
 
