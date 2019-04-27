@@ -18,9 +18,11 @@ paths=(
     src/config/
     src/models/
     src/res_compiled/
-    src/ui_compiled/
     src/ui/
-    src/ui/graph
+    src/ui/graph/
+    src/ui/misc/
+    src/ui/widgets/
+    src/ui_compiled/
 )
 
 final_path=""

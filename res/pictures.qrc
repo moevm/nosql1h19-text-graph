@@ -15,5 +15,6 @@
         <file alias="create.png">pictures/icons/create.png</file>
         <file alias="exit.png">pictures/icons/exit.png</file>
         <file alias="update.png">pictures/icons/update.png</file>
+        <file alias="gravity.png">pictures/icons/gravity.png</file>
     </qresource>
 </RCC>

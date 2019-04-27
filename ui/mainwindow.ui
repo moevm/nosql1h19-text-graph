@@ -144,8 +144,8 @@ p, li { white-space: pre-wrap; }
    <addaction name="actionChangeFragments"/>
    <addaction name="actionClear"/>
    <addaction name="separator"/>
-   <addaction name="actionStartProcess"/>
    <addaction name="actionUpdateResults"/>
+   <addaction name="actionStartProcess"/>
    <addaction name="separator"/>
    <addaction name="actionOpenParams"/>
   </widget>

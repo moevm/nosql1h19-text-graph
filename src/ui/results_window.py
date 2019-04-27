@@ -74,7 +74,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.settings_dialog.show()
 
     def on_settings_accepted(self):
-        self.remove_project()
+        pass
 
     def remove_project(self):
         """Удаление проекта"""

@@ -172,7 +172,7 @@
      <x>0</x>
      <y>0</y>
      <width>1236</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -187,9 +187,6 @@
     <property name="title">
      <string>Алгоритмы</string>
     </property>
-    <addaction name="actionСomponents"/>
-    <addaction name="actionCliques"/>
-    <addaction name="action"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -206,6 +203,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSaveGraph"/>
+   <addaction name="actionCalibrate"/>
    <addaction name="actionCloseGraph"/>
   </widget>
   <action name="actionCloseGraph">
@@ -232,28 +230,16 @@
     <string>Сохранить</string>
    </property>
   </action>
-  <action name="actionСomponents">
-   <property name="enabled">
-    <bool>false</bool>
+  <action name="actionCalibrate">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/gravity.png</normaloff>:/icons/gravity.png</iconset>
    </property>
    <property name="text">
-    <string>Поиск компонент двусвязности</string>
+    <string>Попытаться откалибровать граф</string>
    </property>
-  </action>
-  <action name="actionCliques">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Поиск клик графа</string>
-   </property>
-  </action>
-  <action name="action">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Поиск компонент связности</string>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выполнить 1000 вычислений гравитации.&lt;/p&gt;&lt;p&gt;Если граф большой и лагает, может положить приложение.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </action>
  </widget>
