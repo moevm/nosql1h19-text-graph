@@ -1,3 +1,5 @@
+import setup_
+
 from api.database import DataBaseConnection
 from api import TextProcessor
 from ui import GraphWindow

@@ -1,3 +1,5 @@
+import setup_
+
 from ui import SettingsDialog
 from PyQt5.QtWidgets import QApplication
 import sys

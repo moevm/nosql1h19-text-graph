@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QLineEdit, QSpinBox, QDoubleSpinBox, \
-        QCheckBox, QBoxLayout, QLabel, QGroupBox
+        QCheckBox, QBoxLayout, QLabel, QGroupBox, QPushButton
 from ui_compiled.settings import Ui_SettingsDialog
+from ui.widgets import SettingsListDialog
 from supremeSettings import SupremeSettings
 
 
@@ -11,12 +12,14 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
 
         self.max_ = 1000
         self.min_ = 0
+        self.list_values = {}
 
         self.settings = SupremeSettings()
         self.settings.check_settings()
         self.controls = {}
         self.add_settings()
         self.saveButton.clicked.connect(self.on_ok_clicked)
+
 
     def get_setting_control(self, name, text):
         value = self.settings[name]
@@ -39,8 +42,21 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
             layout = QBoxLayout(QBoxLayout.LeftToRight)
             label = QLabel(text, self)
             layout.addWidget(label)
+        elif isinstance(value, list):
+            self.list_values[name] = value
+            control = QPushButton('Изменить список', self)
+            control.clicked.connect(lambda: self.on_list_change_clicked(name))
+            label = QLabel(text, self)
+            layout = QBoxLayout(QBoxLayout.LeftToRight)
+            layout.addWidget(label)
         layout.addWidget(control)
         return control, layout
+
+    def on_list_change_clicked(self, name):
+        self.list_dialog = SettingsListDialog(self.list_values[name])
+        self.list_dialog.settings_changed.connect(
+            lambda l: self.list_values.__setitem__(name, l))
+        self.list_dialog.show()
 
     def add_settings(self):
         for box_title, settings in self.settings.settings_gui.items():
@@ -60,6 +76,8 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
                 new_value = widget.isChecked()
             elif isinstance(prev_value, str):
                 new_value = widget.text()
+            elif isinstance(prev_value, list):
+                new_value = self.list_values[name]
             else:
                 new_value = widget.value()
             new_value = type(prev_value)(new_value)

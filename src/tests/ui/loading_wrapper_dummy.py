@@ -1,3 +1,5 @@
+import setup_
+
 from PyQt5.QtWidgets import QApplication
 from loading_wrapper import LoadingThread
 from ui import LoadingWrapper
