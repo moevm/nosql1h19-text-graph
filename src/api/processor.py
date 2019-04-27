@@ -71,7 +71,9 @@ class TextProcessor:
 
         def run(self):
             for index, node in enumerate(self.proc.analyzer):
+                node.alg_results = {}
                 node.link.disconnect_all()
+                node.save()
                 self.check_percent(index)
             self.loadingDone.emit()
 

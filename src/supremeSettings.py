@@ -8,8 +8,10 @@ class SupremeSettings:
         'graphmodule_timer_interval': 20,
         'graphmodule_gravity_enabled': True,
         'dictionary_words_num': 100,
+        'dictionary_min_words': 1,
         'vertex_weight': 250,  # TODO
         'result_auto_update': False,
+        'dictionary_exclude_list': []
     }
 
     settings_gui = {
@@ -22,6 +24,8 @@ class SupremeSettings:
         },
         'Алгоритм работы со словарями': {
             'dictionary_words_num': 'Сколько слов запоминать',
+            'dictionary_min_words': 'Минимальная частота',
+            'dictionary_exclude_list': 'Исключить слова'
         },
         'Основное окно': {
             'result_auto_update': 'Автоматически обновлять результаты'

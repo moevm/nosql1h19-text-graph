@@ -13,9 +13,12 @@ FreqList = List[Tuple[int, Any]]
 class DictionaryAlgorithm(AbstractAlgorithm):
     def __init__(self):
         self.stem = Mystem()
-        self.stopwords = stopwords.words('russian')
-        self.n = SupremeSettings()['dictionary_words_num']
+        settings = SupremeSettings()
+        self.stopwords = stopwords.words('russian') \
+            + settings['dictionary_exclude_list']
+        self.words_num = settings['dictionary_words_num']
         self.word_regex = r'[а-яА-Я]'
+        self.min_freq = settings['dictionary_min_words']
 
     @property
     def name(self):
@@ -59,9 +62,9 @@ class DictionaryAlgorithm(AbstractAlgorithm):
             hash_map.items(),
             key=lambda x: x[1],
             reverse=True)
-        if len(sorted_list) > self.n:
-            sorted_list = sorted_list[:self.n]
-        sorted_list = [elem for elem in sorted_list if elem[1] > 1]
+        if len(sorted_list) > self.words_num:
+            sorted_list = sorted_list[:self.words_num]
+        sorted_list = [elem for elem in sorted_list if elem[1] > self.min_freq]
         return sorted_list
 
     def preprocess(self, text: str) -> Dict:
@@ -75,10 +78,11 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         tokens = self.do_stem(text)
         freq = self.get_freq(tokens)
         return {
+            "tokens": tokens,
             "top_words": freq
         }
 
-    def compare_results(self, top1: FreqList, top2: FreqList, select_words=20):
+    def compare_results(self, top1: FreqList, top2: FreqList):
         """
         Производит сравнение списов частоты
         :param top1: Результат 1 в виде (частота, элемент)
@@ -131,7 +135,7 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         avg /= len(res)
         words = [res_elem for res_elem in res if res_elem[0] > 0]
 
-        return avg, words[:select_words]
+        return avg, words[:self.words_num]
 
     def compare(self, res1: Dict, res2: Dict, *args, **kwargs):
         """
@@ -163,6 +167,11 @@ class DictionaryAlgorithm(AbstractAlgorithm):
     def describe_preprocess(self, prep_dict):
         text = """
         <h3>Алгоритм сравнения словарей</h3>
+        """
+        if prep_dict is None or 'top_words' not in prep_dict:
+            text += "Результатов нет"
+            return text
+        text += """
         <table border="1" width=100%>
             <caption>Наиболее часто встречающиеся слова:</caption>
             <thead>

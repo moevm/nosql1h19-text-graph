@@ -1,3 +1,5 @@
+import setup_
+
 from api import TextProcessor
 from api.database import DataBaseConnection
 from api.algorithm import DictionaryAlgorithm

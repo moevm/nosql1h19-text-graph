@@ -142,5 +142,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def clear_results(self):
         self.thread = self.processor.ClearResultsThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.upload_db)
+        # В ClearResultsTread уже есть сохранение
+        # self.loading.loadingDone.connect(self.upload_db)
         self.loading.start()
