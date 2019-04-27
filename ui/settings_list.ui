@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>0</string>
+   <string>Изменить список</string>
   </property>
   <property name="modal">
    <bool>true</bool>

@@ -161,9 +161,6 @@ class DictionaryAlgorithm(AbstractAlgorithm):
             }
         }
 
-    def describe_result(self):
-        return "TODO"  # TODO
-
     def describe_preprocess(self, prep_dict):
         text = """
         <h3>Алгоритм сравнения словарей</h3>

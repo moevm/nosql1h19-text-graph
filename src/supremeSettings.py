@@ -11,7 +11,9 @@ class SupremeSettings:
         'dictionary_min_words': 1,
         'vertex_weight': 250,  # TODO
         'result_auto_update': False,
-        'dictionary_exclude_list': []
+        'dictionary_exclude_list': [],
+        'processor_min_intersection': 0,
+        'processor_analyze': True
     }
 
     settings_gui = {
@@ -21,6 +23,10 @@ class SupremeSettings:
             'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
             'graphmodule_gravity_enabled': 'Включить гравитацию',
             'vertex_weight': 'Вес вершины',
+        },
+        'Общие настройки анализа': {
+            'processor_min_intersection': 'Минимальный вес ребра [0-1]',
+            'processor_analyze': 'Провести подсчёт общих результатов'
         },
         'Алгоритм работы со словарями': {
             'dictionary_words_num': 'Сколько слов запоминать',

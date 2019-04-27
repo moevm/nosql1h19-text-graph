@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow
-from api import TextProcessor
+from api import TextProcessor, Describer
 from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
 from ui.widgets import FragmentsList, AlgorithmResults
@@ -12,6 +12,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.settings = SupremeSettings()
 
         self.actionCloseProject.triggered.connect(self.remove_project)
         self.actionNew.triggered.connect(self.set_new_project)
@@ -42,7 +43,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fragments_list = None  # Виджет с фрагментами
         self.tabs = []  # Вкладки с результатами алгоритмов
         self.auto_update = SupremeSettings()['result_auto_update']
-        # Автоматически обновлять результаты
+        self.accs = None
+        self.stats = None
 
         self.remove_project()
 
@@ -67,9 +69,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 [item.setEnabled(True) for item in self.en_process_fragments]
 
     def open_settings(self):
-        self.settings = SettingsDialog()
-        self.settings.accepted.connect(self.on_settings_accepted)
-        self.settings.show()
+        self.settings_dialog = SettingsDialog()
+        self.settings_dialog.accepted.connect(self.on_settings_accepted)
+        self.settings_dialog.show()
 
     def on_settings_accepted(self):
         self.remove_project()
@@ -80,6 +82,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.infoLabel.show()
         if self.processor:
             self.processor = None
+        self.accs = None
+        self.stats = None
         self.update_enabled()
 
     def set_new_project(self):
@@ -90,6 +94,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.fragments_list:
             self.fragmentsWidgetLayout.removeWidget(self.fragments_list)
+        self.accs = None
+        self.stats = None
+
         self.fragments_list = FragmentsList(self)
         self.fragmentsWidgetLayout.addWidget(self.fragments_list)
         self.fragments_list.update()
@@ -117,10 +124,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def _continue_algorithm(self):
         """Продолжить выполнение алгоритма"""
         # TODO Сюда впихнуть промежуточные настройки
-        self.thread = self.processor.ProcessThread(self.processor)
+        analyze = self.settings['processor_analyze']
+        self.thread = self.processor.ProcessThread(self.processor, analyze)
         self.loading = LoadingWrapper(self.thread)
+        if analyze:
+            thread = self.thread
+            self.loading.loadingDone.connect(
+                lambda: self._set_results(thread.accs, thread.stats))
         self.loading.loadingDone.connect(self.upload_db)
         self.loading.start()
+
+    def _set_results(self, accs=None, stats=None):
+        if accs is not None:
+            self.accs = accs
+        if stats is not None:
+            self.stats = stats
+        desc = Describer(None, self.processor)
+        results_html = desc.describe_results(self.accs, self.stats,
+                                             all_algs=True)
+        self.textBrowser.setHtml(results_html)
 
     def upload_db(self):
         self.thread = self.processor.analyzer.UploadDBThread(
@@ -130,8 +152,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loading.loadingDone.connect(self.fragments_list.update)
         self.loading.start()
 
+    def update_stats(self):
+        thread = self.processor.DescribeThread(self.processor)
+        thread.stats_ready.connect(
+            lambda stats: self._set_results(None, stats))
+        thread.run()
+
     def auto_update_results(self):
         [item.setEnabled(True) for item in self.en_algorithm_results]
+        if self.stats is None:
+            self.update_stats()
+        else:
+            self._set_results()
         if SupremeSettings()['result_auto_update']:
             [tab.update_results() for tab in self.tabs]
 
@@ -140,6 +172,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         [tab.update_results() for tab in self.tabs]
 
     def clear_results(self):
+        self.accs = None
+        self.stats = None
         self.thread = self.processor.ClearResultsThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
         # В ClearResultsTread уже есть сохранение
