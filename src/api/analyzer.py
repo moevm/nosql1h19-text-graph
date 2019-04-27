@@ -11,21 +11,25 @@ class FragmentsAnalyzer:
     Дает интерфейс контейнера для фрагментов.
     """
     class UploadDBThread(LoadingThread):
-        def __init__(self, analyzer, parent=None):
+        def __init__(self, analyzer, download_first=False, parent=None):
             super().__init__(parent)
-            self.anayler = analyzer
+            self.analyzer = analyzer
             self.operation = 'Загрузка данных в БД'
-            self.setInterval(len(analyzer))
+            self.set_interval(len(analyzer))
+            self.download_first = download_first
 
         def run(self):
             log.info('Uploading data')
-            self.updateStatus.emit('Нумерация вершин')
-            for i, node in enumerate(self.anayler):
-                self.checkPercent(i)
+            self.updateStatus.emit('Загрузка')
+            if self.download_first:
+                self.analyzer.download_db()
+            self.updateStatus.emit('Нумерация')
+            for i, node in enumerate(self.analyzer):
+                self.check_percent(i)
                 node.order_id = i
             self.updateStatus.emit('Сохранение')
-            for i, node in enumerate(self.anayler):
-                self.checkPercent(i)
+            for i, node in enumerate(self.analyzer):
+                self.check_percent(i)
                 node.save()
             self.loadingDone.emit()
 

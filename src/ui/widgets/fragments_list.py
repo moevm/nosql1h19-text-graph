@@ -16,7 +16,7 @@ class FragmentsList(QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setSortingEnabled(True)
-        self.itemActivated.connect(self.onItemChanged)
+        self.itemActivated.connect(self.on_item_changed)
 
     def update(self):
         self.clear()
@@ -28,5 +28,5 @@ class FragmentsList(QListWidget):
         self.sortItems(Qt.AscendingOrder)
         super().update()
 
-    def onItemChanged(self, item):
+    def on_item_changed(self, item):
         self.fragmentItemActivated.emit(item.node)

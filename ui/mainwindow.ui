@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>809</width>
-    <height>590</height>
+    <height>742</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,17 +24,17 @@
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1">
     <item>
      <widget class="QTabWidget" name="mainTab">
       <property name="enabled">
        <bool>true</bool>
       </property>
-      <property name="currentIndex">
-       <number>1</number>
+      <property name="tabShape">
+       <enum>QTabWidget::Rounded</enum>
       </property>
-      <property name="tabsClosable">
-       <bool>false</bool>
+      <property name="currentIndex">
+       <number>0</number>
       </property>
       <property name="tabBarAutoHide">
        <bool>false</bool>
@@ -43,9 +43,9 @@
        <attribute name="title">
         <string>Общее</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QGroupBox" name="statsGroupBox">
             <property name="title">
@@ -182,304 +182,65 @@
            </widget>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="controlsLayout">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <item>
-               <widget class="QPushButton" name="startProcessButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Начать обработку</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="stopProcessButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Остановить обработку</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>Список фрагментов</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="fragmentsWidgetLayout"/>
-              </item>
-              <item>
-               <widget class="QPushButton" name="changeFragmentsButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Изменить список фрагментов</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="dictIntersectTab">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <attribute name="title">
-        <string>Пересечение словарей</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_11" stretch="2,3">
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
-            <item>
-             <widget class="QLabel" name="label_9">
-              <property name="text">
-               <string>Топ-100 слов</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="comboBox">
-              <item>
-               <property name="text">
-                <string>Весь текст</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QListWidget" name="listWidget_2"/>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
+         <layout class="QVBoxLayout" name="controlsLayout">
           <item>
-           <widget class="QLabel" name="label_10">
-            <property name="text">
-             <string>Матрица совпадений фрагментов</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="dictIntersectMatrixLayout"/>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="dictHideEmptyCheckBox">
-            <property name="text">
-             <string>Скрыть пустые</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item>
-             <widget class="QLabel" name="label_11">
-              <property name="text">
-               <string>Порог связи</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="dictThresholdSlider">
+             <widget class="QPushButton" name="startProcessButton">
               <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Указывает минимальное значение, при котором фрагменты считаются связанными&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <property name="text">
+               <string>Начать обработку</string>
               </property>
-              <property name="value">
-               <number>45</number>
-              </property>
-              <property name="tracking">
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="stopProcessButton">
+              <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="tickPosition">
-               <enum>QSlider::NoTicks</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="tresholdLabel">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-               </font>
-              </property>
               <property name="text">
-               <string>45</string>
-              </property>
-              <property name="textFormat">
-               <enum>Qt::PlainText</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_12">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>%</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="showDictIntersectGraphButton">
-              <property name="text">
-               <string>Показать граф</string>
+               <string>Остановить обработку</string>
               </property>
              </widget>
             </item>
            </layout>
           </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="namesIntersectTab">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <attribute name="title">
-        <string>Пересечения имён собственных</string>
-       </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="2,3">
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QLabel" name="label_13">
+             <widget class="QLabel" name="label_8">
               <property name="text">
-               <string>Топ-20 имён</string>
+               <string>Список фрагментов</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox_2">
-              <item>
-               <property name="text">
-                <string>Весь текст</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Фрагмент 1</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Фрагмент 2</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Фрагмент 3</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QListWidget" name="listWidget_3"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_8">
-          <item>
-           <widget class="QLabel" name="label_14">
-            <property name="text">
-             <string>Матрица совпадений фрагментов</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="anmesIntersectMatrixLayout"/>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_13">
-            <item>
-             <widget class="QLabel" name="label_15">
-              <property name="text">
-               <string>Порог связи</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="fragmentsWidgetLayout"/>
             </item>
             <item>
-             <widget class="QSlider" name="thresholdSlider_2">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Указывает минимальное значение, при котором фрагменты считаются связанными&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="value">
-               <number>45</number>
-              </property>
-              <property name="tracking">
+             <widget class="QPushButton" name="changeFragmentsButton">
+              <property name="enabled">
                <bool>false</bool>
               </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="tresholdLabel_2">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-               </font>
-              </property>
               <property name="text">
-               <string>45</string>
-              </property>
-              <property name="textFormat">
-               <enum>Qt::PlainText</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_16">
-              <property name="font">
-               <font>
-                <pointsize>14</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>%</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="showNamesIntersectGraph">
-              <property name="text">
-               <string>Показать граф</string>
+               <string>Изменить список фрагментов</string>
               </property>
              </widget>
             </item>
@@ -519,6 +280,7 @@
    <addaction name="separator"/>
    <addaction name="actionStartProcess"/>
    <addaction name="actionStopProcess"/>
+   <addaction name="actionUpdateResults"/>
    <addaction name="separator"/>
    <addaction name="actionOpenParams"/>
   </widget>
@@ -559,6 +321,7 @@
     </property>
     <addaction name="actionStartProcess"/>
     <addaction name="actionStopProcess"/>
+    <addaction name="actionUpdateResults"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -671,7 +434,7 @@
   </action>
   <action name="actionOpenParams">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
@@ -691,6 +454,15 @@
    </property>
    <property name="text">
     <string>Закрыть проект</string>
+   </property>
+  </action>
+  <action name="actionUpdateResults">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/update.png</normaloff>:/icons/update.png</iconset>
+   </property>
+   <property name="text">
+    <string>Обновить результаты</string>
    </property>
   </action>
  </widget>
@@ -715,30 +487,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>dictThresholdSlider</sender>
-   <signal>sliderMoved(int)</signal>
-   <receiver>tresholdLabel</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>413</x>
-     <y>347</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>644</x>
-     <y>341</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>startProcessButton</sender>
    <signal>clicked()</signal>
    <receiver>actionStartProcess</receiver>
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>594</x>
-     <y>169</y>
+     <x>79</x>
+     <y>110</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -753,8 +509,8 @@
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>785</x>
-     <y>169</y>
+     <x>98</x>
+     <y>110</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -769,8 +525,8 @@
    <slot>trigger()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>785</x>
-     <y>306</y>
+     <x>98</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>

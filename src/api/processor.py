@@ -18,14 +18,14 @@ class TextProcessor:
             super().__init__(parent)
             self.proc = proc
             self.operation = 'Выполнение предобработки'
-            self.setInterval(len(proc.analyzer))
+            self.set_interval(len(proc.analyzer))
 
         def run(self):
             for index, algorithm in enumerate(self.proc.algorithms):
                 self.updateStatus.emit(f'Обработка алгоритма {algorithm.name}')
                 log.info(f'Preprocessing for {algorithm}')
                 for index, node in enumerate(self.proc.analyzer):
-                    self.checkPercent(index)
+                    self.check_percent(index)
                     if not node.alg_results:
                         node.alg_results = algorithm.preprocess(node.text)
                     else:
@@ -40,7 +40,7 @@ class TextProcessor:
             super().__init__(parent)
             self.proc = proc
             self.operation = 'Выполнение алгоритмов'
-            self.setInterval(len(proc.analyzer))
+            self.set_interval(len(proc.analyzer))
 
         def run(self):
             log.info('Started processing')
@@ -59,7 +59,7 @@ class TextProcessor:
                                     "data": result["data"]
                                 }
                             )
-                self.checkPercent(i)
+                self.check_percent(i)
             self.loadingDone.emit()
 
     class ClearResultsThread(LoadingThread):
@@ -67,12 +67,12 @@ class TextProcessor:
             super().__init__(parent)
             self.operation = 'Очистка результатов'
             self.proc = proc
-            self.setInterval(len(self.proc.analyzer))
+            self.set_interval(len(self.proc.analyzer))
 
         def run(self):
             for index, node in enumerate(self.proc.analyzer):
                 node.link.disconnect_all()
-                self.checkPercent(index)
+                self.check_percent(index)
             self.loadingDone.emit()
 
     def __init__(self, algorithm_classes=None):
@@ -91,6 +91,13 @@ class TextProcessor:
         self.algorithms = []
         for algorithm_class in self.algorithm_classes:
             self.algorithms.append(algorithm_class())
+
+    def alg_by_name(self, name):
+        for algorithm in self.algorithms:
+            if algorithm.name == name:
+                return algorithm
+
+        raise KeyError(f'No algorithm {name}')
 
     def parse_file(self, filename: str, regex: Pattern):
         """Считать файл и вытащить из него все фрагменты
@@ -112,43 +119,68 @@ class TextProcessor:
         thread.run()
         thread.wait()
 
-    def get_matrix(self, algorithm_name: str, exclude_zeros=False):
+    def get_node_id_list(self, algorithm_name: str, exclude_zeros=False, min_val=0):
+        if len(self.analyzer) == 0:
+            return None, None
+        query = f"""
+            MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
+            WHERE r.algorithm_name = '{algorithm_name}'
+                AND r.intersection >= {min_val}
+            RETURN n.order_id, n2.order_id, r, n.alg_results
+        """
+        res, meta = db.cypher_query(query)
+        # head - список номеров вершин для матрицы
+        if exclude_zeros:  # Убрать нули
+            head = list(set(id1 for id1, id2, r, res_a in res))
+            head.sort()
+        else:
+            head = [node.order_id for node in self.analyzer]
+
+        if len(head) == 0:
+            return None, None
+        return head, res
+
+    def get_matrix(self, algorithm_name: str, exclude_zeros=False, min_val=0):
         """Получить матрицу, пригодную для обработки в MatrixWidget
 
         :param algorithm_name: имя алгоритма
         :type algorithm_name: str
         """
-        if (len(self.analyzer)) == 0:
+        head, res = self.get_node_id_list(algorithm_name, exclude_zeros, min_val)
+        if not head:
             return [], []
-
-        query = f"""
-            MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
-            WHERE r.algorithm_name = '{algorithm_name}'
-            RETURN n.order_id, n2.order_id, r
-        """
-        res, meta = db.cypher_query(query)
-        # head - список вершин для матрицы
-        if exclude_zeros:  # Убрать нули
-            head = list(set([id1 for id1, id2, r in res]) \
-                    .intersection([id2 for id1, id2, r in res]))
-            head.sort()
-        else:
-            head = [node.order_id for node in self.analyzer]
-
         # Оптимизация для O(n)
         head_rev = list(range(max(head) + 1))
         for i, id_ in enumerate(head):
             head_rev[id_] = i
 
+        # Сама матрица
         matrix = [[(0, None) for _ in range(len(head))]
                   for _ in range(len(head))]
-        for id1, id2, r in res:
-            matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], dict(r)
+        if res:
+            for id1, id2, r, result in res:
+                if r['intersection'] > min_val or not exclude_zeros:
+                    matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], \
+                            (id1, id2, r)
 
         for i in range(len(matrix)):
             matrix[i][i] = (1, None)
 
         return matrix, head
+
+    def get_node_list(self, head):
+        """Получение """
+        # query = f"""
+        #     MATCH (n:TextNode)
+        #     WHERE n.order_id in {str(head)}
+        #     return n.alg_results
+        #     ORDER BY n.order_id
+        # """
+        # res, meta = db.cypher_query(query)
+        # return [json.loads(res_[0]) for res_ in res if res_[0]]
+        if not head:
+            return []
+        return [self.analyzer[i] for i in head]
 
     def clear_db(self):
         """Очистить  БД"""

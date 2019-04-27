@@ -6,3 +6,4 @@ nltk
 pymystem3
 numpy
 natasha
+fa2

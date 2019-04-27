@@ -35,7 +35,7 @@ class AbstractAlgorithm(ABC):
         pass
 
     @abstractmethod
-    def describe_result(self) -> str:
+    def describe_result(self) -> str:  # TODO А это возможно вообще?
         """Возращает общие результаты работы алгоритма в виде HTML-строки
 
         :rtype: str

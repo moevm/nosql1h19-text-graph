@@ -1,0 +1,5 @@
+ipdb
+pudb
+snakeviz
+coverage
+PyQt5-stubs

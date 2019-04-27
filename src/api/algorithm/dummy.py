@@ -19,3 +19,12 @@ class DummyAlgorithm(AbstractAlgorithm):
     @property
     def name(self):
         return "DUMMY"
+
+    def describe_result(self):
+        return "Dummy describe results"
+
+    def describe_comparison(self, comp_dict):
+        return "Dummy describe_comparison"
+
+    def describe_preprocess(self, prep_dict):
+        return "Dummy describe preprocess"
