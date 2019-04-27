@@ -75,7 +75,7 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
         return result
 
     def compare_results(self, top1: Dict, top2: Dict, select_words=5):
-        # TODO То же сравнение, что и в dictionary
+        # TODO Compare_results_proper
         return 0, []
 
     def preprocess(self, text: str) -> Dict:
@@ -88,18 +88,11 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
         return {'top_proper_names': sorted_result}
 
     def compare(self, res1: Dict, res2: Dict, *args, **kwargs):
-        intersection, top_proper_names = self.compare_results(
-            res1["top_proper_names"], res2["top_proper_names"],
-            *args, **kwargs
-        )
-        return {
-            "intersection": intersection,
-            "data": {
-                "top_proper_names": top_proper_names
-            }
-        }
+        # TODO Compare_results_proper
+        pass
 
     def describe_result(self) -> str:
+        # TODO Describe_result_proper
         pass
 
     def describe_comparison(self, comp_dict) -> str:
@@ -111,7 +104,7 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
     def extract_html(self, data):
         result = ""
         for item in data:
-            result += "<p>" + item[1] + " - " + item[0] + "</p>"
+            result += "<p>" + str(item[1]) + " - " + str(item[0]) + "</p>"
         result += "</div>"
         return result
 
