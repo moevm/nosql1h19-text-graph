@@ -5,7 +5,6 @@ from api.database import DataBaseConnection
 from tests.config import Config as TestConfig
 from PyQt5.QtWidgets import QApplication
 import sys
-import json
 
 
 class TestTextProcessor(unittest.TestCase):
@@ -28,8 +27,10 @@ class TestTextProcessor(unittest.TestCase):
         processor.upload_db()
         self.assertGreater(len(processor.analyzer), 1)
         processor.do_preprocess()
-        processor.do_process()
+        res, stats = processor.do_process(analyze=True)
         processor.upload_db()
+        self.assertIsNotNone(res)
+        self.assertIsNotNone(stats)
 
     def test_get_matrix(self):
         processor = TextProcessor([DictionaryAlgorithm, DummyAlgorithm])
@@ -39,6 +40,7 @@ class TestTextProcessor(unittest.TestCase):
         processor.do_preprocess()
         processor.do_process()
         processor.upload_db()
+
         matrix, head = processor.get_matrix('Dictionary')
         self.assertIsNotNone(matrix)
         self.assertGreater(len(matrix), 0)
@@ -46,5 +48,8 @@ class TestTextProcessor(unittest.TestCase):
         self.assertLessEqual(len(head2), len(head))
         self.assertLessEqual(len(matrix2), len(matrix))
         self.assertGreater(len(matrix2), 0)
+
         results = processor.get_node_list(head)
         self.assertGreater(len(results), 0)
+        results_id = processor.get_node_id_list('Dictionary')
+        self.assertGreater(len(results_id), 0)

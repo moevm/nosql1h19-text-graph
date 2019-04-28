@@ -174,14 +174,22 @@ class GraphModule:
             SupremeSettings()['graphmodule_timer_interval'])
         self.gravity_timer.timeout.connect(self._process_gravity)
 
+    def stop_gravity(self):
+        if self.gravity_timer:
+            self.gravity_timer.stop()
+            self.gravity_timer.deleteLater()
+            self.gravity_timer = None
+
     def do_gravity_ticks(self, ticks):
         """Выполнить нужное количество тиков расчёта гравитации.
         Можно использовать для первоначальной стабилизации сцены.
 
         :param ticks: Количество тиков
         """
+        self.stop_gravity()
         for _ in range(ticks):
             self._process_gravity()
+        self.start_gravity()
 
     def _process_gravity(self, ticks=1):
         """ Один тик обработки взаимодействия вершин """

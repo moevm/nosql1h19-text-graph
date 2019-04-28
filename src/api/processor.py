@@ -1,9 +1,12 @@
+from PyQt5.QtCore import pyqtSignal
 from typing import List, Pattern
 from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
 from api import FragmentsAnalyzer
 from logger import log
 from loading_wrapper import LoadingThread
 from neomodel import db
+from supremeSettings import SupremeSettings
+from models import TextNode
 
 
 class TextProcessor:
@@ -14,6 +17,8 @@ class TextProcessor:
     # TODO Подумать над объединенем TextProcessor и TextAnalyzer
 
     class PreprocessThread(LoadingThread):
+        """Выполняет предобработку фрагментов"""
+
         def __init__(self, proc, parent=None):
             super().__init__(parent)
             self.proc = proc
@@ -36,22 +41,37 @@ class TextProcessor:
             self.loadingDone.emit()
 
     class ProcessThread(LoadingThread):
-        def __init__(self, proc, parent=None):
+        """Выполняет обработку фрагментов и производит общий анализ"""
+
+        def __init__(self, proc, analyze=False, parent=None):
             super().__init__(parent)
             self.proc = proc
             self.operation = 'Выполнение алгоритмов'
             self.set_interval(len(proc.analyzer))
+            self.analyze = analyze
+            self.accs = None
+            self.stats = None
 
         def run(self):
+            min_intersection = SupremeSettings()['processor_min_intersection']
             log.info('Started processing')
+            if self.analyze:
+                accs = [None for _ in range(len(self.proc.algorithms))]
+                self.accs = accs
+
             for i in range(len(self.proc.analyzer)):
-                for j in range(i + 1, len(self.proc.analyzer)):
-                    node1 = self.proc.analyzer[i]
-                    node2 = self.proc.analyzer[j]
-                    for algorithm in self.proc.algorithms:
+                node1 = self.proc.analyzer[i]
+                self.stats = self.proc._get_stats(node1, self.stats)
+                for index, algorithm in enumerate(self.proc.algorithms):
+                    if self.analyze:
+                        accs[index] = algorithm.analyze(node1.alg_results,
+                                                        accs[index])
+
+                    for j in range(i + 1, len(self.proc.analyzer)):
+                        node2 = self.proc.analyzer[j]
                         result = algorithm.compare(node1.alg_results,
                                                    node2.alg_results)
-                        if result["intersection"] > 0:
+                        if result["intersection"] > min_intersection:
                             node1.link.connect(
                                 node2, {
                                     "algorithm_name": algorithm.name,
@@ -59,7 +79,28 @@ class TextProcessor:
                                     "data": result["data"]
                                 }
                             )
+                            if self.analyze:
+                                accs[index] = algorithm.analyze_comparison(
+                                    node1.alg_results, node2.alg_results,
+                                    result, accs[index])
                 self.check_percent(i)
+            self.loadingDone.emit()
+
+    class DescribeThread(LoadingThread):
+        stats_ready = pyqtSignal(object)
+
+        def __init__(self, processor, parent=None):
+            super().__init__(parent)
+            self.operation = 'Общий анализ'
+            self.proc = processor
+            self.set_interval(len(processor.analyzer))
+
+        def run(self):
+            acc = None
+            for index, node in enumerate(self.proc.analyzer):
+                acc = self.proc._get_stats(node, acc)
+                self.check_percent(index)
+            self.stats_ready.emit(acc)
             self.loadingDone.emit()
 
     class ClearResultsThread(LoadingThread):
@@ -112,16 +153,37 @@ class TextProcessor:
         self.upload_db()
 
     def do_preprocess(self):
+        """Выполнить предобработку.
+        Для более интерактивной обработки использовать LoadingWrapper с
+        PreprocessThread
+        """
         thread = self.PreprocessThread(self)
         thread.run()
         thread.wait()
 
-    def do_process(self):
-        thread = self.ProcessThread(self)
+    def _get_stats(self, node: TextNode, acc=None):
+        if acc is None:
+            acc = {
+                'frags': 0,
+                'symbols': 0,
+                'words': 0,
+                'sentences': 0,
+            }
+        acc['frags'] += 1
+        acc['symbols'] += node.character_num()
+        acc['words'] += node.words_num()
+        acc['sentences'] += node.sentences_num()
+        return acc
+
+    def do_process(self, analyze=False):
+        thread = self.ProcessThread(self, analyze)
         thread.run()
         thread.wait()
+        if analyze:
+            return thread.accs, thread.stats
 
-    def get_node_id_list(self, algorithm_name: str, exclude_zeros=False, min_val=0):
+    def get_node_id_list(self, algorithm_name: str, exclude_zeros=False,
+                         min_val=0):
         if len(self.analyzer) == 0:
             return None, None
         query = f"""
@@ -148,7 +210,8 @@ class TextProcessor:
         :param algorithm_name: имя алгоритма
         :type algorithm_name: str
         """
-        head, res = self.get_node_id_list(algorithm_name, exclude_zeros, min_val)
+        head, res = self.get_node_id_list(algorithm_name, exclude_zeros,
+                                          min_val)
         if not head:
             return [], []
         # Оптимизация для O(n)

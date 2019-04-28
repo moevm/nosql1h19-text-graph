@@ -34,17 +34,61 @@ class AbstractAlgorithm(ABC):
     def name(self) -> str:
         pass
 
-    @abstractmethod
-    def describe_result(self) -> str:  # TODO А это возможно вообще?
-        """Возращает общие результаты работы алгоритма в виде HTML-строки
+    def analyze(self, res: Dict, acc=None):
+        """Получить общие результаты. Этот метод должен применится к каждому
+        фрагменту. После чего полученный объект-аккумулятор передается в
+        AbstractAlgorithm.describe_result для получения общих результатов
+        работы
 
+        В отличие от остальных методов, имеет стандартную реализацию, но
+        имеет смысл его переопределить/расширить в наследниках,
+        чтобы получить более конкретные результаты.
+
+        :param res: результат AbstractAlgorithm.preprocess
+        :type res: Dict
+        :param acc: аккумулятор. Хранит данные об обработке всех предыдущих
+        :return: Аккумулятор
+        """
+        if acc is None:
+            acc = {
+                'fragments': 0,
+                'edges': 0
+            }
+        acc['fragments'] += 1
+        return acc
+
+    def analyze_comparison(self, res1: Dict, res2: Dict,
+                           comp_res: Dict, acc):
+        """Проанализировать результаты сравнения фрагментов.
+        Этот метод должен применится к каждой связи.
+
+        :param res1: Результат AbstractAlgorithm.preprocess
+        :type res1: Dict
+        :param res2: Результат AbstractAlgorithm.preprocess
+        :type res2: Dict
+        :param comp_res: Результат AbstractAlgorithm.compare(res1, res2)
+        :type comp_res: Dict
+        :param acc: тот же аккумулятор, что и в AbstractAlgorithm.analyze
+        """
+        acc['edges'] += 1
+        return acc
+
+    def describe_result(self, acc) -> str:
+        """Описывает общие результаты работы алгоритма в формате HTML-строки
+
+        :param acc: Результат применение AbstractAlgorithm.analyze ко всем
+        фрагментам
         :rtype: str
         """
-        pass
+        return f"""
+            <h3>Алгоритм {self.name}</h3>
+            Проанализировано фрагментов: {acc['fragments']} <br>
+            Найдено связей: {acc['edges']}
+        """
 
     @abstractmethod
     def describe_comparison(self, comp_dict) -> str:
-        """Описавает результаты сравнения фрагментов
+        """Описывает результаты сравнения фрагментов
 
         :param comp_dict: Словарь из AbstractAlgorithm.compare
         :rtype: str

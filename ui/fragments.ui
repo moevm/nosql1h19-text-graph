@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>Список фрагментов</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QLabel[objectName*=&quot;Number&quot;]{
 	font-size: 12pt;
@@ -322,7 +326,9 @@ p, li { white-space: pre-wrap; }
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/pictures.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>entersRadioButton</sender>

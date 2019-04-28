@@ -10,11 +10,15 @@
     <x>0</x>
     <y>0</y>
     <width>828</width>
-    <height>577</height>
+    <height>569</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Ошибка</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -121,7 +125,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/pictures.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>okButton</sender>

@@ -14,6 +14,9 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
         super().__init__(parent)
         self.setupUi(self)
         self.graph = GraphModule(self)
+
+        self.actionCalibrate.triggered.connect(self.on_calibrate)
+
         self.graphWidgetLayout.addWidget(self.graph.widget)
         self.processor = processor
         self.setupAlgorithms(algorithm)
@@ -25,7 +28,6 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             self.updateGraph)
         self.thresholdSlider.valueChanged.connect(
             self.updateGraph)
-        #  self.graph.do_gravity_ticks(1000)
         self.graph.start_gravity()
 
     def setupAlgorithms(self, algorithm=None):
@@ -36,6 +38,9 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             self.algorithm = algorithm
         else:
             self.onChangeAlgorithms(alg_list[0])
+
+    def on_calibrate(self):
+        self.graph.do_gravity_ticks(1000)
 
     def onChangeAlgorithms(self, name: str):
         self.algorithm = self.processor.alg_by_name(name)
