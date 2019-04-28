@@ -65,7 +65,7 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             info = self.describer.describe_node(node)
             x, y, color = self.getNodeParams(node)
             self.graph.add_node(node.order_id, x, y, color=color,
-                                label=str(node.order_id), info=info)
+                                label=str(node.label), info=info)
         if res:
             for id1, id2, rel, res_a in res:
                 if min_val < 1:

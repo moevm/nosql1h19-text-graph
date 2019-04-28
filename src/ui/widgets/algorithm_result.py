@@ -56,6 +56,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         matrixModel, head = self.processor.get_matrix(
             self.algorithm.name, self.hide_empty, min_val)
         head_items = self.processor.get_node_list(head)
+        head_names = self.processor.get_node_label_list(head)
         if self.result_matrix:
             self.resultMatrixLayout.removeWidget(self.result_matrix)
             self.result_matrix.deleteLater()
@@ -65,7 +66,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
                     self.resultMatrixLayout.itemAt(i))
             self.loadLabel.deleteLater()
 
-        self.result_matrix = MatrixWidget(matrixModel, head, head_items,
+        self.result_matrix = MatrixWidget(matrixModel, head_names, head_items,
                                           min_val, self)
         self.result_matrix.item_clicked.connect(self.on_item_clicked)
         self.result_matrix.relation_clicked.connect(self.on_relation_clicked)

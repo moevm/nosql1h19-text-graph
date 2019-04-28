@@ -142,15 +142,19 @@ class TextProcessor:
 
         raise KeyError(f'No algorithm {name}')
 
-    def parse_file(self, filename: str, regex: Pattern):
+    def parse_file(self, filename: str, regex: Pattern, get_name=None,
+                   upload=True):
         """Считать файл и вытащить из него все фрагменты
 
         :param filename:
+        :param get_name: Функция, получающая имя фрагмента по его номеру
+        в текущем файле
         :type filename: str
         """
         self.analyzer.set_separator(regex)
-        self.analyzer.read_file(filename)
-        self.upload_db()
+        self.analyzer.read_file(filename, get_name)
+        if upload:
+            self.upload_db()
 
     def do_preprocess(self):
         """Выполнить предобработку.
@@ -246,6 +250,11 @@ class TextProcessor:
         if not head:
             return []
         return [self.analyzer[i] for i in head]
+
+    def get_node_label_list(self, head):
+        if not head:
+            return []
+        return [self.analyzer[i].label for i in head]
 
     def clear_db(self):
         """Очистить  БД"""

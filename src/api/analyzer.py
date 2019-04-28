@@ -51,19 +51,22 @@ class FragmentsAnalyzer:
         self.separator = None
         self._fragments: List[str] = []
 
-    def read_file(self, filename: str):
+    def read_file(self, filename: str, get_label=None):
         """Считать фрагменты из файла
 
         :param filename: Имя файла
         :type filename: str
+        :param get_label: Функция, по номеру фрагмента в файле
+        возвращающая название
         :exception SeparatorNotSetException: Если регулярное выражение для
         разделения не установлено
         """
+
         with open(filename, 'r') as file:
             content = file.read()
-            self._parse_fragments(content)
+            self._parse_fragments(content, get_label)
 
-    def _parse_fragments(self, text: str):
+    def _parse_fragments(self, text: str, get_label=None):
         """Разобрать текст на фрагменты по установленному регулярному
         выражению
 
@@ -71,11 +74,14 @@ class FragmentsAnalyzer:
         :type text: str
         """
         if not self.separator:
-            self.append(text)
+            self.append(text, get_label(0))
         else:
-            for candidate in re.split(self.separator, text):
+            for i, candidate in enumerate(re.split(self.separator, text)):
                 if len(candidate) > 0:
-                    self.append(candidate)
+                    label = None
+                    if get_label:
+                        label = get_label(i)
+                    self.append(candidate, label)
 
     def set_separator(self, separator: Pattern):
         """Установить регулярное выражение, по которому следующий файл
@@ -92,7 +98,7 @@ class FragmentsAnalyzer:
         thread.run()
         thread.wait()
 
-    def append(self, value: str):
+    def append(self, value: str, label=None):
         """Добавить фрагмент
 
         :param value: фрагмент
@@ -100,6 +106,10 @@ class FragmentsAnalyzer:
         node = TextNode(text=value)
         self._fragments.append(node)
         node.order_id = len(self._fragments)-1
+        if label is None:
+            node.label = str(node.order_id)
+        else:
+            node.label = label
 
     def upload_db(self):
         """Загрузить фрагменты в БД"""
