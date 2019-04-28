@@ -41,7 +41,7 @@ class FragmentsAnalyzer:
             self.set_interval(len(analyzer))
 
         def run(self):
-            for i, node in enumerate(self.analyzer):
+            for i, node in enumerate(TextNode.nodes.all()):
                 self.check_percent(i)
                 node.delete()
             self.analyzer._fragments.clear()

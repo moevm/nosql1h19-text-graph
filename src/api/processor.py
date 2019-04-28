@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal
 from typing import List, Pattern
-from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
+from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm, DiffAlgorithm
 from api import FragmentsAnalyzer
 from logger import log
 from loading_wrapper import LoadingThread
@@ -121,7 +121,7 @@ class TextProcessor:
     def __init__(self, algorithm_classes=None):
         super().__init__()
         if not algorithm_classes:
-            self.algorithm_classes = [DictionaryAlgorithm]
+            self.algorithm_classes = [DictionaryAlgorithm, DiffAlgorithm]
         else:
             self.algorithm_classes = algorithm_classes
         self.algorithms: List[AbstractAlgorithm] = []

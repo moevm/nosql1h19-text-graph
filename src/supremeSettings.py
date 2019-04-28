@@ -9,6 +9,7 @@ class SupremeSettings:
         'graphmodule_gravity_enabled': True,
         'dictionary_words_num': 100,
         'dictionary_min_words': 1,
+        'diff_lines': True,
         'vertex_weight': 250,  # TODO
         'result_auto_update': False,
         'dictionary_exclude_list': [],
@@ -32,6 +33,9 @@ class SupremeSettings:
             'dictionary_words_num': 'Сколько слов запоминать',
             'dictionary_min_words': 'Минимальная частота',
             'dictionary_exclude_list': 'Исключить слова'
+        },
+        'Алгоритм сравнения строк': {
+            'diff_lines': 'Построчное сравнение (быстрее)'
         },
         'Основное окно': {
             'result_auto_update': 'Автоматически обновлять результаты'
