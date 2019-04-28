@@ -33,6 +33,20 @@ class FragmentsAnalyzer:
                 node.save()
             self.loadingDone.emit()
 
+    class ClearDBThread(LoadingThread):
+        def __init__(self, analyzer, parent=None):
+            super().__init__(parent)
+            self.analyzer = analyzer
+            self.operation = 'Очистка БД'
+            self.set_interval(len(analyzer))
+
+        def run(self):
+            for i, node in enumerate(self.analyzer):
+                self.check_percent(i)
+                node.delete()
+            self.analyzer._fragments.clear()
+            self.loadingDone.emit()
+
     def __init__(self):
         self.separator = None
         self._fragments: List[str] = []
@@ -74,8 +88,9 @@ class FragmentsAnalyzer:
 
     def clear(self):
         """Очистить список фрагментов и БД"""
-        [node.delete() for node in TextNode.nodes.all()]
-        self._fragments.clear()
+        thread = self.ClearDBThread(self)
+        thread.run()
+        thread.wait()
 
     def append(self, value: str):
         """Добавить фрагмент

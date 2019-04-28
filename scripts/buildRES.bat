@@ -1,4 +1,6 @@
-cd ..
+IF NOT EXIST src (
+    cd ..
+)
 call venv\Scripts\activate
 IF EXIST src\res_compiled (
     rm -rf src\res_compiled\*

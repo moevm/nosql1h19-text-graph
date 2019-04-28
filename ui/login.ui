@@ -28,6 +28,10 @@
   <property name="windowTitle">
    <string>Логин</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
+  </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
   </property>

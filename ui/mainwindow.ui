@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Text Graph</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QLabel[objectName*=&quot;Number&quot;]{
 	font-size: 12pt;
@@ -76,16 +80,6 @@ p, li { white-space: pre-wrap; }
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QPushButton" name="stopProcessButton">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Остановить обработку</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item>
@@ -143,9 +137,10 @@ p, li { white-space: pre-wrap; }
    <addaction name="separator"/>
    <addaction name="actionChangeFragments"/>
    <addaction name="actionClear"/>
+   <addaction name="actionClearDB"/>
    <addaction name="separator"/>
-   <addaction name="actionUpdateResults"/>
    <addaction name="actionStartProcess"/>
+   <addaction name="actionUpdateResults"/>
    <addaction name="separator"/>
    <addaction name="actionOpenParams"/>
   </widget>
@@ -179,6 +174,7 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionChangeFragments"/>
     <addaction name="actionClear"/>
+    <addaction name="actionClearDB"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
@@ -269,7 +265,10 @@ p, li { white-space: pre-wrap; }
      <normaloff>:/icons/trash.png</normaloff>:/icons/trash.png</iconset>
    </property>
    <property name="text">
-    <string>Очистить</string>
+    <string>Очистить результаты</string>
+   </property>
+   <property name="toolTip">
+    <string>Очистить результаты</string>
    </property>
   </action>
   <action name="actionStartProcess">
@@ -315,6 +314,15 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>Обновить результаты</string>
+   </property>
+  </action>
+  <action name="actionClearDB">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/boom.png</normaloff>:/icons/boom.png</iconset>
+   </property>
+   <property name="text">
+    <string>Очистить БД</string>
    </property>
   </action>
  </widget>

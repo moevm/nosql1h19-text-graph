@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Настройка синонимов</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
@@ -188,7 +192,9 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/pictures.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>resetSelectionButton</sender>

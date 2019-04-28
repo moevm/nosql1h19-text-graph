@@ -16,5 +16,7 @@
         <file alias="exit.png">pictures/icons/exit.png</file>
         <file alias="update.png">pictures/icons/update.png</file>
         <file alias="gravity.png">pictures/icons/gravity.png</file>
+        <file alias="boom.png">pictures/icons/boom.png</file>
+        <file alias="logo_small.png">pictures/logo_small.png</file>
     </qresource>
 </RCC>

@@ -21,6 +21,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionStartProcess.triggered.connect(self.start_algorithm)
         self.actionUpdateResults.triggered.connect(self.update_results)
         self.actionOpenParams.triggered.connect(self.open_settings)
+        self.actionClearDB.triggered.connect(self.clear_db)
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
@@ -94,6 +95,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.fragments_list:
             self.fragmentsWidgetLayout.removeWidget(self.fragments_list)
+            self.fragments_list.deleteLater()
         self.accs = None
         self.stats = None
 
@@ -178,4 +180,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loading = LoadingWrapper(self.thread)
         # В ClearResultsTread уже есть сохранение
         # self.loading.loadingDone.connect(self.upload_db)
+        self.loading.start()
+
+    def clear_db(self):
+        self.thread = self.processor.analyzer.ClearDBThread(
+            self.processor.analyzer)
+        self.loading = LoadingWrapper(self.thread)
+        self.loading.loadingDone.connect(self.remove_project)
         self.loading.start()

@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>Параметры анализа</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
+  </property>
   <property name="modal">
    <bool>true</bool>
   </property>
@@ -66,7 +70,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/pictures.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>cancelButton</sender>
