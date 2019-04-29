@@ -16,14 +16,14 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
         self.setupUi(self)
         self.graph = GraphModule(self)
 
-        self.actionCalibrate.triggered.connect(self.on_calibrate)
-
         self.graphWidgetLayout.addWidget(self.graph.widget)
         self.processor = processor
         self.setupAlgorithms(algorithm)
 
         self.describer = Describer(self.algorithm, processor)
         self.populateGraph()
+
+        self.actionSaveGraph.triggered.connect(self.saveGraph)
 
         self.excludeZerosCheckBox.stateChanged.connect(
             self.updateGraph)
@@ -36,6 +36,8 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
                 self.layoutComboBox.currentText()))
 
         self.gravityCheckBox.stateChanged.connect(self.toggle_gravity)
+        self.gravityCheckBox.setChecked(
+            SupremeSettings()['graphmodule_gravity_enabled'])
 
         self.graph.start_gravity()
 
@@ -51,21 +53,19 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
     def toggle_gravity(self, state):
         state = state != 0
         SupremeSettings()['graphmodule_gravity_enabled'] = state
-        if state == False:
+        if state is False:
             self.graph.stop_gravity()
         else:
             self.graph.start_gravity()
-
-    def on_calibrate(self):
-        self.graph.do_gravity_ticks(1000)
 
     def onChangeAlgorithms(self, name: str):
         self.algorithm = self.processor.alg_by_name(name)
 
     def getNodeParams(self, node: TextNode):
-        x = np.random.random() * 200 - 100
-        y = np.random.random() * 200 - 100
-        color = QColor.fromRgbF(*[np.random.random() for _ in range(3)])
+        x = np.random.random() * 400 - 200
+        y = np.random.random() * 400 - 200
+        color = QColor.fromRgbF(
+            *[np.random.random() * 0.5 + 0.5 for _ in range(3)])
         return x, y, color
 
     def updateGraph(self):
@@ -86,12 +86,16 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
         if res:
             for id1, id2, rel, res_a in res:
                 if min_val < 1:
-                    weight = (rel['intersection'] - min_val) / (1 - min_val)
+                    weight = (rel['intersection'] - min_val + 0.005) \
+                           / (1 - min_val)
                 else:
                     weight = 1
                 info = self.describer.describe_query_relation(rel, id1, id2)
                 self.graph.add_edge(id1, id2, ud=True, info=info,
                                     weight=weight)
+
+    def saveGraph(self):
+        self.graph.save_graph()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

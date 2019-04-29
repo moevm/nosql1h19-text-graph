@@ -48,6 +48,8 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
 
     def on_relation_clicked(self, item):
         id1, id2, item = item
+        id1 = f"{id1} [{self.processor.get_node_label(id1)}]"
+        id2 = f"{id2} [{self.processor.get_node_label(id2)}]"
         self.textBrowser.setHtml(
             self.describer.describe_query_relation(item, id1, id2))
 

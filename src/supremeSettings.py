@@ -7,13 +7,14 @@ class SupremeSettings:
         'edge_width': 2,
         'graphmodule_timer_interval': 20,
         'graphmodule_gravity_enabled': False,
+        'graphmodule_gravity': 10.,
         'graphmodule_graph_scale': 500,
         'dictionary_words_num': 100,
         'dictionary_min_words': 1,
         'diff_lines': True,
         'result_auto_update': False,
         'dictionary_exclude_list': [],
-        'processor_min_intersection': 0,
+        'processor_min_intersection': 0.,
         'processor_analyze': True
     }
 
@@ -21,9 +22,12 @@ class SupremeSettings:
         'Отображение графа': {
             'vertex_size_value': 'Размер вершины',
             'edge_width': 'Ширина стрелок',
-            'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
             'graphmodule_graph_scale': 'Масштабирование layout-ов',
+        },
+        'Расчёт гравитации': {
             'graphmodule_gravity_enabled': 'Включить гравитацию',
+            'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
+            'graphmodule_gravity': 'Сила притяжения вершин к центру'
         },
         'Общие настройки анализа': {
             'processor_min_intersection': 'Минимальный вес ребра [0-1]',

@@ -1,10 +1,12 @@
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QMainWindow, QGraphicsItem
+from PyQt5.QtWidgets import QMainWindow, QGraphicsItem, QMessageBox
+from PyQt5.QtGui import QColor
 import numpy as np
 import sys
 import re
 from fa2 import ForceAtlas2
 import networkx as nx
+from matplotlib import pyplot as plt
 
 from supremeSettings import SupremeSettings
 from ui.graph import Node, Edge, GraphWidget, TextItem
@@ -35,7 +37,8 @@ class GraphModule:
         self.fa2 = ForceAtlas2(
             outboundAttractionDistribution=False,
             scalingRatio=100.0,
-            verbose=False
+            verbose=False,
+            gravity=10.0
         )
 
         self._nodes = {}  # Хранилище вершин
@@ -149,23 +152,94 @@ class GraphModule:
         """Вернуть список ребер"""
         return list(self._edges.values())
 
-    def relayout_graph(self, name: str):
+    def save_graph(self):
         self.calculate_matrix()
         matrix = np.array(self.matrix)
+        G = nx.from_numpy_matrix(matrix)  # Перевести в NetworkX граф
+
+        # Параметры вершин
+        pos, labels = {}, {}
+        node_colors = []
+        for i, position in enumerate(self.positions):
+            pos[i] = position[0], -position[1]
+            node = self.nodes[self.head.index(i)]
+            labels[i] = node.label
+            node_colors.append(node.color.name(QColor.HexRgb))
+
+        # Параметры связей
+        edge_labels = {}
+        edge_colors = []
+        for a, b in G.edges():
+            try:
+                edge = self._edges[(a, b)]
+            except KeyError:
+                edge = self._edges[(b, a)]
+            edge_colors.append(edge.get_color().name(QColor.HexRgb))
+            edge_labels[(a, b)] = f"{int(edge.weight*100)}%"
+
+        # Рисование
+        # TODO Адаптивный размер шрифта
+        fig, ax = plt.subplots(figsize=(8, 8))
+        nx.draw_networkx(G, pos=pos, ax=ax, labels=labels,
+                         node_color=node_colors, edge_color=edge_colors,
+                         node_size=600, font_size=7, width=2.0)
+        nx.draw_networkx_edge_labels(G, pos=pos, ax=ax, font_size=6,
+                                     edge_labels=edge_labels)
+        plt.show()
+
+    def relayout_graph(self, name: str):
+        """Расположить вершины графа по какому-то алгоритму.
+        Алгоритмы:
+            * circular - по кругу
+            * kamada_kawai - Kamada-Kawai Algorithm
+            * planar - без пересечений ребер
+            * random - рандом
+            * shell - пока то же, что circular
+            * spring - Fruchterman-Reingold Algorithm
+        :param name:
+        :type name: str
+        """
+        def kamada_kawai(G):
+            return nx.kamada_kawai_layout(G, weight=1)
+
+        # def spectral(G):
+        #    return nx.spectral_layout(G, scale=20)
+
         func_dict = {
             'circular': nx.circular_layout,
-            'kamada_kawai': nx.kamada_kawai_layout,
+            'kamada_kawai': kamada_kawai,
             'planar': nx.planar_layout,
             'random': nx.random_layout,
-            'shell': nx.shell_layout,
+            'shell': nx.shell_layout,  # TODO
             'spring': nx.spring_layout,
-            'spectral': nx.spectral_layout
+            # 'spectral': spectral
         }
-        G = nx.from_numpy_matrix(matrix)
-        pos = func_dict[name](G)
+        scale_dict = {
+            'circular': 0.5,
+            'random': 0.3
+        }
+
+        self.calculate_matrix()
+        matrix = np.array(self.matrix)
+        G = nx.from_numpy_matrix(matrix)  # Получить networkx-граф из матрицы
+        try:
+            pos = func_dict[name](G)
+        except nx.exception.NetworkXException:
+            self.box = QMessageBox.critical(self.widget,
+                                            'Ошибка', 'Граф не планарен')
+            return
+
+        # Расчехлить позиции
         pos = np.array([pos[i] for i in range(len(pos))])
+
+        # Масштабировать
         scale = SupremeSettings()['graphmodule_graph_scale']
-        pos = nx.rescale_layout(pos, scale=scale)
+        try:
+            pos = nx.rescale_layout(pos, scale=scale * scale_dict[name])
+        except KeyError:
+            pos = nx.rescale_layout(pos, scale=scale)
+
+        # Применить позиции
         for index, position in enumerate(pos):
             x, y = position
             node = self._nodes[self.head[index]]

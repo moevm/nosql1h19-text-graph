@@ -251,6 +251,9 @@ class TextProcessor:
             return []
         return [self.analyzer[i] for i in head]
 
+    def get_node_label(self, id):
+        return self.analyzer[id].label
+
     def get_node_label_list(self, head):
         if not head:
             return []
