@@ -59,6 +59,7 @@ class MatrixWidget(QTableWidget):
         self.head = [str(i) for i in head]
         self.head_objects = head_dicts
         self.set_items(matrix)
+        self.matrix = matrix
         self.setHorizontalHeaderLabels(self.head)
         self.setVerticalHeaderLabels(self.head)
         self.horizontalHeader().sectionClicked.connect(

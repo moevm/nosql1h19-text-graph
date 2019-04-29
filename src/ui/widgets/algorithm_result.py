@@ -1,4 +1,7 @@
 from PyQt5.QtWidgets import QWidget
+import numpy as np
+from matplotlib import pyplot as plt, colors
+
 from ui_compiled.algorithm_result import Ui_AlgorithmResult
 from api import Describer
 from api.algorithm import AbstractAlgorithm
@@ -23,6 +26,8 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.graphButton.clicked.connect(self.on_show_graph)
         self.splitter.setStretchFactor(0, 1)
         self.splitter.setStretchFactor(1, 2)
+
+        self.exportButton.clicked.connect(self.on_export)
         self.updateButton.clicked.connect(self.update_results)
 
     def on_hide_empty_checkbox_state_changed(self, value):
@@ -52,6 +57,52 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         id2 = f"{id2} [{self.processor.get_node_label(id2)}]"
         self.textBrowser.setHtml(
             self.describer.describe_query_relation(item, id1, id2))
+
+    def _get_cmap(self):
+        min_val = self.thresholdSlider.value() / 100
+        cdict = {
+            'red': [
+                (0.0, 0.6, 0.6),
+                (min_val, 0.6, 1.0),
+                (1.0, 0.0, 0.0)
+            ],
+            'green': [
+                (0.0, 0.6, 0.6),
+                (min_val, 0.6, 0.0),
+                (1.0, 1.0, 1.0)
+            ],
+            'blue': [
+                (0.0, 0.6, 0.6),
+                (min_val, 0.6, 0.0),
+                (1.0, 0.0, 0.0)
+            ]
+        }
+        cmap = colors.LinearSegmentedColormap('rg', cdict, N=256)
+        return cmap
+
+    def on_export(self):
+        if self.result_matrix:
+            cmap = self._get_cmap()
+
+            matrix = np.copy(self.result_matrix.matrix)
+            matrix = matrix[:, :, 0]
+
+            # TODO Адаптивный размер
+            fig, ax = plt.subplots(figsize=(10, 10))
+            ax.matshow(matrix.tolist(), cmap=cmap)
+
+            ax.set_xticks(range(len(self.result_matrix.head)))
+            ax.set_yticks(range(len(self.result_matrix.head)))
+            ax.set_xticklabels(self.result_matrix.head, rotation=90)
+            ax.set_yticklabels(self.result_matrix.head)
+
+            for i in range(len(matrix)):
+                for j in range(len(matrix)):
+                    text = f"{int(matrix[i, j] * 100)}%"
+                    ax.text(j, i, text, ha="center", va="center",
+                            color="k", fontsize=8)
+
+            plt.show()
 
     def update_results(self):
         min_val = self.thresholdSlider.value() / 100
