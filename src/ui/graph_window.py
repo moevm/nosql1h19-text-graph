@@ -4,6 +4,7 @@ from ui_compiled.graphwindow import Ui_GraphWindow
 from ui.graph import GraphModule
 from api import TextProcessor, Describer
 from models import TextNode
+from supremeSettings import SupremeSettings
 
 import numpy as np
 
@@ -28,6 +29,14 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             self.updateGraph)
         self.thresholdSlider.valueChanged.connect(
             self.updateGraph)
+        self.algorithmComboBox.currentIndexChanged.connect(self.updateGraph)
+
+        self.relayoutButton.clicked.connect(
+            lambda: self.graph.relayout_graph(
+                self.layoutComboBox.currentText()))
+
+        self.gravityCheckBox.stateChanged.connect(self.toggle_gravity)
+
         self.graph.start_gravity()
 
     def setupAlgorithms(self, algorithm=None):
@@ -38,6 +47,14 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             self.algorithm = algorithm
         else:
             self.onChangeAlgorithms(alg_list[0])
+
+    def toggle_gravity(self, state):
+        state = state != 0
+        SupremeSettings()['graphmodule_gravity_enabled'] = state
+        if state == False:
+            self.graph.stop_gravity()
+        else:
+            self.graph.start_gravity()
 
     def on_calibrate(self):
         self.graph.do_gravity_ticks(1000)

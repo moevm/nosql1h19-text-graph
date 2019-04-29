@@ -54,7 +54,10 @@ class DiffAlgorithm(AbstractAlgorithm):
         return "Diff"
 
     def describe_comparison(self, comp_dict):
-        return self.dmp.diff_prettyHtml(comp_dict['data'])
+        html = self.dmp.diff_prettyHtml(comp_dict['data'])
+        html = html.replace('#ffe6e6', '#ff1a1a')
+        html = html.replace('#e6ffe6', '#33ff33')
+        return html
 
     def describe_preprocess(self, prep_dict):
         return ""

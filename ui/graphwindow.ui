@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1236</width>
-    <height>682</height>
+    <height>779</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,6 +33,66 @@
          <string>Параметры</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QCheckBox" name="gravityCheckBox">
+           <property name="text">
+            <string>Гравитация</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Расположение</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="layoutComboBox">
+           <item>
+            <property name="text">
+             <string>circular</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>kamada_kawai</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>planar</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>random</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>shell</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>spring</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>spectral</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="relayoutButton">
+           <property name="text">
+            <string>Перерасположить</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
@@ -140,13 +200,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="clearResultsButton">
-           <property name="text">
-            <string>Очистить результаты</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
@@ -176,7 +229,7 @@
      <x>0</x>
      <y>0</y>
      <width>1236</width>
-     <height>23</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

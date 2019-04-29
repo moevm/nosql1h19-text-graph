@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
+from PyQt5.QtGui import QKeyEvent
 import re
 from os import listdir
 from os.path import isfile, join
@@ -96,6 +97,7 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         self.openFolderButton.clicked.connect(self.on_folder_open)
         self.addFragmentButton.clicked.connect(self.on_add_fragments)
         self.renameButton.clicked.connect(self.on_rename_fragment)
+        self.fragmentLabelEdit.returnPressed.connect(self.on_rename_fragment)
         self.dontSeparateRadioButton.clicked.connect(
             lambda: self.sepRegExEdit.setText('.*')
         )
@@ -122,6 +124,7 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
     def on_rename_fragment(self):
         new_name = self.fragmentLabelEdit.text()
         if self.fragment:
+            self.uploadOnClose = True
             self.fragment.label = new_name
             self.fragment.save()
             self.fragments_list.update()
@@ -194,3 +197,8 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         else:
             self.fragmentsChanged.emit()
             super().closeEvent(event)
+
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key_Escape:
+            self.close()
+        super().keyPressEvent(event)

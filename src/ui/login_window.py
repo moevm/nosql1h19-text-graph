@@ -11,9 +11,12 @@ class LoginWindow(QMainWindow, Ui_LoginWindow):
         super().__init__(parent)
         self.setupUi(self)
         self.exitButton.clicked.connect(self.close)
-        self.connectButton.clicked.connect(self.on_connect_button_clicked)
+        self.connectButton.clicked.connect(self.on_connect)
+        self.loginEdit.returnPressed.connect(self.on_connect)
+        self.passwordEdit.returnPressed.connect(self.on_connect)
+        self.uriEdit.returnPressed.connect(self.on_connect)
 
-    def on_connect_button_clicked(self):
+    def on_connect(self):
         uri = self.uriEdit.text()
         login = self.loginEdit.text()
         password = self.passwordEdit.text()

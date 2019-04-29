@@ -1,11 +1,13 @@
-from ui.graph import Node, Edge, GraphWidget, TextItem
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QMainWindow, QGraphicsItem
 import numpy as np
 import sys
 import re
 from fa2 import ForceAtlas2
+import networkx as nx
+
 from supremeSettings import SupremeSettings
+from ui.graph import Node, Edge, GraphWidget, TextItem
 
 
 class GraphModule:
@@ -146,6 +148,31 @@ class GraphModule:
     def edges(self):
         """Вернуть список ребер"""
         return list(self._edges.values())
+
+    def relayout_graph(self, name: str):
+        self.calculate_matrix()
+        matrix = np.array(self.matrix)
+        func_dict = {
+            'circular': nx.circular_layout,
+            'kamada_kawai': nx.kamada_kawai_layout,
+            'planar': nx.planar_layout,
+            'random': nx.random_layout,
+            'shell': nx.shell_layout,
+            'spring': nx.spring_layout,
+            'spectral': nx.spectral_layout
+        }
+        G = nx.from_numpy_matrix(matrix)
+        pos = func_dict[name](G)
+        pos = np.array([pos[i] for i in range(len(pos))])
+        scale = SupremeSettings()['graphmodule_graph_scale']
+        pos = nx.rescale_layout(pos, scale=scale)
+        for index, position in enumerate(pos):
+            x, y = position
+            node = self._nodes[self.head[index]]
+            if node != self.widget.scene().mouseGrabberItem():
+                node.setX(x)
+                node.setY(y)
+        self._adjust_scene()
 
     def _adjust_scene(self):
         """ Подровнять сцену под вершины """

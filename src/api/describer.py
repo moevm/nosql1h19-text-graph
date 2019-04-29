@@ -28,6 +28,10 @@ class Describer:
         self.algorithm = algorithm
         self.processor = processor
 
+    def _text_to_html(self, text):
+        text = text.replace('\n', '<br>')
+        return text
+
     def describe_node(self, node: TextNode):
         html_body = node.describe()
         html_body += f"""
@@ -36,7 +40,7 @@ class Describer:
         """
         html_body += f"""
             <h2>Текст фрагмента</h2>
-            {node.text}
+            {self._text_to_html(node.text)}
         """
         return encapsulate_html(html_body)
 
