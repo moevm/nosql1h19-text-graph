@@ -1,11 +1,15 @@
-from ui.graph import Node, Edge, GraphWidget, TextItem
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QMainWindow, QGraphicsItem
+from PyQt5.QtWidgets import QMainWindow, QGraphicsItem, QMessageBox
+from PyQt5.QtGui import QColor
 import numpy as np
 import sys
 import re
 from fa2 import ForceAtlas2
+import networkx as nx
+from matplotlib import pyplot as plt
+
 from supremeSettings import SupremeSettings
+from ui.graph import Node, Edge, GraphWidget, TextItem
 
 
 class GraphModule:
@@ -33,7 +37,8 @@ class GraphModule:
         self.fa2 = ForceAtlas2(
             outboundAttractionDistribution=False,
             scalingRatio=100.0,
-            verbose=False
+            verbose=False,
+            gravity=10.0
         )
 
         self._nodes = {}  # Хранилище вершин
@@ -61,7 +66,6 @@ class GraphModule:
         text.setPos(pos_x, pos_y)
         text.linkActivated.connect(self._on_text_link_clicked)
         self._texts[id] = text
-        # self.widget.scene().addItem(text)
 
     def add_node(self, id, pos_x, pos_y, **kwargs):
         """Добавить вершину
@@ -103,20 +107,6 @@ class GraphModule:
                     self.widget.scene().removeItem(self._texts[id])
                 del self._texts[id]
 
-    def calculate_matrix(self):
-        head = list(self._nodes.keys())
-        self.head = head
-        self.matrix = np.zeros(len(head)**2).reshape((len(head), len(head)))
-        self.positions = [[0, 0] for _ in range(len(head))]
-        for key, edge in self._edges.items():
-            id1, id2 = key
-            id1, id2 = head.index(id1), head.index(id2)
-            self.matrix[id1][id2] = edge.weight
-            self.matrix[id2][id1] = edge.weight
-        for id_, node in self._nodes.items():
-            self.positions[head.index(id_)] = [node.x(), node.y()]
-        self.positions = np.array(self.positions)
-
     def _on_item_clicked(self, item: QGraphicsItem):
         if isinstance(item, Node) and item.info \
                 and item.id not in self._texts:
@@ -146,6 +136,116 @@ class GraphModule:
     def edges(self):
         """Вернуть список ребер"""
         return list(self._edges.values())
+
+    def calculate_matrix(self, weight=None):
+        head = list(self._nodes.keys())
+        self.head = head
+        self.matrix = np.zeros(len(head)**2).reshape((len(head), len(head)))
+        self.positions = [[0, 0] for _ in range(len(head))]
+        for key, edge in self._edges.items():
+            id1, id2 = key
+            id1, id2 = head.index(id1), head.index(id2)
+            self.matrix[id1][id2] = edge.weight if weight is None else weight
+            self.matrix[id2][id1] = edge.weight if weight is None else weight
+        for id_, node in self._nodes.items():
+            self.positions[head.index(id_)] = [node.x(), node.y()]
+        self.positions = np.array(self.positions)
+
+    def save_graph(self):
+        self.calculate_matrix()
+        matrix = np.array(self.matrix)
+        G = nx.from_numpy_matrix(matrix)  # Перевести в NetworkX граф
+
+        # Параметры вершин
+        pos, labels = {}, {}
+        node_colors = []
+        for i, position in enumerate(self.positions):
+            pos[i] = position[0], -position[1]
+            node = self.nodes[self.head.index(i)]
+            labels[i] = node.label
+            node_colors.append(node.color.name(QColor.HexRgb))
+
+        # Параметры связей
+        edge_labels = {}
+        edge_colors = []
+        for a, b in G.edges():
+            try:
+                edge = self._edges[(a, b)]
+            except KeyError:
+                edge = self._edges[(b, a)]
+            edge_colors.append(edge.get_color().name(QColor.HexRgb))
+            edge_labels[(a, b)] = f"{int(edge.weight*100)}%"
+
+        # Рисование
+        # TODO Адаптивный размер шрифта
+        fig, ax = plt.subplots(figsize=(8, 8))
+        nx.draw_networkx(G, pos=pos, ax=ax, labels=labels,
+                         node_color=node_colors, edge_color=edge_colors,
+                         node_size=600, font_size=7, width=2.0)
+        nx.draw_networkx_edge_labels(G, pos=pos, ax=ax, font_size=6,
+                                     edge_labels=edge_labels)
+        plt.show()
+
+    def relayout_graph(self, name: str):
+        """Расположить вершины графа по какому-то алгоритму.
+        Алгоритмы:
+            * circular - по кругу
+            * kamada_kawai - Kamada-Kawai Algorithm
+            * planar - без пересечений ребер
+            * random - рандом
+            * shell - пока то же, что circular
+            * spring - Fruchterman-Reingold Algorithm
+        :param name:
+        :type name: str
+        """
+        def kamada_kawai(G):
+            return nx.kamada_kawai_layout(G, weight=1)
+
+        # def spectral(G):
+        #    return nx.spectral_layout(G, scale=20)
+
+        func_dict = {
+            'circular': nx.circular_layout,
+            'kamada_kawai': kamada_kawai,
+            'planar': nx.planar_layout,
+            'random': nx.random_layout,
+            'shell': nx.shell_layout,  # TODO
+            'spring': nx.spring_layout,
+            # 'spectral': spectral
+        }
+        scale_dict = {
+            'circular': 0.5,
+            'random': 0.3
+        }
+
+        self.calculate_matrix()
+        matrix = np.array(self.matrix)
+        G = nx.from_numpy_matrix(matrix)  # Получить networkx-граф из матрицы
+        try:
+            pos = func_dict[name](G)
+        except nx.exception.NetworkXException:
+            self.box = QMessageBox.critical(self.widget,
+                                            'Ошибка', 'Граф не планарен')
+            return
+
+        # Расчехлить позиции
+        pos = np.array([pos[i] for i in range(len(pos))])
+
+        # Масштабировать
+        scale = SupremeSettings()['graphmodule_graph_scale']
+        try:
+            pos = nx.rescale_layout(pos, scale=scale * scale_dict[name])
+        except KeyError:
+            pos = nx.rescale_layout(pos, scale=scale)
+
+        # Применить позиции
+        for index, position in enumerate(pos):
+            x, y = position
+            node = self._nodes[self.head[index]]
+            if node != self.widget.scene().mouseGrabberItem():
+                node.setX(x)
+                node.setY(y)
+        self._adjust_scene()
 
     def _adjust_scene(self):
         """ Подровнять сцену под вершины """

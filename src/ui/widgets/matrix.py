@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor
 from typing import List, Tuple, Union, Dict
@@ -59,6 +59,7 @@ class MatrixWidget(QTableWidget):
         self.head = [str(i) for i in head]
         self.head_objects = head_dicts
         self.set_items(matrix)
+        self.matrix = matrix
         self.setHorizontalHeaderLabels(self.head)
         self.setVerticalHeaderLabels(self.head)
         self.horizontalHeader().sectionClicked.connect(
@@ -72,12 +73,23 @@ class MatrixWidget(QTableWidget):
         if len(matrix) > 0:
             self.setColumnCount(len(matrix[0]))
         for i, row in enumerate(matrix):
-            self.setColumnWidth(i, 10)
+            # self.setColumnWidth(i, 10)
             for j, matrix_item in enumerate(row):
                 value, relation = matrix_item
                 item = IntersectionItem(value, self.min_val, relation)
                 self.update_min_val.connect(item.update_text)
                 self.setItem(i, j, item)
+
+        self.resize_cells()
+
+    def resize_cells(self):
+        fake_row = self.rowCount()
+        self.insertRow(fake_row)
+        for i, name in enumerate(self.head):
+            self.setItem(fake_row, i, QTableWidgetItem(name))
+        self.horizontalHeader().resizeSections(QHeaderView.ResizeToContents)
+        self.verticalHeader().resizeSections(QHeaderView.ResizeToContents)
+        self.removeRow(fake_row)
 
     def set_min_val(self, min_val):
         self.min_val = min_val

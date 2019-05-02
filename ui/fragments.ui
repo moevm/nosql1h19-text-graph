@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>762</width>
-    <height>444</height>
+    <width>1035</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,6 +90,13 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="openFolderButton">
+            <property name="text">
+             <string>Открыть папку</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <widget class="QPushButton" name="openFileButton">
             <property name="text">
@@ -298,6 +305,27 @@
              </widget>
             </item>
            </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <item>
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Переименовать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="fragmentLabelEdit"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="renameButton">
+            <property name="text">
+             <string>ОК</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

@@ -5,3 +5,6 @@ nltk
 pymystem3
 numpy
 fa2
+diff-match-patch
+networkx
+matplotlib

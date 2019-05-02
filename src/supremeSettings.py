@@ -6,13 +6,15 @@ class SupremeSettings:
         'vertex_size_value': 20,
         'edge_width': 2,
         'graphmodule_timer_interval': 20,
-        'graphmodule_gravity_enabled': True,
+        'graphmodule_gravity_enabled': False,
+        'graphmodule_gravity': 10.,
+        'graphmodule_graph_scale': 500,
         'dictionary_words_num': 100,
         'dictionary_min_words': 1,
-        'vertex_weight': 250,  # TODO
+        'diff_lines': True,
         'result_auto_update': False,
         'dictionary_exclude_list': [],
-        'processor_min_intersection': 0,
+        'processor_min_intersection': 0.,
         'processor_analyze': True
     }
 
@@ -20,9 +22,12 @@ class SupremeSettings:
         'Отображение графа': {
             'vertex_size_value': 'Размер вершины',
             'edge_width': 'Ширина стрелок',
-            'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
+            'graphmodule_graph_scale': 'Масштабирование layout-ов',
+        },
+        'Расчёт гравитации': {
             'graphmodule_gravity_enabled': 'Включить гравитацию',
-            'vertex_weight': 'Вес вершины',
+            'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
+            'graphmodule_gravity': 'Сила притяжения вершин к центру'
         },
         'Общие настройки анализа': {
             'processor_min_intersection': 'Минимальный вес ребра [0-1]',
@@ -32,6 +37,9 @@ class SupremeSettings:
             'dictionary_words_num': 'Сколько слов запоминать',
             'dictionary_min_words': 'Минимальная частота',
             'dictionary_exclude_list': 'Исключить слова'
+        },
+        'Алгоритм сравнения строк': {
+            'diff_lines': 'Построчное сравнение (быстрее)'
         },
         'Основное окно': {
             'result_auto_update': 'Автоматически обновлять результаты'

@@ -1,6 +1,6 @@
 from PyQt5.QtCore import pyqtSignal
 from typing import List, Pattern
-from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm
+from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm, DiffAlgorithm
 from api import FragmentsAnalyzer
 from logger import log
 from loading_wrapper import LoadingThread
@@ -121,7 +121,7 @@ class TextProcessor:
     def __init__(self, algorithm_classes=None):
         super().__init__()
         if not algorithm_classes:
-            self.algorithm_classes = [DictionaryAlgorithm]
+            self.algorithm_classes = [DictionaryAlgorithm, DiffAlgorithm]
         else:
             self.algorithm_classes = algorithm_classes
         self.algorithms: List[AbstractAlgorithm] = []
@@ -142,15 +142,19 @@ class TextProcessor:
 
         raise KeyError(f'No algorithm {name}')
 
-    def parse_file(self, filename: str, regex: Pattern):
+    def parse_file(self, filename: str, regex: Pattern, get_name=None,
+                   upload=True):
         """Считать файл и вытащить из него все фрагменты
 
         :param filename:
+        :param get_name: Функция, получающая имя фрагмента по его номеру
+        в текущем файле
         :type filename: str
         """
         self.analyzer.set_separator(regex)
-        self.analyzer.read_file(filename)
-        self.upload_db()
+        self.analyzer.read_file(filename, get_name)
+        if upload:
+            self.upload_db()
 
     def do_preprocess(self):
         """Выполнить предобработку.
@@ -246,6 +250,14 @@ class TextProcessor:
         if not head:
             return []
         return [self.analyzer[i] for i in head]
+
+    def get_node_label(self, id):
+        return self.analyzer[id].label
+
+    def get_node_label_list(self, head):
+        if not head:
+            return []
+        return [self.analyzer[i].label for i in head]
 
     def clear_db(self):
         """Очистить  БД"""
