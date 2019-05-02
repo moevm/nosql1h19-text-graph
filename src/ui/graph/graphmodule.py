@@ -66,7 +66,6 @@ class GraphModule:
         text.setPos(pos_x, pos_y)
         text.linkActivated.connect(self._on_text_link_clicked)
         self._texts[id] = text
-        # self.widget.scene().addItem(text)
 
     def add_node(self, id, pos_x, pos_y, **kwargs):
         """Добавить вершину
@@ -108,20 +107,6 @@ class GraphModule:
                     self.widget.scene().removeItem(self._texts[id])
                 del self._texts[id]
 
-    def calculate_matrix(self):
-        head = list(self._nodes.keys())
-        self.head = head
-        self.matrix = np.zeros(len(head)**2).reshape((len(head), len(head)))
-        self.positions = [[0, 0] for _ in range(len(head))]
-        for key, edge in self._edges.items():
-            id1, id2 = key
-            id1, id2 = head.index(id1), head.index(id2)
-            self.matrix[id1][id2] = edge.weight
-            self.matrix[id2][id1] = edge.weight
-        for id_, node in self._nodes.items():
-            self.positions[head.index(id_)] = [node.x(), node.y()]
-        self.positions = np.array(self.positions)
-
     def _on_item_clicked(self, item: QGraphicsItem):
         if isinstance(item, Node) and item.info \
                 and item.id not in self._texts:
@@ -151,6 +136,20 @@ class GraphModule:
     def edges(self):
         """Вернуть список ребер"""
         return list(self._edges.values())
+
+    def calculate_matrix(self, weight=None):
+        head = list(self._nodes.keys())
+        self.head = head
+        self.matrix = np.zeros(len(head)**2).reshape((len(head), len(head)))
+        self.positions = [[0, 0] for _ in range(len(head))]
+        for key, edge in self._edges.items():
+            id1, id2 = key
+            id1, id2 = head.index(id1), head.index(id2)
+            self.matrix[id1][id2] = edge.weight if weight is None else weight
+            self.matrix[id2][id1] = edge.weight if weight is None else weight
+        for id_, node in self._nodes.items():
+            self.positions[head.index(id_)] = [node.x(), node.y()]
+        self.positions = np.array(self.positions)
 
     def save_graph(self):
         self.calculate_matrix()

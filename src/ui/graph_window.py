@@ -47,6 +47,8 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
         self.algorithmComboBox.setCurrentIndex(0)
         if algorithm:
             self.algorithm = algorithm
+            self.algorithmComboBox.setCurrentIndex(
+                self.processor.algorithms.index(self.algorithm))
         else:
             self.onChangeAlgorithms(alg_list[0])
 
@@ -96,6 +98,3 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
 
     def saveGraph(self):
         self.graph.save_graph()
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
