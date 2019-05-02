@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QMainWindow
-from api import TextProcessor, Describer
+from PyQt5.QtWidgets import QMainWindow, QFileDialog
+from api import TextProcessor, Describer, Exporter
 from ui_compiled.mainwindow import Ui_MainWindow
 from .fragments_window import FragmentsWindow
 from ui.widgets import FragmentsList, AlgorithmResults
@@ -22,10 +22,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionUpdateResults.triggered.connect(self.update_results)
         self.actionOpenParams.triggered.connect(self.open_settings)
         self.actionClearDB.triggered.connect(self.clear_db)
+        self.actionOpen.triggered.connect(self.on_import)
+        self.actionSave.triggered.connect(self.on_export)
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
-            # self.actionSave,  # TODO
+            self.actionSave,
             self.actionChangeFragments,
             self.actionClear
         ]
@@ -102,7 +104,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.processor = TextProcessor()
         self.initalize_algorithms()
         self.update_enabled()
-        self.edit_fragments()
+        if len(self.processor.analyzer) == 0:
+            self.edit_fragments()
+        else:
+            self._auto_update_results()
 
     def edit_fragments(self):
         """Запустить редактирование фрагментов"""
@@ -190,3 +195,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loading = LoadingWrapper(self.thread)
         self.loading.loadingDone.connect(self.remove_project)
         self.loading.start()
+
+    def on_export(self):
+        filename, filter_ = QFileDialog.getSaveFileName(self, 'Сохранить',
+                                                        filter='*.graphml')
+        if len(filename) > 0:
+            if not filename.endswith('.graphml'):
+                filename += '.graphml'
+            Exporter.export_db(filename)
+
+    def on_import(self):
+        filename, filter_ = QFileDialog.getOpenFileName(self, 'Открыть',
+                                                        filter='*.graphml')
+        if len(filename) > 0:
+            Exporter.import_db(filename)
+            self.set_new_project()

@@ -56,7 +56,14 @@ p, li { white-space: pre-wrap; }
          <item>
           <widget class="QPushButton" name="updateButton">
            <property name="text">
-            <string>Загрузить/обновить</string>
+            <string>Обновить</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="exportButton">
+           <property name="text">
+            <string>Экспорт</string>
            </property>
           </widget>
          </item>
@@ -88,7 +95,7 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QLabel" name="loadLabel">
             <property name="text">
-             <string>Автоматическое обновление результатов отключено в настройках. Нажмите &quot;Загрузить/обновить&quot;</string>
+             <string>Автоматическое обновление результатов отключено в настройках. Нажмите &quot;Обновить&quot;</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -160,13 +167,6 @@ p, li { white-space: pre-wrap; }
            </property>
            <property name="text">
             <string>%</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="exportButton">
-           <property name="text">
-            <string>Экспорт</string>
            </property>
           </widget>
          </item>

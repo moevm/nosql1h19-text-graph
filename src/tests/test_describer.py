@@ -16,8 +16,9 @@ class TestDescriber(unittest.TestCase):
         self.processor.parse_file('../samples/short.txt', '\n{1}')
         self.processor.upload_db()
         self.processor.do_preprocess()
-        accs, stats = self.processor.do_process(analyze=True)
+        self.processor.do_process(analyze=True)
         self.processor.upload_db()
+        accs, stats = self.processor.accs, self.processor.stats
 
         desc = Describer(self.algorithm, self.processor)
         node_desc = desc.describe_node(self.processor.analyzer[0])
