@@ -1,15 +1,14 @@
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QMainWindow, QGraphicsItem, QMessageBox
-from PyQt5.QtGui import QColor
-import numpy as np
 import sys
 import re
 from fa2 import ForceAtlas2
 import networkx as nx
-from matplotlib import pyplot as plt
+import numpy as np
 
 from supremeSettings import SupremeSettings
 from ui.graph import Node, Edge, GraphWidget, TextItem
+from api import Saver
 
 
 class GraphModule:
@@ -152,39 +151,7 @@ class GraphModule:
         self.positions = np.array(self.positions)
 
     def save_graph(self):
-        self.calculate_matrix()
-        matrix = np.array(self.matrix)
-        G = nx.from_numpy_matrix(matrix)  # Перевести в NetworkX граф
-
-        # Параметры вершин
-        pos, labels = {}, {}
-        node_colors = []
-        for i, position in enumerate(self.positions):
-            pos[i] = position[0], -position[1]
-            node = self.nodes[self.head.index(i)]
-            labels[i] = node.label
-            node_colors.append(node.color.name(QColor.HexRgb))
-
-        # Параметры связей
-        edge_labels = {}
-        edge_colors = []
-        for a, b in G.edges():
-            try:
-                edge = self._edges[(a, b)]
-            except KeyError:
-                edge = self._edges[(b, a)]
-            edge_colors.append(edge.get_color().name(QColor.HexRgb))
-            edge_labels[(a, b)] = f"{int(edge.weight*100)}%"
-
-        # Рисование
-        # TODO Адаптивный размер шрифта
-        fig, ax = plt.subplots(figsize=(8, 8))
-        nx.draw_networkx(G, pos=pos, ax=ax, labels=labels,
-                         node_color=node_colors, edge_color=edge_colors,
-                         node_size=600, font_size=7, width=2.0)
-        nx.draw_networkx_edge_labels(G, pos=pos, ax=ax, font_size=6,
-                                     edge_labels=edge_labels)
-        plt.show()
+        Saver.save_to_graph(self)
 
     def relayout_graph(self, name: str):
         """Расположить вершины графа по какому-то алгоритму.

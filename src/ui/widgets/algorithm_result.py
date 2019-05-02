@@ -1,9 +1,8 @@
 from PyQt5.QtWidgets import QWidget
 import numpy as np
-from matplotlib import pyplot as plt, colors
 
 from ui_compiled.algorithm_result import Ui_AlgorithmResult
-from api import Describer
+from api import Describer, Saver
 from api.algorithm import AbstractAlgorithm
 from .matrix import MatrixWidget
 from models import TextNode
@@ -58,51 +57,12 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.textBrowser.setHtml(
             self.describer.describe_query_relation(item, id1, id2))
 
-    def _get_cmap(self):
-        min_val = self.thresholdSlider.value() / 100
-        cdict = {
-            'red': [
-                (0.0, 0.6, 0.6),
-                (min_val, 0.6, 1.0),
-                (1.0, 0.0, 0.0)
-            ],
-            'green': [
-                (0.0, 0.6, 0.6),
-                (min_val, 0.6, 0.0),
-                (1.0, 1.0, 1.0)
-            ],
-            'blue': [
-                (0.0, 0.6, 0.6),
-                (min_val, 0.6, 0.0),
-                (1.0, 0.0, 0.0)
-            ]
-        }
-        cmap = colors.LinearSegmentedColormap('rg', cdict, N=256)
-        return cmap
-
     def _on_export(self):
         if self.result_matrix:
-            cmap = self._get_cmap()
-
             matrix = np.copy(self.result_matrix.matrix)
             matrix = matrix[:, :, 0]
-
-            # TODO Адаптивный размер
-            fig, ax = plt.subplots(figsize=(10, 10))
-            ax.matshow(matrix.tolist(), cmap=cmap)
-
-            ax.set_xticks(range(len(self.result_matrix.head)))
-            ax.set_yticks(range(len(self.result_matrix.head)))
-            ax.set_xticklabels(self.result_matrix.head, rotation=90)
-            ax.set_yticklabels(self.result_matrix.head)
-
-            for i in range(len(matrix)):
-                for j in range(len(matrix)):
-                    text = f"{int(matrix[i, j] * 100)}%"
-                    ax.text(j, i, text, ha="center", va="center",
-                            color="k", fontsize=8)
-
-            plt.show()
+            min_val = self.thresholdSlider.value() / 100
+            Saver.save_to_matrix(matrix, self.result_matrix.head, min_val)
 
     def update_results(self):
         min_val = self.thresholdSlider.value() / 100

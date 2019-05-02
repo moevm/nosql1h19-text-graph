@@ -277,13 +277,16 @@ class TextProcessor:
         self.accs = accs
 
         nodes = GlobalResults.nodes.all()
-        if len(nodes) == 0:
-            node = GlobalResults()
+        if self.stats is not None and self.accs is not None:
+            if len(nodes) == 0:
+                node = GlobalResults()
+            else:
+                node = nodes[0]
+            node.accs = self.accs
+            node.stats = self.stats
+            node.save()
         else:
-            node = nodes[0]
-        node.accs = self.accs
-        node.stats = self.stats
-        node.save()
+            self._clear_results()
 
     def _clear_results(self):
         for node in GlobalResults.nodes.all():
