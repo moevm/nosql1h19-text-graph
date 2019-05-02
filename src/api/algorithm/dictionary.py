@@ -187,8 +187,10 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         acc['top_words'].sort(key=lambda el: el[1], reverse=True)
         html_body = """
             <h3>Алгоритм сравнения словарей</h3>
-            <b>Наиболее часто встречающиеся слова во фрагментах</b>
             <table border="1" width="100%">
+                <caption>
+                    Наиболее часто встречающиеся слова во фрагментах
+                </caption>
                 <thead>
                     <tr>
                         <th>Слово</th>

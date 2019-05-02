@@ -91,7 +91,7 @@ class Describer:
             <h2>Результаты алгоритмов</h2>"""
             if all_algs:
                 for acc, algorithm in zip(accs, self.processor.algorithms):
-                    html_body += algorithm.describe_result(acc)
+                    html_body += '<p>'+algorithm.describe_result(acc)+'</p>'
             else:
                 acc = accs[self.processor.algorithms.index(self.algorithm)]
                 html_body += self.algorithm.describe_result(acc)

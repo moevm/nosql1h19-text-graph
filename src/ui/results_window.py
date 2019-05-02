@@ -44,12 +44,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fragments_list = None  # Виджет с фрагментами
         self.tabs = []  # Вкладки с результатами алгоритмов
         self.auto_update = SupremeSettings()['result_auto_update']
-        self.accs = None
-        self.stats = None
 
         self.remove_project()
 
     def initalize_algorithms(self):
+        """ Инициализировать алгоритмы """
         while self.mainTab.count() > 1:
             self.mainTab.removeTab(self.mainTab.count() - 1)
         self.tabs.clear()
@@ -70,6 +69,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 [item.setEnabled(True) for item in self.en_process_fragments]
 
     def open_settings(self):
+        """ Открыть настройки """
         self.settings_dialog = SettingsDialog()
         self.settings_dialog.accepted.connect(self.on_settings_accepted)
         self.settings_dialog.show()
@@ -83,8 +83,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.infoLabel.show()
         if self.processor:
             self.processor = None
-        self.accs = None
-        self.stats = None
         self.update_enabled()
 
     def set_new_project(self):
@@ -96,8 +94,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.fragments_list:
             self.fragmentsWidgetLayout.removeWidget(self.fragments_list)
             self.fragments_list.deleteLater()
-        self.accs = None
-        self.stats = None
 
         self.fragments_list = FragmentsList(self)
         self.fragmentsWidgetLayout.addWidget(self.fragments_list)
@@ -113,76 +109,82 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fragments = FragmentsWindow(self.processor, self)
         self.fragments.show()
         self.fragments.fragmentsChanged.connect(self.fragments_list.update)
-        self.fragments.fragmentsChanged.connect(self.auto_update_results)
+        self.fragments.fragmentsChanged.connect(self._auto_update_results)
         self.fragments.fragmentsChanged.connect(self.update_enabled)
 
     def start_algorithm(self):
-        """Запустить алгоритм"""
+        """Запустить алгоритм
+            Тут запускается препроцессинг
+        """
         self.thread = self.processor.PreprocessThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
         self.loading.loadingDone.connect(self._continue_algorithm)
         self.loading.start()
 
     def _continue_algorithm(self):
-        """Продолжить выполнение алгоритма"""
+        """Продолжить выполнение алгоритма
+           Здесь выполняется непосредственно сравнение результатов
+        """
         # TODO Сюда впихнуть промежуточные настройки
         analyze = self.settings['processor_analyze']
         self.thread = self.processor.ProcessThread(self.processor, analyze)
         self.loading = LoadingWrapper(self.thread)
-        if analyze:
-            thread = self.thread
-            self.loading.loadingDone.connect(
-                lambda: self._set_results(thread.accs, thread.stats))
-        self.loading.loadingDone.connect(self.upload_db)
+        self.loading.loadingDone.connect(self._finish_algorithm)
         self.loading.start()
 
-    def _set_results(self, accs=None, stats=None):
-        if accs is not None:
-            self.accs = accs
-        if stats is not None:
-            self.stats = stats
+    def _finish_algorithm(self):
+        """Завершение алгоритма.
+            Здесь выполняется загрузка в БД и отображение результатов
+        """
+        analyze = self.settings['processor_analyze']
+        if analyze:
+            self._update_global_description()
+            self._make_global_description()
+        self.upload_db()
+
+    def _make_global_description(self):
         desc = Describer(None, self.processor)
-        results_html = desc.describe_results(self.accs, self.stats,
+        results_html = desc.describe_results(self.processor.accs,
+                                             self.processor.stats,
                                              all_algs=True)
         self.textBrowser.setHtml(results_html)
+
+    def _update_global_description(self):
+        thread = self.processor.DescribeThread(self.processor)
+        thread.run()
+        thread.wait()
+        self._make_global_description()
 
     def upload_db(self):
         self.thread = self.processor.analyzer.UploadDBThread(
             self.processor.analyzer)
         self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.auto_update_results)
+        self.loading.loadingDone.connect(self._auto_update_results)
         self.loading.loadingDone.connect(self.fragments_list.update)
         self.loading.start()
 
-    def update_stats(self):
-        thread = self.processor.DescribeThread(self.processor)
-        thread.stats_ready.connect(
-            lambda stats: self._set_results(None, stats))
-        thread.run()
-
-    def auto_update_results(self):
+    def _auto_update_results(self):
         [item.setEnabled(True) for item in self.en_algorithm_results]
-        if self.stats is None:
-            self.update_stats()
-        else:
-            self._set_results()
+        self._make_global_description()
         if SupremeSettings()['result_auto_update']:
             [tab.update_results() for tab in self.tabs]
 
     def update_results(self):
+        self._update_global_description()
         [item.setEnabled(True) for item in self.en_algorithm_results]
         [tab.update_results() for tab in self.tabs]
 
     def clear_results(self):
-        self.accs = None
-        self.stats = None
         self.thread = self.processor.ClearResultsThread(self.processor)
         self.loading = LoadingWrapper(self.thread)
         # В ClearResultsTread уже есть сохранение
         # self.loading.loadingDone.connect(self.upload_db)
+        self.loading.loadingDone.connect(self._auto_update_results)
+        self.loading.loadingDone.connect(self._update_global_description)
         self.loading.start()
 
     def clear_db(self):
+        self.processor.clear_results()
         self.thread = self.processor.analyzer.ClearDBThread(
             self.processor.analyzer)
         self.loading = LoadingWrapper(self.thread)

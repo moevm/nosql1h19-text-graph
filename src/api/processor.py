@@ -1,4 +1,3 @@
-from PyQt5.QtCore import pyqtSignal
 from typing import List, Pattern
 from api.algorithm import AbstractAlgorithm, DictionaryAlgorithm, DiffAlgorithm
 from api import FragmentsAnalyzer
@@ -6,7 +5,7 @@ from logger import log
 from loading_wrapper import LoadingThread
 from neomodel import db
 from supremeSettings import SupremeSettings
-from models import TextNode
+from models import TextNode, GlobalResults
 
 
 class TextProcessor:
@@ -84,11 +83,11 @@ class TextProcessor:
                                     node1.alg_results, node2.alg_results,
                                     result, accs[index])
                 self.check_percent(i)
+            if self.analyze:
+                self.proc._upload_results(self.accs, self.stats)
             self.loadingDone.emit()
 
     class DescribeThread(LoadingThread):
-        stats_ready = pyqtSignal(object)
-
         def __init__(self, processor, parent=None):
             super().__init__(parent)
             self.operation = 'Общий анализ'
@@ -96,11 +95,11 @@ class TextProcessor:
             self.set_interval(len(processor.analyzer))
 
         def run(self):
-            acc = None
+            stats = None
             for index, node in enumerate(self.proc.analyzer):
-                acc = self.proc._get_stats(node, acc)
+                stats = self.proc._get_stats(node, stats)
                 self.check_percent(index)
-            self.stats_ready.emit(acc)
+            self.stats = stats
             self.loadingDone.emit()
 
     class ClearResultsThread(LoadingThread):
@@ -116,6 +115,7 @@ class TextProcessor:
                 node.link.disconnect_all()
                 node.save()
                 self.check_percent(index)
+            self.proc._clear_results()
             self.loadingDone.emit()
 
     def __init__(self, algorithm_classes=None):
@@ -126,7 +126,11 @@ class TextProcessor:
             self.algorithm_classes = algorithm_classes
         self.algorithms: List[AbstractAlgorithm] = []
         self.analyzer = FragmentsAnalyzer()
+        self.accs = None
+        self.stats = None
+
         self.analyzer.download_db()
+        self._download_results()
         self.set_up_algorithms()
 
     def set_up_algorithms(self):
@@ -259,18 +263,49 @@ class TextProcessor:
             return []
         return [self.analyzer[i].label for i in head]
 
+    def _download_results(self):
+        nodes = GlobalResults.nodes.all()
+        if len(nodes) > 0:
+            node = nodes[0]
+            self.accs = list(node.accs)
+            self.stats = dict(node.stats)
+
+    def _upload_results(self, accs=None, stats=None):
+        accs = self.accs if accs is None else accs
+        stats = self.stats if stats is None else stats
+        self.stats = stats
+        self.accs = accs
+
+        nodes = GlobalResults.nodes.all()
+        if len(nodes) == 0:
+            node = GlobalResults()
+        else:
+            node = nodes[0]
+        node.accs = self.accs
+        node.stats = self.stats
+        node.save()
+
+    def _clear_results(self):
+        for node in GlobalResults.nodes.all():
+            node.delete()
+        self.stats = None
+        self.accs = None
+
     def clear_db(self):
         """Очистить  БД"""
         self.analyzer.clear()
+        self.clear_results()
 
     def upload_db(self):
         """Загрузить изменения в БД"""
         thread = self.analyzer.UploadDBThread(self.analyzer)
         thread.run()
         thread.wait()
+        self._upload_results()
 
     def clear_results(self):
         """Удалить результаты из БД"""
         thread = self.ClearResultsThread(self)
         thread.run()
         thread.wait()
+        self._upload_results()
