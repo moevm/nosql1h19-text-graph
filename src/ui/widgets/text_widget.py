@@ -1,18 +1,15 @@
+from PyQt5.QtCore import QUrl
 from PyQt5.QtWidgets import QTextBrowser
 import re
 import urllib.parse as parse
 
 
-class TextBrowser(QTextBrowser):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+class CollapsibleHtml:
+    def __init__(self):
         self.collapse_ids = None
         self.source_html = None
-        self.setOpenLinks(False)
-        self.anchorClicked.connect(self._on_link_cliked)
 
-    @staticmethod
-    def _parse_collapses(text, collapse_ids=None):
+    def _parse_collapses(self, text, collapse_ids=None):
         start = r'<!-- COLLAPSE .* -->'
         end = r'<!-- END COLLAPSE -->'
         starts = [(match.start(), match.end())
@@ -39,24 +36,37 @@ class TextBrowser(QTextBrowser):
         text = re.sub(end, '', text)
         return text, collapse_ids
 
-    def setHtml(self, text):
-        self.source_html = text
-
-        text, self.collapse_ids = TextBrowser._parse_collapses(text)
-        super().setHtml(text)
-
-    def update_html(self):
-        text = self.source_html
-        text, self.collapse_ids = TextBrowser._parse_collapses(
-            text, self.collapse_ids
-        )
-        super().setHtml(text)
-
     def _on_link_cliked(self, url):
-        url = url.toString()
+        if isinstance(url, QUrl):
+            url = url.toString()
         parsed = parse.urlparse(url)
         if parsed.scheme == 'internal':
             if parsed.netloc == 'collapse':
                 toggle_id = int(dict(parse.parse_qsl(parsed.query))['id'])
                 self.collapse_ids[toggle_id] = not self.collapse_ids[toggle_id]
-        self.update_html()
+
+    def _get_html(self, text=None):
+        if text is not None:
+            self.source_html = text
+            text, self.collapse_ids = self._parse_collapses(text)
+            return text
+        else:
+            text = self.source_html
+            text, self.collapse_ids = self._parse_collapses(
+                text, self.collapse_ids)
+            return text
+
+
+class TextBrowser(QTextBrowser, CollapsibleHtml):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setOpenLinks(False)
+        self.anchorClicked.connect(self._on_link_cliked)
+
+    def setHtml(self, text):
+        super().setHtml(self._get_html(text))
+
+    def _on_link_cliked(self, url):
+        super()._on_link_cliked(url)
+        super().setHtml(self._get_html())
+
