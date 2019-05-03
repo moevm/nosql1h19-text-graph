@@ -57,7 +57,11 @@ class DiffAlgorithm(AbstractAlgorithm):
         html = self.dmp.diff_prettyHtml(comp_dict['data'])
         html = html.replace('#ffe6e6', '#ff1a1a')
         html = html.replace('#e6ffe6', '#33ff33')
-        return html
+        return f"""
+        <!-- COLLAPSE Сравнение текстов -->
+            {html}
+        <!-- END COLLAPSE -->
+        """
 
     def describe_preprocess(self, prep_dict):
         return ""

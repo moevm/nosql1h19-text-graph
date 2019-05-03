@@ -180,15 +180,18 @@ class DictionaryAlgorithm(AbstractAlgorithm):
         acc['top_words'] = add_freq_lists(acc['top_words'], res['top_words'])
         return acc
 
-    def analyze_comparison(self, res1, res2, comp_res, acc):  # TODO
+    def analyze_comparison(self, res1, res2, comp_res, acc):
         return acc
 
     def describe_result(self, acc):
         acc['top_words'].sort(key=lambda el: el[1], reverse=True)
-        html_body = """
-            <h3>Алгоритм сравнения словарей</h3>
-            <b>Наиболее часто встречающиеся слова во фрагментах</b>
+        html_body = f"""
+            <!-- COLLAPSE Таблица слов -->
             <table border="1" width="100%">
+                <caption>
+                    Наиболее часто встречающиеся слова во фрагментах
+                    [топ-{self.words_num}]
+                </caption>
                 <thead>
                     <tr>
                         <th>Слово</th>
@@ -202,16 +205,18 @@ class DictionaryAlgorithm(AbstractAlgorithm):
                     <td>{word}</td>
                     <td>{freq}</td>
                 </tr>"""
+        html_body += """
+            </table>
+            <!-- END COLLAPSE -->"""
         return html_body
 
     def describe_preprocess(self, prep_dict):
-        text = """
-        <h3>Алгоритм сравнения словарей</h3>
-        """
+        text = ""
         if prep_dict is None or 'top_words' not in prep_dict:
             text += "Результатов нет"
             return text
         text += """
+        <!-- COLLAPSE Таблица слов -->
         <table border="1" width=100%>
             <caption>Наиболее часто встречающиеся слова:</caption>
             <thead>
@@ -227,11 +232,13 @@ class DictionaryAlgorithm(AbstractAlgorithm):
                 <td>{freq}</td>
             </tr>"""
         text += """
+        <!-- END COLLAPSE -->
         </table>"""
         return text
 
     def describe_comparison(self, comp_dict):
         text = f"""
+        <!-- COLLAPSE Таблица слов -->
         <table border="1">
             <caption>
                 Наиболее часто встречающиеся слова из пересечения
@@ -251,5 +258,6 @@ class DictionaryAlgorithm(AbstractAlgorithm):
                 <td>{int(freq)}</td>
             </tr>"""
         text += """
+        <!-- END COLLAPSE -->
         </table>"""
         return text
