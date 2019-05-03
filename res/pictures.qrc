@@ -22,4 +22,20 @@
         <file alias="logo_small.png">pictures/logo_small.png</file>
         <file alias="report.png">pictures/icons/report.png</file>
     </qresource>
+    <qresource prefix="/icons/document">
+        <file alias="bold.png">pictures/icons/documents/bold.png</file>
+        <file alias="center.png">pictures/icons/documents/center.png</file>
+        <file alias="copy.png">pictures/icons/documents/copy.png</file>
+        <file alias="cut.png">pictures/icons/documents/cut.png</file>
+        <file alias="italic.png">pictures/icons/documents/italic.png</file>
+        <file alias="justify.png">pictures/icons/documents/justify.png</file>
+        <file alias="left.png">pictures/icons/documents/left.png</file>
+        <file alias="paste.png">pictures/icons/documents/paste.png</file>
+        <file alias="pdf_export.png">pictures/icons/documents/pdf_export.png</file>
+        <file alias="print.png">pictures/icons/documents/print.png</file>
+        <file alias="redo.png">pictures/icons/documents/redo.png</file>
+        <file alias="right.png">pictures/icons/documents/right.png</file>
+        <file alias="underline.png">pictures/icons/documents/underline.png</file>
+        <file alias="undo.png">pictures/icons/documents/undo.png</file>
+    </qresource>
 </RCC>

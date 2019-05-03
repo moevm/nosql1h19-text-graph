@@ -81,22 +81,26 @@ class Describer:
         """
 
     def describe_results(self, accs=None, stats=None, all_algs=False):
+        accs = accs if accs is not None else self.processor.accs
+        stats = stats if stats is not None else self.processor.stats
         assert accs is None or len(accs) == len(self.processor.algorithms)
-        html_body = f"""
-        <h1>Общие результаты работы</h1>"""
-        if stats:
-            html_body += f"""
-            <h2>Статистика</h2>
-            {self._describe_stats(stats)}"""
+        html_body = ""
+        if all_algs:
+            html_body += "<h1>Общие результаты работы</h1>"
+            if stats:
+                html_body += f"""
+                <h2>Статистика</h2>
+                {self._describe_stats(stats)}"""
         if accs:
-            html_body += """
-            <h2>Результаты алгоритмов</h2>"""
             if all_algs:
+                html_body += """
+                <h2>Результаты алгоритмов</h2>"""
                 for acc, algorithm in zip(accs, self.processor.algorithms):
                     html_body += '<p>' \
                         + f'<h3>Алгоритм {algorithm.name}</h3>' \
                         + algorithm.describe_result(acc) + '</p>'
             else:
+                html_body += f'<h2>Алгоритм {self.algorithm.name}</h2>'
                 acc = accs[self.processor.algorithms.index(self.algorithm)]
                 html_body += self.algorithm.describe_result(acc)
         return encapsulate_html(html_body)

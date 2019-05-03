@@ -157,9 +157,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _make_global_description(self):
         desc = Describer(None, self.processor)
-        results_html = desc.describe_results(self.processor.accs,
-                                             self.processor.stats,
-                                             all_algs=True)
+        results_html = desc.describe_results(all_algs=True)
         self.textBrowser.setHtml(results_html)
 
     def _update_global_description(self):
