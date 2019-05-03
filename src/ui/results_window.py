@@ -1,17 +1,22 @@
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
+
 from api import TextProcessor, Describer, Exporter
+from supremeSettings import SupremeSettings
+
 from ui_compiled.mainwindow import Ui_MainWindow
+from ui.widgets import FragmentsList, AlgorithmResults, TextBrowser
 from .fragments_window import FragmentsWindow
-from ui.widgets import FragmentsList, AlgorithmResults
 from .loading_dialog import LoadingWrapper
 from .settings import SettingsDialog
-from supremeSettings import SupremeSettings
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.textBrowser = TextBrowser(self)
+        self.textBrowserLayout.addWidget(self.textBrowser)
+
         self.settings = SupremeSettings()
 
         self.actionCloseProject.triggered.connect(self.remove_project)
@@ -189,6 +194,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loading.start()
 
     def clear_db(self):
+        if self.processor is None:
+            self.processor = TextProcessor()
         self.processor.clear_results()
         self.thread = self.processor.analyzer.ClearDBThread(
             self.processor.analyzer)

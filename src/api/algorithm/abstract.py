@@ -52,7 +52,8 @@ class AbstractAlgorithm(ABC):
         if acc is None:
             acc = {
                 'fragments': 0,
-                'edges': 0
+                'edges': 0,
+                'sum_intersect': 0
             }
         acc['fragments'] += 1
         return acc
@@ -71,6 +72,7 @@ class AbstractAlgorithm(ABC):
         :param acc: тот же аккумулятор, что и в AbstractAlgorithm.analyze
         """
         acc['edges'] += 1
+        acc['sum_intersect'] += comp_res['intersection']
         return acc
 
     def describe_result(self, acc) -> str:
@@ -81,9 +83,10 @@ class AbstractAlgorithm(ABC):
         :rtype: str
         """
         return f"""
-            <h3>Алгоритм {self.name}</h3>
             Проанализировано фрагментов: {acc['fragments']} <br>
-            Найдено связей: {acc['edges']}
+            Найдено связей: {acc['edges']} <br>
+            Среднее пересечение:
+                {acc['sum_intersect'] / acc['edges'] * 100:.2f}%
         """
 
     @abstractmethod

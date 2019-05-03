@@ -52,7 +52,7 @@ class Saver:
                 ax.text(j, i, text, ha="center", va="center",
                         color="k", fontsize=8)
 
-        plt.show()
+        return fig
 
     @staticmethod
     def save_to_graph(graph):
@@ -88,4 +88,8 @@ class Saver:
                          node_size=600, font_size=7, width=2.0)
         nx.draw_networkx_edge_labels(G, pos=pos, ax=ax, font_size=6,
                                      edge_labels=edge_labels)
+        return fig
+
+    @staticmethod
+    def display(fig):
         plt.show()

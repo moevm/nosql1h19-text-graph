@@ -40,7 +40,9 @@ class Describer:
         """
         html_body += f"""
             <h2>Текст фрагмента</h2>
+            <!-- COLLAPSE текст фрагмента -->
             {self._text_to_html(node.text)}
+            <!-- END COLLAPSE -->
         """
         return encapsulate_html(html_body)
 
@@ -91,7 +93,9 @@ class Describer:
             <h2>Результаты алгоритмов</h2>"""
             if all_algs:
                 for acc, algorithm in zip(accs, self.processor.algorithms):
-                    html_body += '<p>'+algorithm.describe_result(acc)+'</p>'
+                    html_body += '<p>' \
+                        + f'<h3>Алгоритм {algorithm.name}</h3>' \
+                        + algorithm.describe_result(acc) + '</p>'
             else:
                 acc = accs[self.processor.algorithms.index(self.algorithm)]
                 html_body += self.algorithm.describe_result(acc)

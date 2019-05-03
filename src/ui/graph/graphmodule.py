@@ -151,7 +151,8 @@ class GraphModule:
         self.positions = np.array(self.positions)
 
     def save_graph(self):
-        Saver.save_to_graph(self)
+        fig = Saver.save_to_graph(self)
+        Saver.display(fig)
 
     def relayout_graph(self, name: str):
         """Расположить вершины графа по какому-то алгоритму.

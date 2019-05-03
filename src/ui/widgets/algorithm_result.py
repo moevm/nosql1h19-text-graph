@@ -1,17 +1,22 @@
 from PyQt5.QtWidgets import QWidget
 import numpy as np
 
-from ui_compiled.algorithm_result import Ui_AlgorithmResult
 from api import Describer, Saver
 from api.algorithm import AbstractAlgorithm
-from .matrix import MatrixWidget
 from models import TextNode
+
+from ui_compiled.algorithm_result import Ui_AlgorithmResult
+from .matrix import MatrixWidget
+from .text_widget import TextBrowser
 
 
 class AlgorithmResults(QWidget, Ui_AlgorithmResult):
     def __init__(self, algorithm: AbstractAlgorithm, processor, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.textBrowser = TextBrowser(self)
+        self.textBrowserLayout.addWidget(self.textBrowser)
+
         self.algorithm = algorithm
         self.processor = processor
         self.describer = Describer(algorithm, processor)
@@ -62,7 +67,9 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
             matrix = np.copy(self.result_matrix.matrix)
             matrix = matrix[:, :, 0]
             min_val = self.thresholdSlider.value() / 100
-            Saver.save_to_matrix(matrix, self.result_matrix.head, min_val)
+            fig = Saver.save_to_matrix(matrix, self.result_matrix.head,
+                                       min_val)
+            Saver.display(fig)
 
     def update_results(self):
         min_val = self.thresholdSlider.value() / 100
