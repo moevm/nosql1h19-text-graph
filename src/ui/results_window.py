@@ -7,6 +7,7 @@ from ui_compiled.mainwindow import Ui_MainWindow
 from ui.widgets import FragmentsList, AlgorithmResults, TextBrowser
 from .fragments_window import FragmentsWindow
 from .loading_dialog import LoadingWrapper
+from .report_editor import ReportEditor
 from .settings import SettingsDialog
 
 
@@ -29,12 +30,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionClearDB.triggered.connect(self.clear_db)
         self.actionOpen.triggered.connect(self.on_import)
         self.actionSave.triggered.connect(self.on_export)
+        self.actionReport.triggered.connect(self.on_report)
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
             self.actionSave,
             self.actionChangeFragments,
-            self.actionClear
+            self.actionClear,
+            self.actionReport
         ]
 
         self.en_algorithm_results = [  # Включить, когда есть результаты
@@ -217,3 +220,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(filename) > 0:
             Exporter.import_db(filename)
             self.set_new_project()
+
+    def on_report(self):
+        self.report = ReportEditor(self.processor, self)
+        self.report.show()
