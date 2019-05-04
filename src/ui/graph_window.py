@@ -8,7 +8,6 @@ from supremeSettings import SupremeSettings
 
 import numpy as np
 
-
 class GraphWindow(QMainWindow, Ui_GraphWindow):
     def __init__(self, processor: TextProcessor,
                  algorithm=None, parent=None):

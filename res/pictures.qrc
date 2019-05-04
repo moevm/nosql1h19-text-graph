@@ -38,5 +38,6 @@
         <file alias="underline.png">pictures/icons/documents/underline.png</file>
         <file alias="undo.png">pictures/icons/documents/undo.png</file>
         <file alias="color.png">pictures/icons/documents/color.png</file>
+        <file alias="browser.png">pictures/icons/documents/browser.png</file>
     </qresource>
 </RCC>

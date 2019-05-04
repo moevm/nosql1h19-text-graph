@@ -2,6 +2,8 @@ from matplotlib import pyplot as plt, colors
 import networkx as nx
 from PyQt5.QtGui import QColor
 import numpy as np
+from io import BytesIO
+import base64
 
 
 class Saver:
@@ -89,6 +91,16 @@ class Saver:
         nx.draw_networkx_edge_labels(G, pos=pos, ax=ax, font_size=6,
                                      edge_labels=edge_labels)
         return fig
+
+    @staticmethod
+    def fig_to_base64(fig, close=True):
+        figfile = BytesIO()
+        fig.savefig(figfile, format='png')
+        figfile.seek(0)
+        figdata_png = base64.b64encode(figfile.getvalue())
+        if close:
+            plt.close(fig)
+        return figdata_png.decode('utf8')
 
     @staticmethod
     def display(fig):

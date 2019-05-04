@@ -14,69 +14,96 @@
    <string>Редактирование отчёта</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string>Компоненты отчёта</string>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Доступные компоненты</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QListWidget" name="availableList">
-         <property name="dragDropMode">
-          <enum>QAbstractItemView::DragOnly</enum>
-         </property>
-         <property name="defaultDropAction">
-          <enum>Qt::CopyAction</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Используемые компоненты</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QListWidget" name="usedList">
-         <property name="dragDropOverwriteMode">
-          <bool>false</bool>
-         </property>
-         <property name="dragDropMode">
-          <enum>QAbstractItemView::DragDrop</enum>
-         </property>
-         <property name="defaultDropAction">
-          <enum>Qt::MoveAction</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
-         <item>
-          <widget class="QPushButton" name="updateButton">
-           <property name="text">
-            <string>Обновить</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QTextEdit" name="textEdit">
-      <property name="placeholderText">
-       <string>Выберите нужные компоненты для отчёта и нажмите &quot;Обновить&quot;. Удаление из списка используемых производится двойным кликом.</string>
-      </property>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>250</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Компоненты отчёта</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Доступные компоненты</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="availableList">
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="dragDropMode">
+           <enum>QAbstractItemView::DragOnly</enum>
+          </property>
+          <property name="defaultDropAction">
+           <enum>Qt::CopyAction</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Используемые компоненты</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="usedList">
+          <property name="editTriggers">
+           <set>QAbstractItemView::NoEditTriggers</set>
+          </property>
+          <property name="dragDropOverwriteMode">
+           <bool>false</bool>
+          </property>
+          <property name="dragDropMode">
+           <enum>QAbstractItemView::DragDrop</enum>
+          </property>
+          <property name="defaultDropAction">
+           <enum>Qt::MoveAction</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="updateButton">
+            <property name="text">
+             <string>Обновить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QTextEdit" name="textEdit">
+       <property name="placeholderText">
+        <string>Выберите нужные компоненты для отчёта и нажмите &quot;Обновить&quot;. Удаление из списка используемых производится двойным кликом.</string>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -153,7 +180,9 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSave"/>
+   <addaction name="separator"/>
    <addaction name="actionPDF"/>
+   <addaction name="actionBrowser"/>
    <addaction name="actionPrint"/>
    <addaction name="separator"/>
    <addaction name="actionUpdate"/>
@@ -398,6 +427,15 @@
     <string>Цвет текста</string>
    </property>
   </action>
+  <action name="actionBrowser">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/document/browser.png</normaloff>:/icons/document/browser.png</iconset>
+   </property>
+   <property name="text">
+    <string>Открыть в браузере</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../res/pictures.qrc"/>
@@ -496,6 +534,38 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>updateButton</sender>
+   <signal>clicked()</signal>
+   <receiver>availableList</receiver>
+   <slot>clearSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>116</x>
+     <y>546</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>180</x>
+     <y>309</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>usedList</sender>
+   <signal>clicked(QModelIndex)</signal>
+   <receiver>availableList</receiver>
+   <slot>clearSelection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>465</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>118</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>

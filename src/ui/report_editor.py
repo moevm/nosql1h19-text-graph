@@ -4,6 +4,11 @@ from PyQt5.QtGui import QFontDatabase, QTextDocumentWriter, QTextCharFormat, \
         QFont, QTextCursor, QTextListFormat, QTextFormat, QFontInfo
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from PyQt5.QtCore import Qt
+import webbrowser
+import pdfkit
+import os
+import subprocess
+import platform
 
 from ui_compiled.report_editor import Ui_ReportEditorWindow
 from ui.report import AbstractReportItem, AlgorithmReportFactory
@@ -22,7 +27,12 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
         self._file_name = None
 
         self.setupUi(self)
+        self.splitter.setStretchFactor(0, 1)
+        self.splitter.setStretchFactor(1, 3)
+
         self.actionUpdate.triggered.connect(self._create_report)
+        self.usedList.doubleClicked.connect(
+            lambda i: self.usedList.takeItem(i.row()))
 
         self._setup_text_editor()
         self._setup_text_connections()
@@ -66,6 +76,7 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
 
         self.actionSave.triggered.connect(self._save)
         self.actionSaveAs.triggered.connect(self._save_as)
+        self.actionBrowser.triggered.connect(self._browser)
 
         self.actionPrint.triggered.connect(self._print)
         self.actionPrintPreview.triggered.connect(self._print_preview)
@@ -119,10 +130,10 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
     def _save_as(self):
         dialog = QFileDialog(self, 'Сохранить как...')
         dialog.setAcceptMode(QFileDialog.AcceptSave)
-        mime_types = ["application/vnd.oasis.opendocument.text",
-                      "text/html", "text/plain"]
+        mime_types = ["text/html", "text/plain",
+                      "application/vnd.oasis.opendocument.text"]
         dialog.setMimeTypeFilters(mime_types)
-        dialog.setDefaultSuffix("odt")
+        dialog.setDefaultSuffix("html")
         if dialog.exec_() != QDialog.Accepted:
             self.statusbar.showMessage('Сохранение отменено')
             return False
@@ -146,6 +157,15 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
             self._actually_print_preview)
         self.preview_dialog.exec_()
 
+    def _browser(self, not_open=False):
+        if not os.path.exists('_temp'):
+            os.mkdir('_temp')
+        filename = '_temp/temp_report.html'
+        writer = QTextDocumentWriter(filename)
+        writer.write(self.textEdit.document())
+        if not not_open:
+            webbrowser.open_new('_temp/temp_report.html')
+
     def _actually_print_preview(self, printer: QPrinter):
         self.textEdit.print(printer)
 
@@ -157,11 +177,15 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
         if dialog.exec_() != QDialog.Accepted:
             return
         name = dialog.selectedFiles()[0]
-        printer = QPrinter(QPrinter.HighResolution)
-        printer.setOutputFormat(QPrinter.PdfFormat)
-        printer.setOutputFileName(name)
-        self.textEdit.document().print(printer)
+        self._browser(True)
+        pdfkit.from_file('_temp/temp_report.html', name)
         self.statusbar.showMessage('Экспорт успешен')
+        if platform.system() == 'Darwin':       # macOS
+            subprocess.call(('open', name))
+        elif platform.system() == 'Windows':    # Windows
+            os.startfile(name)
+        else:                                   # linux variants
+            subprocess.call(('xdg-open', name))
 
     def _text_bold(self):
         fmt = QTextCharFormat()
@@ -176,7 +200,7 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
 
     def _text_underline(self):
         fmt = QTextCharFormat()
-        fmt.setFontUnderLine(self.actionTextUnderline.isChecked())
+        fmt.setFontUnderline(self.actionTextUnderline.isChecked())
         self._merge_text_format(fmt)
 
     def _merge_text_format(self, format):
@@ -333,6 +357,7 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
 
     def _create_report(self):
         self.textEdit.clear()
+        self.statusbar.showMessage('Создание отчёта...')
         html = ""
         for i in range(self.usedList.count()):
             list_item = self.usedList.item(i)
@@ -341,3 +366,4 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
         html = encapsulate_html(html)
         self.textEdit.setHtml(html)
         self.textEdit.document().setModified(True)
+        self.statusbar.showMessage('Отчёт создан')
