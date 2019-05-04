@@ -36,10 +36,13 @@ class App:
         self.log.debug(f'Main thread {QThread.currentThread()}')
 
     def start(self):
-        self.thread = self.SetupThread()
-        self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.show_login)
-        self.loading.start()
+        if self.settings['setup']:
+            self.thread = self.SetupThread()
+            self.loading = LoadingWrapper(self.thread)
+            self.loading.loadingDone.connect(self.show_login)
+            self.loading.start()
+        else:
+            self.show_login()
 
         exit_code = self.app.exec_()
         self.clear_temp()

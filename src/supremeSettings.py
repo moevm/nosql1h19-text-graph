@@ -15,23 +15,22 @@ class SupremeSettings:
         'result_auto_update': False,
         'dictionary_exclude_list': [],
         'processor_min_intersection': 0.,
-        'processor_analyze': True
+        'processor_analyze': True,
+        'setup': False,
+        'algorithms': {
+            'Diff': True,
+            'Dictionary': True
+        }
     }
 
     settings_gui = {
-        'Отображение графа': {
-            'vertex_size_value': 'Размер вершины',
-            'edge_width': 'Ширина стрелок',
-            'graphmodule_graph_scale': 'Масштабирование layout-ов',
-        },
-        'Расчёт гравитации': {
-            'graphmodule_gravity_enabled': 'Включить гравитацию',
-            'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
-            'graphmodule_gravity': 'Сила притяжения вершин к центру'
-        },
         'Общие настройки анализа': {
+            'algorithms': 'Включенные алгоритмы',
             'processor_min_intersection': 'Минимальный вес ребра [0-1]',
             'processor_analyze': 'Провести подсчёт общих результатов'
+        },
+        'Основное окно': {
+            'result_auto_update': 'Автоматически обновлять результаты'
         },
         'Алгоритм работы со словарями': {
             'dictionary_words_num': 'Сколько слов запоминать',
@@ -41,8 +40,15 @@ class SupremeSettings:
         'Алгоритм сравнения строк': {
             'diff_lines': 'Построчное сравнение (быстрее)'
         },
-        'Основное окно': {
-            'result_auto_update': 'Автоматически обновлять результаты'
+        'Отображение графа': {
+            'vertex_size_value': 'Размер вершины',
+            'edge_width': 'Ширина стрелок',
+            'graphmodule_graph_scale': 'Масштабирование layout-ов',
+        },
+        'Расчёт гравитации': {
+            'graphmodule_gravity_enabled': 'Включить гравитацию',
+            'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
+            'graphmodule_gravity': 'Сила притяжения вершин к центру'
         }
     }
 

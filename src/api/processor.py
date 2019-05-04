@@ -8,6 +8,9 @@ from supremeSettings import SupremeSettings
 from models import TextNode, GlobalResults
 
 
+_algorithm_classes = [DictionaryAlgorithm, DiffAlgorithm]
+
+
 class TextProcessor:
     """Класс, выполняющие основные операции по работе с фрагментами.
     Внесение изменений в фрагменты требует явного выполнения синхронизации.
@@ -120,12 +123,11 @@ class TextProcessor:
 
     def __init__(self, algorithm_classes=None):
         super().__init__()
-        if not algorithm_classes:
-            self.algorithm_classes = [DictionaryAlgorithm, DiffAlgorithm]
-        else:
-            self.algorithm_classes = algorithm_classes
         self.algorithms: List[AbstractAlgorithm] = []
+        self.all_algorithms: List[AbstractAlgorithm] = []
+
         self.analyzer = FragmentsAnalyzer()
+        self.settings = SupremeSettings()
         self.accs = None
         self.stats = None
 
@@ -136,8 +138,11 @@ class TextProcessor:
     def set_up_algorithms(self):
         """Инициализация алгоритмов"""
         self.algorithms = []
-        for algorithm_class in self.algorithm_classes:
-            self.algorithms.append(algorithm_class())
+        for algorithm_class in _algorithm_classes:
+            algorithm = algorithm_class()
+            if self.settings['algorithms'][algorithm.name]:
+                self.algorithms.append(algorithm)
+            self.all_algorithms.append(algorithm)
 
     def alg_by_name(self, name):
         for algorithm in self.algorithms:
@@ -145,6 +150,13 @@ class TextProcessor:
                 return algorithm
 
         raise KeyError(f'No algorithm {name}')
+
+    def is_algortihm_active(self, algorithm):
+        try:
+            self.alg_by_name(algorithm.name)
+        except KeyError:
+            return False
+        return True
 
     def parse_file(self, filename: str, regex: Pattern, get_name=None,
                    upload=True):

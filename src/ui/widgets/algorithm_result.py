@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QWidget
-import numpy as np
 
-from api import Describer, Saver
+from api import Describer, Plotter
 from api.algorithm import AbstractAlgorithm
 from models import TextNode
 
@@ -20,6 +19,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.algorithm = algorithm
         self.processor = processor
         self.describer = Describer(algorithm, processor)
+        self.plotter = Plotter(self.processor, self.algorithm)
 
         self.result_matrix = None
         self.hide_empty = False
@@ -63,13 +63,8 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
             self.describer.describe_query_relation(item, id1, id2))
 
     def _on_export(self):
-        if self.result_matrix:
-            matrix = np.copy(self.result_matrix.matrix)
-            matrix = matrix[:, :, 0]
-            min_val = self.thresholdSlider.value() / 100
-            fig = Saver.save_to_matrix(matrix, self.result_matrix.head,
-                                       min_val)
-            Saver.display(fig)
+        min_val = self.thresholdSlider.value() / 100
+        Plotter.display(self.plotter.algorithm_matrix(min_val))
 
     def update_results(self):
         min_val = self.thresholdSlider.value() / 100

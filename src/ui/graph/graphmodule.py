@@ -8,7 +8,7 @@ import numpy as np
 
 from supremeSettings import SupremeSettings
 from ui.graph import Node, Edge, GraphWidget, TextItem
-from api import Saver
+from api import Plotter
 
 
 class GraphModule:
@@ -151,8 +151,8 @@ class GraphModule:
         self.positions = np.array(self.positions)
 
     def save_graph(self):
-        fig = Saver.save_to_graph(self)
-        Saver.display(fig)
+        fig = Plotter.save_to_graph(self)
+        Plotter.display(fig)
 
     def relayout_graph(self, name: str):
         """Расположить вершины графа по какому-то алгоритму.

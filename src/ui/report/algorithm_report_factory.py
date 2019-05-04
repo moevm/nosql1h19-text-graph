@@ -2,7 +2,7 @@ from PyQt5.QtGui import QBrush, QColor
 import numpy as np
 
 from .abstract import AbstractReportItem
-from api import Describer, Saver
+from api import Describer, Plotter
 
 
 def random_color():
@@ -20,7 +20,7 @@ class AlgorithmReportItem(AbstractReportItem):
         return describer.describe_results()
 
 
-class AlgorithmMatrixItem(AbstractReportItem):
+class AlgorithmMatrixGraph(AbstractReportItem):
     def __init__(self, processor, algorithm, parent=None):
         self.name = f'Матрица для алгоритма {algorithm.name}'
         self.algorithm = algorithm
@@ -28,20 +28,27 @@ class AlgorithmMatrixItem(AbstractReportItem):
         super().__init__(processor, parent)
 
     def create_html(self):
-        matrix, head = self.processor.get_matrix(self.algorithm.name,
-                                                 min_val=self.min_val)
-        matrix = np.array(matrix)[:, :, 0]
-        head = self.processor.get_node_label_list(head)
-        fig = Saver.save_to_matrix(matrix, head)
-        fig_base = Saver.fig_to_base64(fig)
+        plotter = Plotter(self.processor, self.algorithm)
+        fig = plotter.algorithm_matrix(self.min_val)
+        fig_base = Plotter.fig_to_base64_tag(fig)
         return f"""
-            <h3>
-                Матрица пересечения для алгоритма {self.algorithm.name}
-            </h3>
-            <p>
-                <img src="data:image/jpeg;base64,{fig_base}" />
-            </p>
+            <center>
+                {fig_base}
+            </center>
         """
+
+
+class AlgorithmIntersectionGraph(AbstractReportItem):
+    def __init__(self, processor, algorithm, parent=None):
+        self.name = f'Распределение пересечений для {algorithm.name}'
+        self.algorithm = algorithm
+        super().__init__(processor, parent)
+
+    def create_html(self):
+        plotter = Plotter(self.processor, self.algorithm)
+        fig = plotter.intersection_plot()
+        fig_base = Plotter.fig_to_base64_tag(fig)
+        return f"<center> {fig_base} </center>"
 
 
 class AlgorithmReportFactory:
@@ -54,9 +61,11 @@ class AlgorithmReportFactory:
         for algorithm in self.processor.algorithms:
             report_item = AlgorithmReportItem(self.processor, algorithm,
                                               self.item_parent)
-            matrix_item = AlgorithmMatrixItem(self.processor, algorithm,
+            matr_graph = AlgorithmMatrixGraph(self.processor, algorithm,
                                               self.item_parent)
-            alg_items = [report_item, matrix_item]
+            inter_graph = AlgorithmIntersectionGraph(self.processor, algorithm,
+                                                     self.item_parent)
+            alg_items = [report_item, matr_graph, inter_graph]
             color = random_color()
             [item.setBackground(QBrush(color)) for item in alg_items]
             items.extend(alg_items)
