@@ -95,12 +95,13 @@
      <string>Файл</string>
     </property>
     <addaction name="actionSave"/>
-    <addaction name="actionExit"/>
+    <addaction name="actionSaveAs"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
     <addaction name="actionPrintPreview"/>
     <addaction name="separator"/>
     <addaction name="actionPDF"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -112,9 +113,6 @@
     <property name="title">
      <string>Формат</string>
     </property>
-    <addaction name="actionTextCut"/>
-    <addaction name="actionTextCopy"/>
-    <addaction name="actionTextPaste"/>
     <addaction name="separator"/>
     <addaction name="actionTextBold"/>
     <addaction name="actionTextItalic"/>
@@ -124,8 +122,22 @@
     <addaction name="actionTextCenter"/>
     <addaction name="actionTextRight"/>
     <addaction name="actionTextJustify"/>
+    <addaction name="separator"/>
+    <addaction name="actionTextColor"/>
+   </widget>
+   <widget class="QMenu" name="menu_4">
+    <property name="title">
+     <string>Правка</string>
+    </property>
+    <addaction name="actionTextCut"/>
+    <addaction name="actionTextCopy"/>
+    <addaction name="actionTextPaste"/>
+    <addaction name="separator"/>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
    </widget>
    <addaction name="menu"/>
+   <addaction name="menu_4"/>
    <addaction name="menu_3"/>
    <addaction name="menu_2"/>
   </widget>
@@ -138,7 +150,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionSave"/>
    <addaction name="actionPDF"/>
@@ -156,6 +168,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
+   <addaction name="separator"/>
    <addaction name="actionTextCut"/>
    <addaction name="actionTextCopy"/>
    <addaction name="actionTextPaste"/>
@@ -169,6 +184,7 @@
    <addaction name="actionTextItalic"/>
    <addaction name="actionTextUnderline"/>
    <addaction name="separator"/>
+   <addaction name="actionTextColor"/>
   </widget>
   <widget class="QToolBar" name="fontToolBar">
    <property name="windowTitle">
@@ -209,6 +225,9 @@
    </property>
   </action>
   <action name="actionTextLeft">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/document/left.png</normaloff>:/icons/document/left.png</iconset>
@@ -218,6 +237,9 @@
    </property>
   </action>
   <action name="actionTextCenter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/document/center.png</normaloff>:/icons/document/center.png</iconset>
@@ -227,6 +249,9 @@
    </property>
   </action>
   <action name="actionTextRight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/document/right.png</normaloff>:/icons/document/right.png</iconset>
@@ -236,6 +261,9 @@
    </property>
   </action>
   <action name="actionTextJustify">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/document/justify.png</normaloff>:/icons/document/justify.png</iconset>
@@ -272,6 +300,9 @@
    </property>
   </action>
   <action name="actionTextBold">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/document/bold.png</normaloff>:/icons/document/bold.png</iconset>
@@ -281,6 +312,9 @@
    </property>
   </action>
   <action name="actionTextItalic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/document/italic.png</normaloff>:/icons/document/italic.png</iconset>
@@ -290,6 +324,9 @@
    </property>
   </action>
   <action name="actionTextUnderline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/document/underline.png</normaloff>:/icons/document/underline.png</iconset>
@@ -323,6 +360,42 @@
    </property>
    <property name="text">
     <string>Печать (предпросмотр)</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/document/undo.png</normaloff>:/icons/document/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Отменить</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/document/redo.png</normaloff>:/icons/document/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Вернуть</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить как...</string>
+   </property>
+  </action>
+  <action name="actionTextColor">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/document/color.png</normaloff>:/icons/document/color.png</iconset>
+   </property>
+   <property name="text">
+    <string>Цвет текста</string>
    </property>
   </action>
  </widget>
@@ -359,6 +432,70 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>textEdit</sender>
+   <signal>undoAvailable(bool)</signal>
+   <receiver>actionUndo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>327</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>textEdit</sender>
+   <signal>redoAvailable(bool)</signal>
+   <receiver>actionRedo</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>327</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>textEdit</sender>
+   <signal>copyAvailable(bool)</signal>
+   <receiver>actionTextCopy</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>327</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>textEdit</sender>
+   <signal>copyAvailable(bool)</signal>
+   <receiver>actionTextCut</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>327</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>
