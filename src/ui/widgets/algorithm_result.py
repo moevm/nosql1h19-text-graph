@@ -3,17 +3,18 @@ from PyQt5.QtWidgets import QWidget
 from api import Describer, Plotter
 from api.algorithm import AbstractAlgorithm
 from models import TextNode
+from supremeSettings import SupremeSettings
 
 from ui_compiled.algorithm_result import Ui_AlgorithmResult
 from .matrix import MatrixWidget
 from .text_widget import TextBrowser
-from .range_slider import QRangeSlider
 
 
 class AlgorithmResults(QWidget, Ui_AlgorithmResult):
     def __init__(self, algorithm: AbstractAlgorithm, processor, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.settings = SupremeSettings()
         self.textBrowser = TextBrowser(self)
         self.textBrowserLayout.addWidget(self.textBrowser)
 
@@ -38,14 +39,15 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
 
     def _on_hide_empty_checkbox_state_changed(self, value):
         self.hide_empty = value
-        self.update_results()
+        if self.settings['result_auto_update']:
+            self.update_results()
 
     def _on_threshold_slider_value_changed(self, value):
         self.min_val = value / 100
         if self.result_matrix:
             if not self.hide_empty:
                 self.result_matrix.set_min_val(self.min_val)
-            else:
+            elif self.settings['result_auto_update']:
                 self.update_results()
 
     def _on_item_clicked(self, item: TextNode):
