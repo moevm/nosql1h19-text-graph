@@ -7,6 +7,7 @@ from models import TextNode
 from ui_compiled.algorithm_result import Ui_AlgorithmResult
 from .matrix import MatrixWidget
 from .text_widget import TextBrowser
+from .range_slider import QRangeSlider
 
 
 class AlgorithmResults(QWidget, Ui_AlgorithmResult):
@@ -21,6 +22,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.describer = Describer(algorithm, processor)
         self.plotter = Plotter(self.processor, self.algorithm)
 
+        self._init_ranges()
         self.result_matrix = None
         self.hide_empty = False
         self.thresholdSlider.valueChanged.connect(
@@ -33,6 +35,29 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
 
         self.exportButton.clicked.connect(self._on_export)
         self.updateButton.clicked.connect(self.update_results)
+
+    def _init_ranges(self):
+        self.rowsSlider = QRangeSlider(self)
+        self.columnsSlider = QRangeSlider(self)
+        frag_num = len(self.processor.analyzer)
+
+        self.rowsSlider.startValueChanged.connect(self._update_elem_number)
+        self.rowsSlider.endValueChanged.connect(self._update_elem_number)
+        self.columnsSlider.startValueChanged.connect(self._update_elem_number)
+        self.columnsSlider.endValueChanged.connect(self._update_elem_number)
+
+        self.rowsSlider.setMax(frag_num)
+        self.columnsSlider.setMax(frag_num)
+        self.rowsSlider.setRange(0, frag_num)
+        self.columnsSlider.setRange(0, frag_num)
+
+        self.rowsSliderLayout.addWidget(self.rowsSlider)
+        self.columnsSliderLayout.addWidget(self.columnsSlider)
+
+    def _update_elem_number(self):
+        num = (self.rowsSlider.end() - self.rowsSlider.start()) \
+            * (self.columnsSlider.end() - self.columnsSlider.start())
+        self.elementsLabel.setText(str(num))
 
     def _on_hide_empty_checkbox_state_changed(self, value):
         self.hide_empty = value
@@ -68,6 +93,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
 
     def update_results(self):
         min_val = self.thresholdSlider.value() / 100
+        __import__('pudb').set_trace()
         matrixModel, head = self.processor.get_matrix(
             self.algorithm.name, self.hide_empty, min_val)
         head_items = self.processor.get_node_list(head)

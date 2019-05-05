@@ -51,9 +51,10 @@ class TextNode(StructuredNode):
             if str(self.order_id) != str(self.label):
                 return f"{str(self.order_id).zfill(leading)}: " \
                    + f"[{self.label}] {self.short()}..."
-        else:
-            return f"{str(self.order_id).zfill(leading)}: " \
-                   + f"[{self.label}] {self.short()}..."
+            else:
+                return f"{str(self.order_id).zfill(leading)}: " \
+                       + f"[{self.label}] {self.short()}..."
+        return f"[{self.label}] {self.short()}..."
 
     def words_num(self):
         return len(self.text.split())

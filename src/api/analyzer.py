@@ -76,8 +76,10 @@ class FragmentsAnalyzer:
         if not self.separator:
             self.append(text, get_label(0))
         else:
-            for i, candidate in enumerate(re.split(self.separator, text)):
+            i = 0
+            for candidate in re.split(self.separator, text):
                 if len(candidate) > 0:
+                    i += 1
                     label = None
                     if get_label:
                         label = get_label(i)

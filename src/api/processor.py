@@ -341,7 +341,7 @@ class TextProcessor:
         # self.analyzer.clear()
         # self.clear_results()
         query = f"""
-            MATCH (n), ()-[r]-() DELETE n,r
+            MATCH (n) DETACH DELETE n
         """
         db.cypher_query(query)
         self.analyzer.download_db()

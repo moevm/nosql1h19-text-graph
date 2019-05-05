@@ -96,14 +96,14 @@ class AbstractAlgorithm(ABC):
         :rtype: str
         """
         if acc['edges']:
-            avg_intersect = "{acc['sum_instersect'] / acc['edges'] * 100:.2f}%"
+            avg_inter = f"{acc['sum_intersect'] / acc['edges'] * 100:.2f}%"
         else:
-            avg_intersect = "0%"
+            avg_inter = "0%"
         return f"""
             Проанализировано фрагментов: {acc['fragments']} <br>
             Найдено связей: {acc['edges']} <br>
             Среднее пересечение:
-                {avg_intersect}
+                {avg_inter}
         """
 
     @abstractmethod

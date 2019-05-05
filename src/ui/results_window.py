@@ -93,7 +93,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.infoLabel.show()
         if self.processor:
             self.processor = None
-        if self.fragments_list:
+        if self.fragments_list is not None:
             self.fragmentsWidgetLayout.removeWidget(self.fragments_list)
             self.fragments_list.deleteLater()
             self.fragments_list = None
@@ -105,7 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mainTab.show()
         self.infoLabel.hide()
 
-        if self.fragments_list:
+        if self.fragments_list is not None:
             self.fragmentsWidgetLayout.removeWidget(self.fragments_list)
             self.fragments_list.deleteLater()
 
@@ -201,12 +201,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def clear_db(self):
         if self.processor is None:
             self.processor = TextProcessor()
-        self.processor.clear_results()
-        self.thread = self.processor.analyzer.ClearDBThread(
-            self.processor.analyzer)
-        self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.remove_project)
-        self.loading.start()
+        self.processor.clear_db()
+        self._auto_update_results()
+        self.fragments_list.update()
 
     def on_export(self):
         filename, filter_ = QFileDialog.getSaveFileName(self, 'Сохранить',
