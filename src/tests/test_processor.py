@@ -27,8 +27,8 @@ class TestTextProcessor(unittest.TestCase):
         processor.upload_db()
         self.assertGreater(len(processor.analyzer), 1)
         processor.do_preprocess()
-        res, stats = processor.do_process(analyze=True)
         processor.upload_db()
+        res, stats = processor.do_process(analyze=True)
         self.assertIsNotNone(res)
         self.assertIsNotNone(stats)
 

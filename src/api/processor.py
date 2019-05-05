@@ -25,10 +25,23 @@ class TextProcessor:
             self.operation = 'Выполнение предобработки'
             self.set_interval(len(proc.analyzer))
 
+        def _check_keys(self, node, algorithm):
+            if not node.alg_results:
+                return False
+            for key in algorithm.preprocess_keys:
+                if key not in node.alg_results:
+                    return False
+            return True
+
         def run(self):
             for index, algorithm in enumerate(self.proc.algorithms):
                 self.updateStatus.emit(f'Обработка алгоритма {algorithm.name}')
                 log.info(f'Preprocessing for {algorithm}')
+                # FIXME В этом моменте опасно. Если в БД где-то нет результата,
+                # будет ошибка
+                if self._check_keys(self.proc.analyzer[-1], algorithm):
+                    log.info(f'Для алгоритма {algorithm} уже есть результаты')
+                    continue
                 for index, node in enumerate(self.proc.analyzer):
                     self.check_percent(index)
                     if not node.alg_results:
@@ -123,6 +136,7 @@ class TextProcessor:
         super().__init__()
         self.algorithms: List[AbstractAlgorithm] = []  # Включенные
         self.all_algorithms: List[AbstractAlgorithm] = []  # Все
+        self.init_algorithm_classes = algorithm_classes
 
         self.analyzer = FragmentsAnalyzer()
         self.settings = SupremeSettings()
@@ -138,7 +152,10 @@ class TextProcessor:
         self.algorithms = []
         for algorithm_class in _algorithm_classes:
             algorithm = algorithm_class()
-            if self.settings['algorithms'][algorithm.name]:
+            if self.init_algorithm_classes is not None \
+                    and algorithm_class is self.init_algorithm_classes:
+                self.algorithms.append(algorithm)
+            elif self.settings['algorithms'][algorithm.name]:
                 self.algorithms.append(algorithm)
             self.all_algorithms.append(algorithm)
 
@@ -202,7 +219,7 @@ class TextProcessor:
         thread.run()
         thread.wait()
         if analyze:
-            return thread.accs, thread.stats
+            return self.accs, self.stats
 
     def get_node_id_list(self, algorithm_name: str, exclude_zeros=False,
                          min_val=0):
@@ -290,6 +307,9 @@ class TextProcessor:
             for alg_name in algs:
                 self.settings['algorithms'][alg_name] = True
             self.set_up_algorithms()
+        else:
+            self.accs = None
+            self.stats = None
 
     def _upload_results(self, accs=None, stats=None):
         accs = self.accs if accs is None else accs
@@ -318,8 +338,14 @@ class TextProcessor:
 
     def clear_db(self):
         """Очистить  БД"""
-        self.analyzer.clear()
-        self.clear_results()
+        # self.analyzer.clear()
+        # self.clear_results()
+        query = f"""
+            MATCH (n), ()-[r]-() DELETE n,r
+        """
+        db.cypher_query(query)
+        self.analyzer.download_db()
+        self._download_results()
 
     def upload_db(self):
         """Загрузить изменения в БД"""

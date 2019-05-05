@@ -24,6 +24,10 @@ class DictionaryAlgorithm(AbstractAlgorithm):
     def name(self):
         return 'Dictionary'
 
+    @property
+    def preprocess_keys(self):
+        return ['tokens', 'top_words']
+
     def check_word(self, word: str) -> bool:
         """
         Проверяет, удовлетворяет ли слово заданным критерием
