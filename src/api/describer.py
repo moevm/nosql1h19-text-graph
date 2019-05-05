@@ -1,3 +1,4 @@
+from logger import log
 from api.algorithm import AbstractAlgorithm
 from api import TextProcessor
 from models import TextNode
@@ -47,15 +48,19 @@ class Describer:
         return encapsulate_html(html_body)
 
     def describe_query_relation(self, rel, id1=None, id2=None):
-        rel = dict(rel)
-        rel['data'] = json.loads(rel['data'])
+        if rel is None:
+            intersection = 0
+        else:
+            intersection = rel['intersection']
+            rel['data'] = json.loads(rel['data'])
         html_body = f"""
         <h1>Связь</h1>
-        <h3>Пересечение: {rel['intersection']*100:.2f}% </h3>"""
+        <h3>Пересечение: {intersection*100:.2f}% </h3>"""
         if id1 and id2:
             html_body += f"""
             <h3>Фрагменты: {id1} и {id2} </h3>"""
-        html_body += self.algorithm.describe_comparison(rel)
+        if rel:
+            html_body += self.algorithm.describe_comparison(rel)
         return encapsulate_html(html_body)
 
     def _describe_stats(self, stats):
@@ -81,22 +86,30 @@ class Describer:
         """
 
     def describe_results(self, accs=None, stats=None, all_algs=False):
-        assert accs is None or len(accs) == len(self.processor.algorithms)
-        html_body = f"""
-        <h1>Общие результаты работы</h1>"""
-        if stats:
-            html_body += f"""
-            <h2>Статистика</h2>
-            {self._describe_stats(stats)}"""
+        accs = accs if accs is not None else self.processor.accs
+        stats = stats if stats is not None else self.processor.stats
+        algorithms = self.processor.algorithms
+        if accs and len(accs) != len(algorithms):
+            log.warning('Результаты в БД не соответствуют настройкам')
+            algorithms = self.processor.all_algorithms
+        html_body = ""
+        if all_algs:
+            html_body += "<h1>Общие результаты работы</h1>"
+            if stats:
+                html_body += f"""
+                <h2>Статистика</h2>
+                {self._describe_stats(stats)}"""
         if accs:
-            html_body += """
-            <h2>Результаты алгоритмов</h2>"""
             if all_algs:
-                for acc, algorithm in zip(accs, self.processor.algorithms):
-                    html_body += '<p>' \
-                        + f'<h3>Алгоритм {algorithm.name}</h3>' \
-                        + algorithm.describe_result(acc) + '</p>'
+                html_body += """
+                <h2>Результаты алгоритмов</h2>"""
+                for acc, algorithm in zip(accs, self.processor.all_algorithms):
+                    if self.processor.is_algortihm_active(algorithm):
+                        html_body += '<p>' \
+                            + f'<h3>Алгоритм {algorithm.name}</h3>' \
+                            + algorithm.describe_result(acc) + '</p>'
             else:
+                html_body += f'<h2>Алгоритм {self.algorithm.name}</h2>'
                 acc = accs[self.processor.algorithms.index(self.algorithm)]
                 html_body += self.algorithm.describe_result(acc)
         return encapsulate_html(html_body)

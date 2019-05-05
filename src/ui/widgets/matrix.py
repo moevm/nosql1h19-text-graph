@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor
-from typing import List, Tuple, Union, Dict
+from typing import List
+
 from ui.misc import get_foreground_color
 
 
@@ -39,13 +40,11 @@ class MatrixWidget(QTableWidget):
     item_clicked = pyqtSignal(object)
     relation_clicked = pyqtSignal(object)
 
-    def __init__(self, matrix: List[List[
-                Tuple[float, Union[Dict, None]]
-            ]], head, head_dicts, min_val=0, parent=None):
+    def __init__(self, matrix: List[List[float]],
+                 head, head_dicts, min_val=0, parent=None):
         """
         :param matrix: Отображаемая матрица из элементов вида:
-            [Процент пересечения, Передаваемый при клике словарь]
-        :type matrix: List[List[Tuple[float, Union[TextRelation, Dict, None]]]]
+            [Процент пересечения]
         :param head: Заголовки матрицы
         :param head_objects: Элементы, передаваемые при клике на соответсвующие
             заголовки матрицы
@@ -74,8 +73,8 @@ class MatrixWidget(QTableWidget):
             self.setColumnCount(len(matrix[0]))
         for i, row in enumerate(matrix):
             # self.setColumnWidth(i, 10)
-            for j, matrix_item in enumerate(row):
-                value, relation = matrix_item
+            for j, value in enumerate(row):
+                relation = (i, j, value)
                 item = IntersectionItem(value, self.min_val, relation)
                 self.update_min_val.connect(item.update_text)
                 self.setItem(i, j, item)

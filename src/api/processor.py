@@ -8,12 +8,13 @@ from supremeSettings import SupremeSettings
 from models import TextNode, GlobalResults
 
 
+_algorithm_classes = [DictionaryAlgorithm, DiffAlgorithm]
+
+
 class TextProcessor:
     """Класс, выполняющие основные операции по работе с фрагментами.
     Внесение изменений в фрагменты требует явного выполнения синхронизации.
     Таким образом в БД не будут занесены ошибочные данные"""
-
-    # TODO Подумать над объединенем TextProcessor и TextAnalyzer
 
     class PreprocessThread(LoadingThread):
         """Выполняет предобработку фрагментов"""
@@ -24,10 +25,23 @@ class TextProcessor:
             self.operation = 'Выполнение предобработки'
             self.set_interval(len(proc.analyzer))
 
+        def _check_keys(self, node, algorithm):
+            if not node.alg_results:
+                return False
+            for key in algorithm.preprocess_keys:
+                if key not in node.alg_results:
+                    return False
+            return True
+
         def run(self):
             for index, algorithm in enumerate(self.proc.algorithms):
                 self.updateStatus.emit(f'Обработка алгоритма {algorithm.name}')
                 log.info(f'Preprocessing for {algorithm}')
+                # FIXME В этом моменте опасно. Если в БД где-то нет результата,
+                # будет ошибка
+                if self._check_keys(self.proc.analyzer[-1], algorithm):
+                    log.info(f'Для алгоритма {algorithm} уже есть результаты')
+                    continue
                 for index, node in enumerate(self.proc.analyzer):
                     self.check_percent(index)
                     if not node.alg_results:
@@ -120,12 +134,12 @@ class TextProcessor:
 
     def __init__(self, algorithm_classes=None):
         super().__init__()
-        if not algorithm_classes:
-            self.algorithm_classes = [DictionaryAlgorithm, DiffAlgorithm]
-        else:
-            self.algorithm_classes = algorithm_classes
-        self.algorithms: List[AbstractAlgorithm] = []
+        self.algorithms: List[AbstractAlgorithm] = []  # Включенные
+        self.all_algorithms: List[AbstractAlgorithm] = []  # Все
+        self.init_algorithm_classes = algorithm_classes
+
         self.analyzer = FragmentsAnalyzer()
+        self.settings = SupremeSettings()
         self.accs = None
         self.stats = None
 
@@ -136,15 +150,32 @@ class TextProcessor:
     def set_up_algorithms(self):
         """Инициализация алгоритмов"""
         self.algorithms = []
-        for algorithm_class in self.algorithm_classes:
-            self.algorithms.append(algorithm_class())
+        for algorithm_class in _algorithm_classes:
+            algorithm = algorithm_class()
+            if self.init_algorithm_classes is not None \
+                    and algorithm_class is self.init_algorithm_classes:
+                self.algorithms.append(algorithm)
+            elif self.settings['algorithms'][algorithm.name]:
+                self.algorithms.append(algorithm)
+            self.all_algorithms.append(algorithm)
 
-    def alg_by_name(self, name):
-        for algorithm in self.algorithms:
+    def alg_by_name(self, name, all_=False):
+        if not all_:
+            algorithms = self.algorithms
+        else:
+            algorithms = self.all_algorithms
+        for algorithm in algorithms:
             if algorithm.name == name:
                 return algorithm
 
         raise KeyError(f'No algorithm {name}')
+
+    def is_algortihm_active(self, algorithm):
+        try:
+            self.alg_by_name(algorithm.name)
+        except KeyError:
+            return False
+        return True
 
     def parse_file(self, filename: str, regex: Pattern, get_name=None,
                    upload=True):
@@ -188,7 +219,7 @@ class TextProcessor:
         thread.run()
         thread.wait()
         if analyze:
-            return thread.accs, thread.stats
+            return self.accs, self.stats
 
     def get_node_id_list(self, algorithm_name: str, exclude_zeros=False,
                          min_val=0):
@@ -198,13 +229,24 @@ class TextProcessor:
             MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
             WHERE r.algorithm_name = '{algorithm_name}'
                 AND r.intersection >= {min_val}
-            RETURN n.order_id, n2.order_id, r, n.alg_results
+            RETURN n.order_id, n2.order_id, r.intersection
+            ORDER BY n.order_id
         """
         res, meta = db.cypher_query(query)
         # head - список номеров вершин для матрицы
         if exclude_zeros:  # Убрать нули
-            head = list(set(id1 for id1, id2, r, res_a in res))
-            head.sort()
+            # head = list(set(id1 for id1, id2, r, res_a in res))
+            query = f"""
+                MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
+                WHERE r.algorithm_name = '{algorithm_name}'
+                    AND r.intersection > {min_val}
+                WITH collect(distinct n.order_id) AS id_list
+                UNWIND id_list AS id_
+                RETURN id_
+                ORDER BY id_
+            """
+            res_, meta_ = db.cypher_query(query)
+            head = [r[0] for r in res_]
         else:
             head = [node.order_id for node in self.analyzer]
 
@@ -213,7 +255,7 @@ class TextProcessor:
         return head, res
 
     def get_matrix(self, algorithm_name: str, exclude_zeros=False, min_val=0):
-        """Получить матрицу, пригодную для обработки в MatrixWidget
+        """Получить матрицу инцидентности для алгоритма
 
         :param algorithm_name: имя алгоритма
         :type algorithm_name: str
@@ -228,16 +270,15 @@ class TextProcessor:
             head_rev[id_] = i
 
         # Сама матрица
-        matrix = [[(0, None) for _ in range(len(head))]
+        matrix = [[0 for _ in range(len(head))]
                   for _ in range(len(head))]
         if res:
-            for id1, id2, r, result in res:
-                if r['intersection'] > min_val or not exclude_zeros:
-                    matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], \
-                            (id1, id2, r)
+            for id1, id2, intersection in res:
+                if intersection > min_val or not exclude_zeros:
+                    matrix[head_rev[id1]][head_rev[id2]] = intersection
 
         for i in range(len(matrix)):
-            matrix[i][i] = (1, None)
+            matrix[i][i] = 1
 
         return matrix, head
 
@@ -263,12 +304,35 @@ class TextProcessor:
             return []
         return [self.analyzer[i].label for i in head]
 
+    def get_relation(self, algorithm_name, id1, id2):
+        query = f"""
+            MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
+            WHERE n.order_id = {id1} AND n2.order_id = {id2}
+                AND r.algorithm_name = '{algorithm_name}'
+            RETURN r
+        """
+        res, meta = db.cypher_query(query)
+        if res:
+            return dict(res[0][0])
+        else:
+            return None
+
     def _download_results(self):
         nodes = GlobalResults.nodes.all()
         if len(nodes) > 0:
             node = nodes[0]
             self.accs = list(node.accs)
             self.stats = dict(node.stats)
+
+            algs = list(node.algs)
+            for alg in self.all_algorithms:
+                self.settings['algorithms'][alg.name] = False
+            for alg_name in algs:
+                self.settings['algorithms'][alg_name] = True
+            self.set_up_algorithms()
+        else:
+            self.accs = None
+            self.stats = None
 
     def _upload_results(self, accs=None, stats=None):
         accs = self.accs if accs is None else accs
@@ -284,6 +348,7 @@ class TextProcessor:
                 node = nodes[0]
             node.accs = self.accs
             node.stats = self.stats
+            node.algs = [alg.name for alg in self.algorithms]
             node.save()
         else:
             self._clear_results()
@@ -296,8 +361,14 @@ class TextProcessor:
 
     def clear_db(self):
         """Очистить  БД"""
-        self.analyzer.clear()
-        self.clear_results()
+        # self.analyzer.clear()
+        # self.clear_results()
+        query = f"""
+            MATCH (n) DETACH DELETE n
+        """
+        db.cypher_query(query)
+        self.analyzer.download_db()
+        self._download_results()
 
     def upload_db(self):
         """Загрузить изменения в БД"""

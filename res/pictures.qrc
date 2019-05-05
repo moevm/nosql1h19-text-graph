@@ -1,24 +1,43 @@
 <RCC>
-  <qresource prefix="/logo">
-    <file alias="logo.png">pictures/logo.png</file>
-  </qresource>
-  <qresource prefix="/icons">
-    <file alias="shutdown.png">pictures/icons/shutdown.png</file>
-    <file alias="stop.png">pictures/icons/stop.png</file>
-    <file alias="logout.png">pictures/icons/logout.png</file>
-    <file alias="open.png">pictures/icons/open.png</file>
-    <file alias="save.png">pictures/icons/save.png</file>
-    <file alias="settings.png">pictures/icons/settings.png</file>
-    <file alias="import_db.png">pictures/icons/import_db.png</file>
-    <file alias="export_db.png">pictures/icons/export_db.png</file>
-    <file alias="stack.png">pictures/icons/stack.png</file>
-    <file alias="start.png">pictures/icons/start.png</file>
-    <file alias="trash.png">pictures/icons/trash.png</file>
-    <file alias="create.png">pictures/icons/create.png</file>
-    <file alias="exit.png">pictures/icons/exit.png</file>
-    <file alias="update.png">pictures/icons/update.png</file>
-    <file alias="gravity.png">pictures/icons/gravity.png</file>
-    <file alias="boom.png">pictures/icons/boom.png</file>
-    <file alias="logo_small.png">pictures/logo_small.png</file>
-  </qresource>
+    <qresource prefix="/logo">
+        <file alias="logo.png">pictures/logo.png</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="shutdown.png">pictures/icons/shutdown.png</file>
+        <file alias="stop.png">pictures/icons/stop.png</file>
+        <file alias="logout.png">pictures/icons/logout.png</file>
+        <file alias="open.png">pictures/icons/open.png</file>
+        <file alias="save.png">pictures/icons/save.png</file>
+        <file alias="settings.png">pictures/icons/settings.png</file>
+        <file alias="import_db.png">pictures/icons/import_db.png</file>
+        <file alias="export_db.png">pictures/icons/export_db.png</file>
+        <file alias="stack.png">pictures/icons/stack.png</file>
+        <file alias="start.png">pictures/icons/start.png</file>
+        <file alias="trash.png">pictures/icons/trash.png</file>
+        <file alias="create.png">pictures/icons/create.png</file>
+        <file alias="exit.png">pictures/icons/exit.png</file>
+        <file alias="update.png">pictures/icons/update.png</file>
+        <file alias="gravity.png">pictures/icons/gravity.png</file>
+        <file alias="boom.png">pictures/icons/boom.png</file>
+        <file alias="logo_small.png">pictures/logo_small.png</file>
+        <file alias="report.png">pictures/icons/report.png</file>
+    </qresource>
+    <qresource prefix="/icons/document">
+        <file alias="bold.png">pictures/icons/documents/bold.png</file>
+        <file alias="center.png">pictures/icons/documents/center.png</file>
+        <file alias="copy.png">pictures/icons/documents/copy.png</file>
+        <file alias="cut.png">pictures/icons/documents/cut.png</file>
+        <file alias="italic.png">pictures/icons/documents/italic.png</file>
+        <file alias="justify.png">pictures/icons/documents/justify.png</file>
+        <file alias="left.png">pictures/icons/documents/left.png</file>
+        <file alias="paste.png">pictures/icons/documents/paste.png</file>
+        <file alias="pdf_export.png">pictures/icons/documents/pdf_export.png</file>
+        <file alias="print.png">pictures/icons/documents/print.png</file>
+        <file alias="redo.png">pictures/icons/documents/redo.png</file>
+        <file alias="right.png">pictures/icons/documents/right.png</file>
+        <file alias="underline.png">pictures/icons/documents/underline.png</file>
+        <file alias="undo.png">pictures/icons/documents/undo.png</file>
+        <file alias="color.png">pictures/icons/documents/color.png</file>
+        <file alias="browser.png">pictures/icons/documents/browser.png</file>
+    </qresource>
 </RCC>

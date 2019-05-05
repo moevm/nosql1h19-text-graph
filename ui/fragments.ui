@@ -165,6 +165,13 @@
             </layout>
            </item>
            <item>
+            <widget class="QRadioButton" name="romanRadioButton">
+             <property name="text">
+              <string>Римские цифры и перенос строки</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QRadioButton" name="dontSeparateRadioButton">
              <property name="text">
               <string>Не разделять текст</string>

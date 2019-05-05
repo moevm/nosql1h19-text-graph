@@ -8,3 +8,4 @@ fa2
 diff-match-patch
 networkx
 matplotlib
+pdfkit

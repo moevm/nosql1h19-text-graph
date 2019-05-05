@@ -7,6 +7,7 @@ from ui_compiled.mainwindow import Ui_MainWindow
 from ui.widgets import FragmentsList, AlgorithmResults, TextBrowser
 from .fragments_window import FragmentsWindow
 from .loading_dialog import LoadingWrapper
+from .report_editor import ReportEditor
 from .settings import SettingsDialog
 
 
@@ -29,12 +30,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionClearDB.triggered.connect(self.clear_db)
         self.actionOpen.triggered.connect(self.on_import)
         self.actionSave.triggered.connect(self.on_export)
+        self.actionReport.triggered.connect(self.on_report)
 
         self.en_project = [  # Включить, когда есть проект
             self.actionCloseProject,
             self.actionSave,
             self.actionChangeFragments,
-            self.actionClear
+            self.actionClear,
+            self.actionReport
         ]
 
         self.en_algorithm_results = [  # Включить, когда есть результаты
@@ -90,6 +93,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.infoLabel.show()
         if self.processor:
             self.processor = None
+        if self.fragments_list is not None:
+            self.fragmentsWidgetLayout.removeWidget(self.fragments_list)
+            self.fragments_list.deleteLater()
+            self.fragments_list = None
         self.update_enabled()
 
     def set_new_project(self):
@@ -98,7 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mainTab.show()
         self.infoLabel.hide()
 
-        if self.fragments_list:
+        if self.fragments_list is not None:
             self.fragmentsWidgetLayout.removeWidget(self.fragments_list)
             self.fragments_list.deleteLater()
 
@@ -154,9 +161,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def _make_global_description(self):
         desc = Describer(None, self.processor)
-        results_html = desc.describe_results(self.processor.accs,
-                                             self.processor.stats,
-                                             all_algs=True)
+        results_html = desc.describe_results(all_algs=True)
         self.textBrowser.setHtml(results_html)
 
     def _update_global_description(self):
@@ -196,12 +201,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def clear_db(self):
         if self.processor is None:
             self.processor = TextProcessor()
-        self.processor.clear_results()
-        self.thread = self.processor.analyzer.ClearDBThread(
-            self.processor.analyzer)
-        self.loading = LoadingWrapper(self.thread)
-        self.loading.loadingDone.connect(self.remove_project)
-        self.loading.start()
+        self.processor.clear_db()
+        self._auto_update_results()
+        self.fragments_list.update()
 
     def on_export(self):
         filename, filter_ = QFileDialog.getSaveFileName(self, 'Сохранить',
@@ -217,3 +219,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(filename) > 0:
             Exporter.import_db(filename)
             self.set_new_project()
+
+    def on_report(self):
+        self.report = ReportEditor(self.processor, self)
+        self.report.show()

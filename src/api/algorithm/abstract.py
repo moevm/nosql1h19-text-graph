@@ -34,6 +34,19 @@ class AbstractAlgorithm(ABC):
     def name(self) -> str:
         pass
 
+    @abstractproperty
+    def preprocess_keys(self) -> list:
+        """Набор ключей словаря, которые возвращает метод preprocess.
+        Предполагается, что результаты методов preprocess для разных алгоритмов
+        могут пересекаться. При этом одинаковые результаты записываются под
+        одинаковыми ключами.
+        Если для фрагмента уже имеются все необходимые результаты, то нет
+        смысла выполнять метод preprocess.
+
+        :rtype: list
+        """
+        pass
+
     def analyze(self, res: Dict, acc=None):
         """Получить общие результаты. Этот метод должен применится к каждому
         фрагменту. После чего полученный объект-аккумулятор передается в
@@ -82,11 +95,15 @@ class AbstractAlgorithm(ABC):
         фрагментам
         :rtype: str
         """
+        if acc['edges']:
+            avg_inter = f"{acc['sum_intersect'] / acc['edges'] * 100:.2f}%"
+        else:
+            avg_inter = "0%"
         return f"""
             Проанализировано фрагментов: {acc['fragments']} <br>
             Найдено связей: {acc['edges']} <br>
             Среднее пересечение:
-                {acc['sum_intersect'] / acc['edges'] * 100:.2f}%
+                {avg_inter}
         """
 
     @abstractmethod

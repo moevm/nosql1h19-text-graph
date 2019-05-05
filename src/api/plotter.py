@@ -2,9 +2,47 @@ from matplotlib import pyplot as plt, colors
 import networkx as nx
 from PyQt5.QtGui import QColor
 import numpy as np
+from io import BytesIO
+import base64
+from neomodel import db
 
 
-class Saver:
+class Plotter:
+    def __init__(self, processor, algorithm=None):
+        self.processor = processor
+        self.algorithm = algorithm
+
+    def algorithm_matrix(self, min_val=0):
+        matrix, head = self.processor.get_matrix(self.algorithm.name)
+        head = self.processor.get_node_label_list(head)
+        return Plotter.save_to_matrix(matrix, head, min_val)
+
+    def fragments_length_plot(self):
+        text_lens = [len(node.text) for node in self.processor.analyzer]
+        fig, ax = plt.subplots(figsize=(7, 5))
+        ax.set_title('Распределение длин фрагментов')
+        ax.hist(text_lens)
+        ax.set_ylabel('Количество фрагментов')
+        ax.set_xlabel('Длина фрагмента')
+        return fig
+
+    def intersection_plot(self):
+        query = f"""
+            MATCH (:TextNode)-[r:ALG]-(:TextNode)
+            WHERE r.algorithm_name = '{self.algorithm.name}'
+                AND r.intersection > 0
+            RETURN r.intersection
+            ORDER BY r.intersection
+        """
+        res, meta = db.cypher_query(query)
+        fig, ax = plt.subplots(figsize=(7, 5))
+        ax.set_title(
+            f'Распределение пересечений для алгоритма {self.algorithm.name}')
+        ax.hist([r[0] for r in res])
+        ax.set_ylabel('Количество')
+        ax.set_xlabel('Пересечение')
+        return fig
+
     @staticmethod
     def _get_cmap(min_val):
         """Получение matplotlib'овской Colormap для заданного
@@ -35,11 +73,13 @@ class Saver:
 
     @staticmethod
     def save_to_matrix(matrix, head, min_val=0):
-        cmap = Saver._get_cmap(min_val)
+        cmap = Plotter._get_cmap(min_val)
 
         # TODO Адаптивный размер
         fig, ax = plt.subplots(figsize=(10, 10))
-        ax.matshow(matrix.tolist(), cmap=cmap)
+        # if not isinstance(matrix, list):
+        #    matrix = list(matrix)
+        ax.matshow(matrix, cmap=cmap)
 
         ax.set_xticks(range(len(head)))
         ax.set_yticks(range(len(head)))
@@ -48,7 +88,7 @@ class Saver:
 
         for i in range(len(matrix)):
             for j in range(len(matrix)):
-                text = f"{int(matrix[i, j] * 100)}%"
+                text = f"{int(matrix[i][j] * 100)}%"
                 ax.text(j, i, text, ha="center", va="center",
                         color="k", fontsize=8)
 
@@ -89,6 +129,21 @@ class Saver:
         nx.draw_networkx_edge_labels(G, pos=pos, ax=ax, font_size=6,
                                      edge_labels=edge_labels)
         return fig
+
+    @staticmethod
+    def fig_to_base64(fig, close=True):
+        figfile = BytesIO()
+        fig.savefig(figfile, format='png', bbox_inches='tight')
+        figfile.seek(0)
+        figdata_png = base64.b64encode(figfile.getvalue())
+        if close:
+            plt.close(fig)
+        return figdata_png.decode('utf8')
+
+    @staticmethod
+    def fig_to_base64_tag(*args, **kwargs):
+        return '<img src="data:image/jpeg;base64,' \
+            + Plotter.fig_to_base64(*args, **kwargs) + '" />'
 
     @staticmethod
     def display(fig):

@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import QWidget
-import numpy as np
 
-from api import Describer, Saver
+from api import Describer, Plotter
 from api.algorithm import AbstractAlgorithm
 from models import TextNode
+from supremeSettings import SupremeSettings
 
 from ui_compiled.algorithm_result import Ui_AlgorithmResult
 from .matrix import MatrixWidget
@@ -14,12 +14,15 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
     def __init__(self, algorithm: AbstractAlgorithm, processor, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        self.settings = SupremeSettings()
         self.textBrowser = TextBrowser(self)
         self.textBrowserLayout.addWidget(self.textBrowser)
 
         self.algorithm = algorithm
         self.processor = processor
+        self.elementsLabel.setText(str(len(self.processor.analyzer)**2))
         self.describer = Describer(algorithm, processor)
+        self.plotter = Plotter(self.processor, self.algorithm)
 
         self.result_matrix = None
         self.hide_empty = False
@@ -36,14 +39,15 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
 
     def _on_hide_empty_checkbox_state_changed(self, value):
         self.hide_empty = value
-        self.update_results()
+        if self.settings['result_auto_update']:
+            self.update_results()
 
     def _on_threshold_slider_value_changed(self, value):
         self.min_val = value / 100
         if self.result_matrix:
             if not self.hide_empty:
                 self.result_matrix.set_min_val(self.min_val)
-            else:
+            elif self.settings['result_auto_update']:
                 self.update_results()
 
     def _on_item_clicked(self, item: TextNode):
@@ -56,24 +60,20 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
         self.graph_window.show()
 
     def _on_relation_clicked(self, item):
-        id1, id2, item = item
+        id1, id2, intersection = item
+        rel = self.processor.get_relation(self.algorithm.name, id1, id2)
         id1 = f"{id1} [{self.processor.get_node_label(id1)}]"
         id2 = f"{id2} [{self.processor.get_node_label(id2)}]"
         self.textBrowser.setHtml(
-            self.describer.describe_query_relation(item, id1, id2))
+            self.describer.describe_query_relation(rel, id1, id2))
 
     def _on_export(self):
-        if self.result_matrix:
-            matrix = np.copy(self.result_matrix.matrix)
-            matrix = matrix[:, :, 0]
-            min_val = self.thresholdSlider.value() / 100
-            fig = Saver.save_to_matrix(matrix, self.result_matrix.head,
-                                       min_val)
-            Saver.display(fig)
+        min_val = self.thresholdSlider.value() / 100
+        Plotter.display(self.plotter.algorithm_matrix(min_val))
 
     def update_results(self):
         min_val = self.thresholdSlider.value() / 100
-        matrixModel, head = self.processor.get_matrix(
+        matrix, head = self.processor.get_matrix(
             self.algorithm.name, self.hide_empty, min_val)
         head_items = self.processor.get_node_list(head)
         head_names = self.processor.get_node_label_list(head)
@@ -86,7 +86,7 @@ class AlgorithmResults(QWidget, Ui_AlgorithmResult):
                     self.resultMatrixLayout.itemAt(i))
             self.loadLabel.deleteLater()
 
-        self.result_matrix = MatrixWidget(matrixModel, head_names, head_items,
+        self.result_matrix = MatrixWidget(matrix, head_names, head_items,
                                           min_val, self)
         self.result_matrix.item_clicked.connect(self._on_item_clicked)
         self.result_matrix.relation_clicked.connect(self._on_relation_clicked)

@@ -8,7 +8,8 @@ import numpy as np
 
 from supremeSettings import SupremeSettings
 from ui.graph import Node, Edge, GraphWidget, TextItem
-from api import Saver
+from api import Plotter
+from logger import log
 
 
 class GraphModule:
@@ -43,6 +44,7 @@ class GraphModule:
         self._nodes = {}  # Хранилище вершин
         self._edges = {}  # Хранилище связей
         self._texts = {}  # Хранилище текстов
+        self.get_relation_text = lambda item: str(item)
         self.matrix = None
         self.positions = None
 
@@ -74,7 +76,9 @@ class GraphModule:
         :param pos_y: y-координата вершины
         :param **kwargs: Аргументы конструктора Node
         """
-        assert id not in self._nodes
+        # assert id not in self._nodes
+        if id in self._nodes:
+            log.warning(f"{id} уже добавлена")
         node = Node(self.widget, id=id, **kwargs)
         node.setPos(pos_x, pos_y)
         self.widget.scene().addItem(node)
@@ -113,9 +117,10 @@ class GraphModule:
                           item, html_text=item.info)
         elif isinstance(item, Edge) and item.info \
                 and item.id not in self._texts:
-            x = (item.dest.x() - item.source.x()) / 2
-            y = (item.dest.y() - item.source.x()) / 2
-            self.add_text(item.id, x, y, item.source, html_text=item.info)
+            x = (item.dest.x() - item.source.x()) / 2 + item.source.x()
+            y = (item.dest.y() - item.source.y()) / 2 + item.source.y()
+            self.add_text(item.id, x, y, parent_item=item.source,
+                          html_text=self.get_relation_text(item.info))
 
     def clear(self):
         self._nodes.clear()
@@ -151,8 +156,8 @@ class GraphModule:
         self.positions = np.array(self.positions)
 
     def save_graph(self):
-        fig = Saver.save_to_graph(self)
-        Saver.display(fig)
+        fig = Plotter.save_to_graph(self)
+        Plotter.display(fig)
 
     def relayout_graph(self, name: str):
         """Расположить вершины графа по какому-то алгоритму.

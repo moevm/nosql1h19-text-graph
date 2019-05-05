@@ -40,9 +40,9 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
                 def get_name(filename, i): return filename
             else:
                 def get_name(filename, i): return f"{filename}_{i}"
-
             files = [f for f in listdir(self.folder)
                      if isfile(join(self.folder, f))]
+            files.sort()
             self.set_interval(len(files))
             for i, file_name in enumerate(files):
                 def get_name_local(index): return get_name(file_name, index)
@@ -101,6 +101,9 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         self.dontSeparateRadioButton.clicked.connect(
             lambda: self.sepRegExEdit.setText('.*')
         )
+        self.romanRadioButton.clicked.connect(
+            lambda: self.sepRegExEdit.setText('^[MDCLXVI]+\\n{2}')
+        )
         self.removeAllFragmentsButton.clicked.connect(
             self.on_clear_fragments
         )
@@ -152,7 +155,7 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
         self.folder = True
 
     def on_add_fragments(self):
-        regex = re.compile(self.sepRegExEdit.text()) \
+        regex = re.compile(self.sepRegExEdit.text(), re.MULTILINE) \
                 if self.sepRegExEdit.text() != '.*' else None
         if len(self.file_name) > 0:
             if not self.folder:

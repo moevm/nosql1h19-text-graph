@@ -124,6 +124,8 @@
    <addaction name="actionClear"/>
    <addaction name="actionClearDB"/>
    <addaction name="separator"/>
+   <addaction name="actionReport"/>
+   <addaction name="separator"/>
    <addaction name="actionStartProcess"/>
    <addaction name="actionUpdateResults"/>
    <addaction name="separator"/>
@@ -160,6 +162,8 @@
     <addaction name="actionChangeFragments"/>
     <addaction name="actionClear"/>
     <addaction name="actionClearDB"/>
+    <addaction name="separator"/>
+    <addaction name="actionReport"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
@@ -293,6 +297,9 @@
    </property>
   </action>
   <action name="actionUpdateResults">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/update.png</normaloff>:/icons/update.png</iconset>
@@ -308,6 +315,18 @@
    </property>
    <property name="text">
     <string>Очистить БД</string>
+   </property>
+  </action>
+  <action name="actionReport">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/report.png</normaloff>:/icons/report.png</iconset>
+   </property>
+   <property name="text">
+    <string>Создать отчёт</string>
    </property>
   </action>
  </widget>

@@ -24,6 +24,10 @@ class DictionaryAlgorithm(AbstractAlgorithm):
     def name(self):
         return 'Dictionary'
 
+    @property
+    def preprocess_keys(self):
+        return ['tokens', 'top_words']
+
     def check_word(self, word: str) -> bool:
         """
         Проверяет, удовлетворяет ли слово заданным критерием
@@ -217,23 +221,23 @@ class DictionaryAlgorithm(AbstractAlgorithm):
             return text
         text += """
         <!-- COLLAPSE Таблица слов -->
-        <table border="1" width=100%>
-            <caption>Наиболее часто встречающиеся слова:</caption>
-            <thead>
-                <tr>
-                    <th>Слово</th>
-                    <th>Частота</th>
-                </tr>
-            </thead>"""
+            <table border="1" width=100%>
+                <caption>Наиболее часто встречающиеся слова:</caption>
+                <thead>
+                    <tr>
+                        <th>Слово</th>
+                        <th>Частота</th>
+                    </tr>
+                </thead>"""
         for word, freq in prep_dict['top_words']:
             text += f"""
-            <tr>
-                <td>{word}</td>
-                <td>{freq}</td>
-            </tr>"""
+                <tr>
+                    <td>{word}</td>
+                    <td>{freq}</td>
+                </tr>"""
         text += """
-        <!-- END COLLAPSE -->
-        </table>"""
+            </table>
+        <!-- END COLLAPSE -->"""
         return text
 
     def describe_comparison(self, comp_dict):

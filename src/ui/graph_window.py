@@ -15,6 +15,7 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
         super().__init__(parent)
         self.setupUi(self)
         self.graph = GraphModule(self)
+        self.graph.get_relation_text = self._describe_relation
 
         self.graphWidgetLayout.addWidget(self.graph.widget)
         self.processor = processor
@@ -74,6 +75,12 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
         self.graph.clear()
         self.populateGraph()
 
+    def _describe_relation(self, item):
+        id1, id2 = item
+        rel = self.processor.get_relation(self.algorithm.name, id1, id2)
+        text = self.describer.describe_query_relation(rel, id1, id2)
+        return text
+
     def populateGraph(self):
         min_val = self.thresholdSlider.value() / 100
         head, res = self.processor.get_node_id_list(
@@ -86,13 +93,13 @@ class GraphWindow(QMainWindow, Ui_GraphWindow):
             self.graph.add_node(node.order_id, x, y, color=color,
                                 label=str(node.label), info=info)
         if res:
-            for id1, id2, rel, res_a in res:
+            for id1, id2, intersection in res:
                 if min_val < 1:
-                    weight = (rel['intersection'] - min_val + 0.005) \
+                    weight = (intersection - min_val + 0.005) \
                            / (1 - min_val)
                 else:
                     weight = 1
-                info = self.describer.describe_query_relation(rel, id1, id2)
+                info = (id1, id2)
                 self.graph.add_edge(id1, id2, ud=True, info=info,
                                     weight=weight)
 
