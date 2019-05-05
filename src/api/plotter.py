@@ -14,7 +14,6 @@ class Plotter:
 
     def algorithm_matrix(self, min_val=0):
         matrix, head = self.processor.get_matrix(self.algorithm.name)
-        matrix = np.array(matrix)[:, :, 0]
         head = self.processor.get_node_label_list(head)
         return Plotter.save_to_matrix(matrix, head, min_val)
 
@@ -78,7 +77,9 @@ class Plotter:
 
         # TODO Адаптивный размер
         fig, ax = plt.subplots(figsize=(10, 10))
-        ax.matshow(matrix.tolist(), cmap=cmap)
+        # if not isinstance(matrix, list):
+        #    matrix = list(matrix)
+        ax.matshow(matrix, cmap=cmap)
 
         ax.set_xticks(range(len(head)))
         ax.set_yticks(range(len(head)))
@@ -87,7 +88,7 @@ class Plotter:
 
         for i in range(len(matrix)):
             for j in range(len(matrix)):
-                text = f"{int(matrix[i, j] * 100)}%"
+                text = f"{int(matrix[i][j] * 100)}%"
                 ax.text(j, i, text, ha="center", va="center",
                         color="k", fontsize=8)
 

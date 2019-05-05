@@ -48,15 +48,19 @@ class Describer:
         return encapsulate_html(html_body)
 
     def describe_query_relation(self, rel, id1=None, id2=None):
-        rel = dict(rel)
-        rel['data'] = json.loads(rel['data'])
+        if rel is None:
+            intersection = 0
+        else:
+            intersection = rel['intersection']
+            rel['data'] = json.loads(rel['data'])
         html_body = f"""
         <h1>Связь</h1>
-        <h3>Пересечение: {rel['intersection']*100:.2f}% </h3>"""
+        <h3>Пересечение: {intersection*100:.2f}% </h3>"""
         if id1 and id2:
             html_body += f"""
             <h3>Фрагменты: {id1} и {id2} </h3>"""
-        html_body += self.algorithm.describe_comparison(rel)
+        if rel:
+            html_body += self.algorithm.describe_comparison(rel)
         return encapsulate_html(html_body)
 
     def _describe_stats(self, stats):

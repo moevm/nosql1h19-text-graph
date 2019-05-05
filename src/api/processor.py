@@ -229,13 +229,24 @@ class TextProcessor:
             MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
             WHERE r.algorithm_name = '{algorithm_name}'
                 AND r.intersection >= {min_val}
-            RETURN n.order_id, n2.order_id, r, n.alg_results
+            RETURN n.order_id, n2.order_id, r.intersection
+            ORDER BY n.order_id
         """
         res, meta = db.cypher_query(query)
         # head - список номеров вершин для матрицы
         if exclude_zeros:  # Убрать нули
-            head = list(set(id1 for id1, id2, r, res_a in res))
-            head.sort()
+            # head = list(set(id1 for id1, id2, r, res_a in res))
+            query = f"""
+                MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
+                WHERE r.algorithm_name = '{algorithm_name}'
+                    AND r.intersection > {min_val}
+                WITH collect(distinct n.order_id) AS id_list
+                UNWIND id_list AS id_
+                RETURN id_
+                ORDER BY id_
+            """
+            res_, meta_ = db.cypher_query(query)
+            head = [r[0] for r in res_]
         else:
             head = [node.order_id for node in self.analyzer]
 
@@ -244,7 +255,7 @@ class TextProcessor:
         return head, res
 
     def get_matrix(self, algorithm_name: str, exclude_zeros=False, min_val=0):
-        """Получить матрицу, пригодную для обработки в MatrixWidget
+        """Получить матрицу инцидентности для алгоритма
 
         :param algorithm_name: имя алгоритма
         :type algorithm_name: str
@@ -259,16 +270,15 @@ class TextProcessor:
             head_rev[id_] = i
 
         # Сама матрица
-        matrix = [[(0, None) for _ in range(len(head))]
+        matrix = [[0 for _ in range(len(head))]
                   for _ in range(len(head))]
         if res:
-            for id1, id2, r, result in res:
-                if r['intersection'] > min_val or not exclude_zeros:
-                    matrix[head_rev[id1]][head_rev[id2]] = r['intersection'], \
-                            (id1, id2, r)
+            for id1, id2, intersection in res:
+                if intersection > min_val or not exclude_zeros:
+                    matrix[head_rev[id1]][head_rev[id2]] = intersection
 
         for i in range(len(matrix)):
-            matrix[i][i] = (1, None)
+            matrix[i][i] = 1
 
         return matrix, head
 
@@ -293,6 +303,19 @@ class TextProcessor:
         if not head:
             return []
         return [self.analyzer[i].label for i in head]
+
+    def get_relation(self, algorithm_name, id1, id2):
+        query = f"""
+            MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
+            WHERE n.order_id = {id1} AND n2.order_id = {id2}
+                AND r.algorithm_name = '{algorithm_name}'
+            RETURN r
+        """
+        res, meta = db.cypher_query(query)
+        if res:
+            return dict(res[0][0])
+        else:
+            return None
 
     def _download_results(self):
         nodes = GlobalResults.nodes.all()
