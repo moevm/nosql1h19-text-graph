@@ -93,6 +93,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.infoLabel.show()
         if self.processor:
             self.processor = None
+        if self.fragments_list:
+            self.fragmentsWidgetLayout.removeWidget(self.fragments_list)
+            self.fragments_list.deleteLater()
+            self.fragments_list = None
         self.update_enabled()
 
     def set_new_project(self):

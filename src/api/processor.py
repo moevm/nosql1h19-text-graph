@@ -16,8 +16,6 @@ class TextProcessor:
     Внесение изменений в фрагменты требует явного выполнения синхронизации.
     Таким образом в БД не будут занесены ошибочные данные"""
 
-    # TODO Подумать над объединенем TextProcessor и TextAnalyzer
-
     class PreprocessThread(LoadingThread):
         """Выполняет предобработку фрагментов"""
 
@@ -123,8 +121,8 @@ class TextProcessor:
 
     def __init__(self, algorithm_classes=None):
         super().__init__()
-        self.algorithms: List[AbstractAlgorithm] = []
-        self.all_algorithms: List[AbstractAlgorithm] = []
+        self.algorithms: List[AbstractAlgorithm] = []  # Включенные
+        self.all_algorithms: List[AbstractAlgorithm] = []  # Все
 
         self.analyzer = FragmentsAnalyzer()
         self.settings = SupremeSettings()
@@ -144,8 +142,12 @@ class TextProcessor:
                 self.algorithms.append(algorithm)
             self.all_algorithms.append(algorithm)
 
-    def alg_by_name(self, name):
-        for algorithm in self.algorithms:
+    def alg_by_name(self, name, all_=False):
+        if not all_:
+            algorithms = self.algorithms
+        else:
+            algorithms = self.all_algorithms
+        for algorithm in algorithms:
             if algorithm.name == name:
                 return algorithm
 
@@ -282,6 +284,13 @@ class TextProcessor:
             self.accs = list(node.accs)
             self.stats = dict(node.stats)
 
+            algs = list(node.algs)
+            for alg in self.all_algorithms:
+                self.settings['algorithms'][alg.name] = False
+            for alg_name in algs:
+                self.settings['algorithms'][alg_name] = True
+            self.set_up_algorithms()
+
     def _upload_results(self, accs=None, stats=None):
         accs = self.accs if accs is None else accs
         stats = self.stats if stats is None else stats
@@ -296,6 +305,7 @@ class TextProcessor:
                 node = nodes[0]
             node.accs = self.accs
             node.stats = self.stats
+            node.algs = [alg.name for alg in self.algorithms]
             node.save()
         else:
             self._clear_results()
