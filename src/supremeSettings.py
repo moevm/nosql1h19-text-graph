@@ -16,7 +16,7 @@ class SupremeSettings:
         'dictionary_exclude_list': [],
         'processor_min_intersection': 0.,
         'processor_analyze': True,
-        'setup': False,
+        'setup': True,
         'algorithms': {
             'Diff': True,
             'Dictionary': True

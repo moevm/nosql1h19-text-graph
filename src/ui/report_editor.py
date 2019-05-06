@@ -13,6 +13,7 @@ import platform
 from ui_compiled.report_editor import Ui_ReportEditorWindow
 from ui.report import AlgorithmReportFactory, StatsReport, LenghtDispGraph
 from api import encapsulate_html
+from supremeSettings import SupremeSettings
 
 
 _report_classes = [StatsReport, LenghtDispGraph]
@@ -22,6 +23,7 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
     def __init__(self, processor, parent=None):
         super().__init__(parent)
         self.processor = processor
+        self.settings = SupremeSettings()
         self._report_items = {}
 
         self._file_name = None
@@ -181,13 +183,11 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
         self.preview_dialog.exec_()
 
     def _browser(self, not_open=False):
-        if not os.path.exists('_temp'):
-            os.mkdir('_temp')
-        filename = '_temp/temp_report.html'
+        filename = f'{self.settings["tempdir"]}/temp_report.html'
         writer = QTextDocumentWriter(filename)
         writer.write(self.textEdit.document())
         if not not_open:
-            webbrowser.open_new('_temp/temp_report.html')
+            webbrowser.open_new(filename)
 
     def _actually_print_preview(self, printer: QPrinter):
         self.textEdit.print(printer)
@@ -201,7 +201,7 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
             return
         name = dialog.selectedFiles()[0]
         self._browser(True)
-        pdfkit.from_file('_temp/temp_report.html', name)
+        pdfkit.from_file(f'{self.settings["tempdir"]}/temp_report.html', name)
         self.statusbar.showMessage('Экспорт успешен')
         if platform.system() == 'Darwin':       # macOS
             subprocess.call(('open', name))
@@ -367,4 +367,3 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
         md = QApplication.clipboard().mimeData()
         if md:
             self.actionTextPaste.setEnabled(md.hasText())
-

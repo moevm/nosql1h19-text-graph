@@ -3,8 +3,7 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QThread
 import sys
 import traceback
-import os
-import shutil
+import tempfile
 
 from config.config import Config
 from ui import LoginWindow, ExceptionDialog, MainWindow, LoadingWrapper
@@ -31,6 +30,10 @@ class App:
         logging.config.dictConfig(Config.LOGGING_CONFIG)
         self.log = logging.getLogger('root')
 
+        self.tempdir = tempfile.TemporaryDirectory()
+        self.log.debug(f'Temporary Directory is {self.tempdir}')
+        self.settings['tempdir'] = self.tempdir.name
+
         self.window = None
         self.login = None
         self.log.debug(f'Main thread {QThread.currentThread()}')
@@ -45,12 +48,7 @@ class App:
             self.show_login()
 
         exit_code = self.app.exec_()
-        self.clear_temp()
         sys.exit(exit_code)
-
-    def clear_temp(self):
-        if os.path.exists('_temp'):
-            shutil.rmtree('_temp')
 
     def show_login(self):
         if self.window:

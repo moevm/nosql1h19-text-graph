@@ -3,7 +3,6 @@ from api import TextProcessor, Exporter
 from api.database import DataBaseConnection
 from tests.config import Config as TestConfig
 from neomodel import db
-import os
 
 
 class TestExporter(unittest.TestCase):
@@ -15,8 +14,7 @@ class TestExporter(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        if os.path.exists("_temp.graphml"):
-            os.remove("_temp.graphml")
+        pass
 
     def TestImportExport(self):
         def get_relation_number():
