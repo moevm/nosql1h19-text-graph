@@ -28,6 +28,7 @@ paths=(
     src/ui/
     src/ui/graph/
     src/ui/misc/
+    src/ui/report/
     src/ui/widgets/
     src/ui_compiled/
 )

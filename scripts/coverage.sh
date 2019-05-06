@@ -10,4 +10,5 @@ if ! [[ -d ../docs/coverage ]]; then
 fi
 rm -rf ../docs/coverage/*;
 coverage html --directory=../docs/coverage;
+coverage xml -o ../docs/coverage.xml;
 sensible-browser ../docs/coverage/index.html;
