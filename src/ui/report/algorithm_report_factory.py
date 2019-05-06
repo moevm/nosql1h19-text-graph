@@ -11,7 +11,7 @@ def random_color():
 
 class AlgorithmReportItem(AbstractReportItem):
     def __init__(self, processor, algorithm, parent=None):
-        self.name = f'Отчёт для алгоритма {algorithm.name}'
+        self.name = f'[{algorithm.name}]: Общий отчёт'
         self.algorithm = algorithm
         super().__init__(processor, parent)
 
@@ -20,16 +20,35 @@ class AlgorithmReportItem(AbstractReportItem):
         return describer.describe_results()
 
 
-class AlgorithmMatrixGraph(AbstractReportItem):
+class AverageIntersectionItem(AbstractReportItem):
     def __init__(self, processor, algorithm, parent=None):
-        self.name = f'Матрица для алгоритма {algorithm.name}'
+        self.name = f'[{algorithm.name}]: Среднее пересечение по фрагментам'
         self.algorithm = algorithm
-        self.min_val = 0  # TODO?
         super().__init__(processor, parent)
 
     def create_html(self):
+        describer = Describer(self.algorithm, self.processor)
+        return describer.describe_intersection_per_fragment()
+
+
+class AlgorithmMatrixGraph(AbstractReportItem):
+    def __init__(self, processor, algorithm, parent=None):
+        self.name = f'[{algorithm.name}]: Матрица пересечений'
+        self.algorithm = algorithm
+        self.settings = {
+            'min_val': 0.
+        }
+        self.gui_settings = {
+            'Настройки связи': {
+                'min_val': 'Минимальное значение связи'
+            }
+        }
+        super().__init__(processor, parent)
+
+    def create_html(self):
+        min_val = self.settings['min_val']
         plotter = Plotter(self.processor, self.algorithm)
-        fig = plotter.algorithm_matrix(self.min_val)
+        fig = plotter.algorithm_matrix(min_val)
         fig_base = Plotter.fig_to_base64_tag(fig)
         return f"""
             <center>
@@ -40,7 +59,7 @@ class AlgorithmMatrixGraph(AbstractReportItem):
 
 class AlgorithmIntersectionGraph(AbstractReportItem):
     def __init__(self, processor, algorithm, parent=None):
-        self.name = f'Распределение пересечений для {algorithm.name}'
+        self.name = f'[{algorithm.name}] Распределение пересечений'
         self.algorithm = algorithm
         super().__init__(processor, parent)
 
@@ -61,11 +80,14 @@ class AlgorithmReportFactory:
         for algorithm in self.processor.algorithms:
             report_item = AlgorithmReportItem(self.processor, algorithm,
                                               self.item_parent)
+            inter_item = AverageIntersectionItem(self.processor, algorithm,
+                                                 self.item_parent)
             matr_graph = AlgorithmMatrixGraph(self.processor, algorithm,
                                               self.item_parent)
             inter_graph = AlgorithmIntersectionGraph(self.processor, algorithm,
                                                      self.item_parent)
-            alg_items = [report_item, matr_graph, inter_graph]
+
+            alg_items = [report_item, inter_item, matr_graph, inter_graph]
             color = random_color()
             [item.setBackground(QBrush(color)) for item in alg_items]
             items.extend(alg_items)

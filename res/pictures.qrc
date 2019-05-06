@@ -21,6 +21,7 @@
         <file alias="boom.png">pictures/icons/boom.png</file>
         <file alias="logo_small.png">pictures/logo_small.png</file>
         <file alias="report.png">pictures/icons/report.png</file>
+        <file alias="cog_wheel.png">pictures/icons/cog_wheel.png</file>
     </qresource>
     <qresource prefix="/icons/document">
         <file alias="bold.png">pictures/icons/documents/bold.png</file>

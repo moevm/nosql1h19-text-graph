@@ -1,8 +1,11 @@
+from neomodel import db
+import json
+
 from logger import log
 from api.algorithm import AbstractAlgorithm
 from api import TextProcessor
 from models import TextNode
-import json
+from ui.misc import get_color_by_weight, get_foreground_color
 
 
 def encapsulate_html(body):
@@ -112,4 +115,49 @@ class Describer:
                 html_body += f'<h2>Алгоритм {self.algorithm.name}</h2>'
                 acc = accs[self.processor.algorithms.index(self.algorithm)]
                 html_body += self.algorithm.describe_result(acc)
-        return encapsulate_html(html_body)
+        if all_algs:
+            html_body = encapsulate_html(html_body)
+        return html_body
+
+    def describe_intersection_per_fragment(self):
+        query = f"""
+        MATCH (n:TextNode)
+        OPTIONAL MATCH (n)-[r:ALG]-(n2:TextNode)
+        WHERE r.algorithm_name='{self.algorithm.name}'
+        WITH avg(r.intersection) as intersection, n as n
+        RETURN n.order_id, n.label, CASE intersection WHEN null THEN 0
+            ELSE intersection END
+        ORDER BY n.order_id
+        """
+        res, meta = db.cypher_query(query)
+        html_body = f"""
+            <h2>Среднее пересечение для каждого фрагмента</h2>
+            <table border="1" width=100%>
+                <thead>
+                    <tr>
+                        <th>Номер</th>
+                        <th>Название</th>
+                        <th>Среднее пересечение</th>
+                    </th>
+                </thead>
+        """
+        inters = [r[2] for r in res]
+        max_inter = max(inters)
+        min_inter = min(inters)
+        for order_id, label, intersection in res:
+            color_weight = (max_inter - intersection) / (max_inter - min_inter)
+            bg_color = get_color_by_weight(color_weight)
+            fg_color = get_foreground_color(bg_color)
+            html_body += f"""
+                <tr>
+                    <td>{order_id}</td>
+                    <td>{label}</td>
+                    <td bgcolor='{bg_color.name()}' color='{fg_color.name()}'>
+                        {intersection*100:.2f}%
+                    </td>
+                </tr>
+            """
+        html_body += f"""
+            </table>
+        """
+        return html_body

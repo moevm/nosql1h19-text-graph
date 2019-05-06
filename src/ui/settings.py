@@ -1,12 +1,15 @@
 from PyQt5.QtWidgets import QDialog, QLineEdit, QSpinBox, QDoubleSpinBox, \
-        QCheckBox, QBoxLayout, QLabel, QGroupBox, QPushButton
+        QCheckBox, QBoxLayout, QLabel, QGroupBox, QPushButton, QSpacerItem
+from PyQt5.QtCore import pyqtSignal
 from ui_compiled.settings import Ui_SettingsDialog
 from ui.widgets import SettingsListDialog
 from supremeSettings import SupremeSettings
 
 
-class SettingsDialog(QDialog, Ui_SettingsDialog):
-    def __init__(self, parent=None):
+class GuiSettingsDialog(QDialog, Ui_SettingsDialog):
+    settings_set = pyqtSignal(object)
+
+    def __init__(self, settings, gui_settings, parent=None):
         super().__init__(parent)
         self.setupUi(self)
 
@@ -14,8 +17,8 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
         self.min_ = 0
         self.list_values = {}
 
-        self.settings = SupremeSettings()
-        self.settings.check_settings()
+        self.settings = settings
+        self.gui_settings = gui_settings
         self.controls = {}
         self.add_settings()
         self.saveButton.clicked.connect(self.on_ok_clicked)
@@ -30,6 +33,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
             layout = QBoxLayout(QBoxLayout.TopToBottom)
             label = QLabel(text, self)
             control = QLineEdit(value, self)
+            control.returnPressed.connect(self.on_ok_clicked)
             layout.addWidget(label)
         elif isinstance(value, int) or isinstance(value, float):
             if isinstance(value, float):
@@ -61,7 +65,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
 
     def add_settings(self):
         main_layout = QBoxLayout(QBoxLayout.TopToBottom)
-        for box_title, settings in self.settings.settings_gui.items():
+        for box_title, settings in self.gui_settings.items():
             box = QGroupBox(box_title, self)
             box_layout = QBoxLayout(QBoxLayout.TopToBottom)
             for name, text in settings.items():
@@ -73,6 +77,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
             if main_layout.count() > 2:
                 self.settingsLayout.addItem(main_layout)
                 main_layout = QBoxLayout(QBoxLayout.TopToBottom)
+        main_layout.addStretch()
         self.settingsLayout.addItem(main_layout)
 
     def on_ok_clicked(self):
@@ -88,4 +93,11 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
                 new_value = widget.value()
             new_value = type(prev_value)(new_value)
             self.settings[name] = new_value
+        self.settings_set.emit(self.settings)
         self.accept()
+
+
+class SettingsDialog(GuiSettingsDialog):
+    def __init__(self, parent=None):
+        settings = SupremeSettings()
+        super().__init__(settings, settings.settings_gui, parent)
