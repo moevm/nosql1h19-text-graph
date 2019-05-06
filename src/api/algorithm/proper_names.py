@@ -155,7 +155,7 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
 
     def analyze(self, res: Dict, acc=None):
         def add_freq_lists(list1: FrqList, list2: FrqList):
-            total = copy.deepcopy(list1 + list2)  # TODO проверить типы
+            total = copy.deepcopy(list1 + list2)
             total.sort(key=lambda el: el[0])
             i = 0
             while i < len(total) - 1:
@@ -176,24 +176,80 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
         return acc
 
     def describe_result(self, acc) -> str:
-        # TODO Describe_result_proper
-        pass
+        acc['top_proper_names'].sort(key=lambda el: el[1], reverse=True)
+        html_body = f"""
+                    <!-- COLLAPSE Таблица слов -->
+                    <table border="1" width="100%">
+                        <caption>
+                            Наиболее часто встречающиеся имена собственные во фрагментах
+                            [топ-{self.words_num}]
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>Слово</th>
+                                <th>Количество</th>
+                            </tr>
+                        </thead>"""
+        acc['top_proper_names'] = acc['top_proper_names'][:self.words_num]
+        for word, freq in acc['top_words']:
+            html_body += f"""
+                        <tr>
+                            <td>{word}</td>
+                            <td>{freq}</td>
+                        </tr>"""
+        html_body += """
+                    </table>
+                    <!-- END COLLAPSE -->"""
+        return html_body
 
     def describe_comparison(self, comp_dict) -> str:
-        data = comp_dict["top_proper_names"]
-        result = "<div>" + self.extract_html(data)
-
-        return result
-
-    def extract_html(self, data):
-        result = ""
-        for item in data:
-            result += "<p>" + str(item[1]) + " - " + str(item[0]) + "</p>"
-        result += "</div>"
-        return result
+        text = f"""
+                <!-- COLLAPSE Таблица слов -->
+                <table border="1">
+                    <caption>
+                        Наиболее часто встречающиеся имена собственные из пересечения
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th>Слово</th>
+                            <th>Пересечение</th>
+                            <th>Частота</th>
+                        </tr>
+                    </thead>"""
+        for inter, freq, word in comp_dict['data']['top_proper_names']:
+            text += f"""
+                    <tr>
+                        <td>{word}</td>
+                        <td>{inter:.2f}</td>
+                        <td>{int(freq)}</td>
+                    </tr>"""
+        text += """
+                <!-- END COLLAPSE -->
+                </table>"""
+        return text
 
     def describe_preprocess(self, prep_dict) -> str:
-        data = prep_dict["top_proper_names"]
-        result = "<div>" + self.extract_html(data)
-
-        return result
+        text = ""
+        if prep_dict is None or 'top_proper_names' not in prep_dict:
+            text += "Результатов нет"
+            return text
+        text += """
+                <!-- COLLAPSE Таблица слов -->
+                    <table border="1" width=100%>
+                        <caption>Наиболее часто встречающиеся имена собственные:</caption>
+                        <thead>
+                            <tr>
+                                <th>Слово</th>
+                                <th>Частота</th>
+                            </tr>
+                        </thead>"""
+        for word, freq in prep_dict['top_proper_names']:
+            text += f"""
+                        <tr>
+                            <td>{word}</td>
+                            <td>{freq}</td>
+                        </tr>"""
+        text += """
+                    </table>
+                <!-- END COLLAPSE -->"""
+        return text
