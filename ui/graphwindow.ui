@@ -7,11 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>1236</width>
-    <height>682</height>
+    <height>779</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Отображение графа</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,3">
@@ -29,6 +33,61 @@
          <string>Параметры</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QCheckBox" name="gravityCheckBox">
+           <property name="text">
+            <string>Гравитация</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Расположение</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="layoutComboBox">
+           <item>
+            <property name="text">
+             <string>random</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>circular</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>kamada_kawai</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>planar</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>shell</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>spring</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="relayoutButton">
+           <property name="text">
+            <string>Перерасположить</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QLabel" name="label">
            <property name="text">
@@ -136,13 +195,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="clearResultsButton">
-           <property name="text">
-            <string>Очистить результаты</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
@@ -172,7 +224,7 @@
      <x>0</x>
      <y>0</y>
      <width>1236</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -187,9 +239,6 @@
     <property name="title">
      <string>Алгоритмы</string>
     </property>
-    <addaction name="actionСomponents"/>
-    <addaction name="actionCliques"/>
-    <addaction name="action"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -222,38 +271,14 @@
   </action>
   <action name="actionSaveGraph">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
    </property>
    <property name="text">
-    <string>Сохранить</string>
-   </property>
-  </action>
-  <action name="actionСomponents">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Поиск компонент двусвязности</string>
-   </property>
-  </action>
-  <action name="actionCliques">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Поиск клик графа</string>
-   </property>
-  </action>
-  <action name="action">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Поиск компонент связности</string>
+    <string>Экспорт в matplotlib</string>
    </property>
   </action>
  </widget>

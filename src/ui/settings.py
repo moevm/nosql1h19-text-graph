@@ -20,7 +20,6 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
         self.add_settings()
         self.saveButton.clicked.connect(self.on_ok_clicked)
 
-
     def get_setting_control(self, name, text):
         value = self.settings[name]
         if isinstance(value, bool):
@@ -42,13 +41,15 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
             layout = QBoxLayout(QBoxLayout.LeftToRight)
             label = QLabel(text, self)
             layout.addWidget(label)
-        elif isinstance(value, list):
+        elif isinstance(value, list) or isinstance(value, dict):
             self.list_values[name] = value
             control = QPushButton('Изменить список', self)
             control.clicked.connect(lambda: self.on_list_change_clicked(name))
             label = QLabel(text, self)
             layout = QBoxLayout(QBoxLayout.LeftToRight)
             layout.addWidget(label)
+        else:
+            raise ValueError(f'Не GUI для настройки типа {type(value)} ')
         layout.addWidget(control)
         return control, layout
 
@@ -59,6 +60,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
         self.list_dialog.show()
 
     def add_settings(self):
+        main_layout = QBoxLayout(QBoxLayout.TopToBottom)
         for box_title, settings in self.settings.settings_gui.items():
             box = QGroupBox(box_title, self)
             box_layout = QBoxLayout(QBoxLayout.TopToBottom)
@@ -67,7 +69,11 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
                 box_layout.addLayout(layout)
                 self.controls[name] = control
             box.setLayout(box_layout)
-            self.settingsLayout.addWidget(box)
+            main_layout.addWidget(box)
+            if main_layout.count() > 2:
+                self.settingsLayout.addItem(main_layout)
+                main_layout = QBoxLayout(QBoxLayout.TopToBottom)
+        self.settingsLayout.addItem(main_layout)
 
     def on_ok_clicked(self):
         for name, widget in self.controls.items():
@@ -76,7 +82,7 @@ class SettingsDialog(QDialog, Ui_SettingsDialog):
                 new_value = widget.isChecked()
             elif isinstance(prev_value, str):
                 new_value = widget.text()
-            elif isinstance(prev_value, list):
+            elif isinstance(prev_value, list) or isinstance(prev_value, dict):
                 new_value = self.list_values[name]
             else:
                 new_value = widget.value()

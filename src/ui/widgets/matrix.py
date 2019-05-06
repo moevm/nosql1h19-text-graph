@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor
-from typing import List, Tuple, Union, Dict
+from typing import List
+
 from ui.misc import get_foreground_color
 
 
@@ -39,13 +40,11 @@ class MatrixWidget(QTableWidget):
     item_clicked = pyqtSignal(object)
     relation_clicked = pyqtSignal(object)
 
-    def __init__(self, matrix: List[List[
-                Tuple[float, Union[Dict, None]]
-            ]], head, head_dicts, min_val=0, parent=None):
+    def __init__(self, matrix: List[List[float]],
+                 head, head_dicts, min_val=0, parent=None):
         """
         :param matrix: Отображаемая матрица из элементов вида:
-            [Процент пересечения, Передаваемый при клике словарь]
-        :type matrix: List[List[Tuple[float, Union[TextRelation, Dict, None]]]]
+            [Процент пересечения]
         :param head: Заголовки матрицы
         :param head_objects: Элементы, передаваемые при клике на соответсвующие
             заголовки матрицы
@@ -59,6 +58,7 @@ class MatrixWidget(QTableWidget):
         self.head = [str(i) for i in head]
         self.head_objects = head_dicts
         self.set_items(matrix)
+        self.matrix = matrix
         self.setHorizontalHeaderLabels(self.head)
         self.setVerticalHeaderLabels(self.head)
         self.horizontalHeader().sectionClicked.connect(
@@ -72,12 +72,23 @@ class MatrixWidget(QTableWidget):
         if len(matrix) > 0:
             self.setColumnCount(len(matrix[0]))
         for i, row in enumerate(matrix):
-            self.setColumnWidth(i, 10)
-            for j, matrix_item in enumerate(row):
-                value, relation = matrix_item
+            # self.setColumnWidth(i, 10)
+            for j, value in enumerate(row):
+                relation = (i, j, value)
                 item = IntersectionItem(value, self.min_val, relation)
                 self.update_min_val.connect(item.update_text)
                 self.setItem(i, j, item)
+
+        self.resize_cells()
+
+    def resize_cells(self):
+        fake_row = self.rowCount()
+        self.insertRow(fake_row)
+        for i, name in enumerate(self.head):
+            self.setItem(fake_row, i, QTableWidgetItem(name))
+        self.horizontalHeader().resizeSections(QHeaderView.ResizeToContents)
+        self.verticalHeader().resizeSections(QHeaderView.ResizeToContents)
+        self.removeRow(fake_row)
 
     def set_min_val(self, min_val):
         self.min_val = min_val

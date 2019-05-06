@@ -5,3 +5,4 @@ from .fragments_window import FragmentsWindow
 from .loading_dialog import LoadingDialog, LoadingWrapper
 from .graph_window import GraphWindow
 from .settings import SettingsDialog
+from .report_editor import ReportEditor

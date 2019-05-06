@@ -1,11 +1,15 @@
-from ui.graph import Node, Edge, GraphWidget, TextItem
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QMainWindow, QGraphicsItem
-import numpy as np
+from PyQt5.QtWidgets import QMainWindow, QGraphicsItem, QMessageBox
 import sys
 import re
 from fa2 import ForceAtlas2
+import networkx as nx
+import numpy as np
+
 from supremeSettings import SupremeSettings
+from ui.graph import Node, Edge, GraphWidget, TextItem
+from api import Plotter
+from logger import log
 
 
 class GraphModule:
@@ -33,12 +37,14 @@ class GraphModule:
         self.fa2 = ForceAtlas2(
             outboundAttractionDistribution=False,
             scalingRatio=100.0,
-            verbose=False
+            verbose=False,
+            gravity=10.0
         )
 
         self._nodes = {}  # Хранилище вершин
         self._edges = {}  # Хранилище связей
         self._texts = {}  # Хранилище текстов
+        self.get_relation_text = lambda item: str(item)
         self.matrix = None
         self.positions = None
 
@@ -61,7 +67,6 @@ class GraphModule:
         text.setPos(pos_x, pos_y)
         text.linkActivated.connect(self._on_text_link_clicked)
         self._texts[id] = text
-        # self.widget.scene().addItem(text)
 
     def add_node(self, id, pos_x, pos_y, **kwargs):
         """Добавить вершину
@@ -71,7 +76,9 @@ class GraphModule:
         :param pos_y: y-координата вершины
         :param **kwargs: Аргументы конструктора Node
         """
-        assert id not in self._nodes
+        # assert id not in self._nodes
+        if id in self._nodes:
+            log.warning(f"{id} уже добавлена")
         node = Node(self.widget, id=id, **kwargs)
         node.setPos(pos_x, pos_y)
         self.widget.scene().addItem(node)
@@ -103,20 +110,6 @@ class GraphModule:
                     self.widget.scene().removeItem(self._texts[id])
                 del self._texts[id]
 
-    def calculate_matrix(self):
-        head = list(self._nodes.keys())
-        self.head = head
-        self.matrix = np.zeros(len(head)**2).reshape((len(head), len(head)))
-        self.positions = [[0, 0] for _ in range(len(head))]
-        for key, edge in self._edges.items():
-            id1, id2 = key
-            id1, id2 = head.index(id1), head.index(id2)
-            self.matrix[id1][id2] = edge.weight
-            self.matrix[id2][id1] = edge.weight
-        for id_, node in self._nodes.items():
-            self.positions[head.index(id_)] = [node.x(), node.y()]
-        self.positions = np.array(self.positions)
-
     def _on_item_clicked(self, item: QGraphicsItem):
         if isinstance(item, Node) and item.info \
                 and item.id not in self._texts:
@@ -124,9 +117,10 @@ class GraphModule:
                           item, html_text=item.info)
         elif isinstance(item, Edge) and item.info \
                 and item.id not in self._texts:
-            x = (item.dest.x() - item.source.x()) / 2
-            y = (item.dest.y() - item.source.x()) / 2
-            self.add_text(item.id, x, y, item.source, html_text=item.info)
+            x = (item.dest.x() - item.source.x()) / 2 + item.source.x()
+            y = (item.dest.y() - item.source.y()) / 2 + item.source.y()
+            self.add_text(item.id, x, y, parent_item=item.source,
+                          html_text=self.get_relation_text(item.info))
 
     def clear(self):
         self._nodes.clear()
@@ -146,6 +140,85 @@ class GraphModule:
     def edges(self):
         """Вернуть список ребер"""
         return list(self._edges.values())
+
+    def calculate_matrix(self, weight=None):
+        head = list(self._nodes.keys())
+        self.head = head
+        self.matrix = np.zeros(len(head)**2).reshape((len(head), len(head)))
+        self.positions = [[0, 0] for _ in range(len(head))]
+        for key, edge in self._edges.items():
+            id1, id2 = key
+            id1, id2 = head.index(id1), head.index(id2)
+            self.matrix[id1][id2] = edge.weight if weight is None else weight
+            self.matrix[id2][id1] = edge.weight if weight is None else weight
+        for id_, node in self._nodes.items():
+            self.positions[head.index(id_)] = [node.x(), node.y()]
+        self.positions = np.array(self.positions)
+
+    def save_graph(self):
+        fig = Plotter.save_to_graph(self)
+        Plotter.display(fig)
+
+    def relayout_graph(self, name: str):
+        """Расположить вершины графа по какому-то алгоритму.
+        Алгоритмы:
+            * circular - по кругу
+            * kamada_kawai - Kamada-Kawai Algorithm
+            * planar - без пересечений ребер
+            * random - рандом
+            * shell - пока то же, что circular
+            * spring - Fruchterman-Reingold Algorithm
+        :param name:
+        :type name: str
+        """
+        def kamada_kawai(G):
+            return nx.kamada_kawai_layout(G, weight=1)
+
+        # def spectral(G):
+        #    return nx.spectral_layout(G, scale=20)
+
+        func_dict = {
+            'circular': nx.circular_layout,
+            'kamada_kawai': kamada_kawai,
+            'planar': nx.planar_layout,
+            'random': nx.random_layout,
+            'shell': nx.shell_layout,  # TODO
+            'spring': nx.spring_layout,
+            # 'spectral': spectral
+        }
+        scale_dict = {
+            'circular': 0.5,
+            'random': 0.3
+        }
+
+        self.calculate_matrix()
+        matrix = np.array(self.matrix)
+        G = nx.from_numpy_matrix(matrix)  # Получить networkx-граф из матрицы
+        try:
+            pos = func_dict[name](G)
+        except nx.exception.NetworkXException:
+            self.box = QMessageBox.critical(self.widget,
+                                            'Ошибка', 'Граф не планарен')
+            return
+
+        # Расчехлить позиции
+        pos = np.array([pos[i] for i in range(len(pos))])
+
+        # Масштабировать
+        scale = SupremeSettings()['graphmodule_graph_scale']
+        try:
+            pos = nx.rescale_layout(pos, scale=scale * scale_dict[name])
+        except KeyError:
+            pos = nx.rescale_layout(pos, scale=scale)
+
+        # Применить позиции
+        for index, position in enumerate(pos):
+            x, y = position
+            node = self._nodes[self.head[index]]
+            if node != self.widget.scene().mouseGrabberItem():
+                node.setX(x)
+                node.setY(y)
+        self._adjust_scene()
 
     def _adjust_scene(self):
         """ Подровнять сцену под вершины """
@@ -174,14 +247,22 @@ class GraphModule:
             SupremeSettings()['graphmodule_timer_interval'])
         self.gravity_timer.timeout.connect(self._process_gravity)
 
+    def stop_gravity(self):
+        if self.gravity_timer:
+            self.gravity_timer.stop()
+            self.gravity_timer.deleteLater()
+            self.gravity_timer = None
+
     def do_gravity_ticks(self, ticks):
         """Выполнить нужное количество тиков расчёта гравитации.
         Можно использовать для первоначальной стабилизации сцены.
 
         :param ticks: Количество тиков
         """
+        self.stop_gravity()
         for _ in range(ticks):
             self._process_gravity()
+        self.start_gravity()
 
     def _process_gravity(self, ticks=1):
         """ Один тик обработки взаимодействия вершин """

@@ -1,9 +1,12 @@
 PyQt5
 neomodel
-pyinstaller
 logutils
 nltk
 pymystem3
 numpy
 natasha
 fa2
+diff-match-patch
+networkx
+matplotlib
+pdfkit

@@ -8,6 +8,7 @@ from models.text_relation import TextRelation
 
 class TextNode(StructuredNode):
     order_id = IntegerProperty(required=True, unique_index=True)
+    label = StringProperty(required=True)
     text = StringProperty(required=True)
     alg_results = JSONProperty()
     link = Relationship('TextNode', 'ALG', model=TextRelation)
@@ -47,7 +48,13 @@ class TextNode(StructuredNode):
         leading = 3
         if frag_num > 0:
             leading = int(np.floor(np.log10(frag_num))) + 1
-        return f"{str(self.order_id).zfill(leading)}: {self.short()}..."
+            if str(self.order_id) != str(self.label):
+                return f"{str(self.order_id).zfill(leading)}: " \
+                   + f"[{self.label}] {self.short()}..."
+            else:
+                return f"{str(self.order_id).zfill(leading)}: " \
+                       + f"[{self.label}] {self.short()}..."
+        return f"[{self.label}] {self.short()}..."
 
     def words_num(self):
         return len(self.text.split())

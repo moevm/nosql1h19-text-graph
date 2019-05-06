@@ -33,23 +33,40 @@ class FragmentsAnalyzer:
                 node.save()
             self.loadingDone.emit()
 
+    class ClearDBThread(LoadingThread):
+        def __init__(self, analyzer, parent=None):
+            super().__init__(parent)
+            self.analyzer = analyzer
+            self.operation = 'Очистка БД'
+            self.set_interval(len(analyzer))
+
+        def run(self):
+            for i, node in enumerate(TextNode.nodes.all()):
+                self.check_percent(i)
+                node.delete()
+            self.analyzer._fragments.clear()
+            self.loadingDone.emit()
+
     def __init__(self):
         self.separator = None
         self._fragments: List[str] = []
 
-    def read_file(self, filename: str):
+    def read_file(self, filename: str, get_label=None):
         """Считать фрагменты из файла
 
         :param filename: Имя файла
         :type filename: str
+        :param get_label: Функция, по номеру фрагмента в файле
+        возвращающая название
         :exception SeparatorNotSetException: Если регулярное выражение для
         разделения не установлено
         """
+
         with open(filename, 'r') as file:
             content = file.read()
-            self._parse_fragments(content)
+            self._parse_fragments(content, get_label)
 
-    def _parse_fragments(self, text: str):
+    def _parse_fragments(self, text: str, get_label=None):
         """Разобрать текст на фрагменты по установленному регулярному
         выражению
 
@@ -57,11 +74,16 @@ class FragmentsAnalyzer:
         :type text: str
         """
         if not self.separator:
-            self.append(text)
+            self.append(text, get_label(0))
         else:
+            i = 0
             for candidate in re.split(self.separator, text):
                 if len(candidate) > 0:
-                    self.append(candidate)
+                    i += 1
+                    label = None
+                    if get_label:
+                        label = get_label(i)
+                    self.append(candidate, label)
 
     def set_separator(self, separator: Pattern):
         """Установить регулярное выражение, по которому следующий файл
@@ -74,10 +96,11 @@ class FragmentsAnalyzer:
 
     def clear(self):
         """Очистить список фрагментов и БД"""
-        [node.delete() for node in TextNode.nodes.all()]
-        self._fragments.clear()
+        thread = self.ClearDBThread(self)
+        thread.run()
+        thread.wait()
 
-    def append(self, value: str):
+    def append(self, value: str, label=None):
         """Добавить фрагмент
 
         :param value: фрагмент
@@ -85,6 +108,10 @@ class FragmentsAnalyzer:
         node = TextNode(text=value)
         self._fragments.append(node)
         node.order_id = len(self._fragments)-1
+        if label is None:
+            node.label = str(node.order_id)
+        else:
+            node.label = label
 
     def upload_db(self):
         """Загрузить фрагменты в БД"""

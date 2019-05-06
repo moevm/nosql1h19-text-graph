@@ -45,7 +45,8 @@ class LoadingDialog(QDialog, Ui_LoadingDialog):
             self.progressBar.setValue(value)
             delta = datetime.now() - self.start_time
             op_time = delta / value
-            remaining = (self.total - value) * op_time
+            # remaining = (self.total - value) * op_time
+            remaining = (100 - value) * op_time
             self.etaShow.setText(format_delta(remaining))
 
     def ready(self):

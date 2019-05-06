@@ -76,3 +76,9 @@ class DictionaryAlgorithmTest(unittest.TestCase):
         comp = self.algorithm.compare(res1, res2)
         desc2 = self.algorithm.describe_comparison(comp)
         self.assertGreater(len(desc2), 0)
+
+        acc = self.algorithm.analyze(res1)
+        acc = self.algorithm.analyze(res2, acc)
+        self.assertIsNotNone(acc)
+        desc3 = self.algorithm.describe_result(acc)
+        self.assertGreater(len(desc3), 0)

@@ -6,29 +6,49 @@ class SupremeSettings:
         'vertex_size_value': 20,
         'edge_width': 2,
         'graphmodule_timer_interval': 20,
-        'graphmodule_gravity_enabled': True,
+        'graphmodule_gravity_enabled': False,
+        'graphmodule_gravity': 10.,
+        'graphmodule_graph_scale': 500,
         'dictionary_words_num': 100,
         'dictionary_min_words': 1,
-        'vertex_weight': 250,  # TODO
+        'diff_lines': True,
         'result_auto_update': False,
-        'dictionary_exclude_list': []
+        'dictionary_exclude_list': [],
+        'processor_min_intersection': 0.,
+        'processor_analyze': True,
+        'setup': False,
+        'algorithms': {
+            'Diff': True,
+            'Dictionary': True
+        }
     }
 
     settings_gui = {
-        'Отображение графа': {
-            'vertex_size_value': 'Размер вершины',
-            'edge_width': 'Ширина стрелок',
-            'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
-            'graphmodule_gravity_enabled': 'Включить гравитацию',
-            'vertex_weight': 'Вес вершины',
+        'Общие настройки анализа': {
+            'algorithms': 'Включенные алгоритмы',
+            'processor_min_intersection': 'Минимальный вес ребра [0-1]',
+            'processor_analyze': 'Провести подсчёт общих результатов'
+        },
+        'Основное окно': {
+            'result_auto_update': 'Автоматически обновлять результаты'
         },
         'Алгоритм работы со словарями': {
             'dictionary_words_num': 'Сколько слов запоминать',
             'dictionary_min_words': 'Минимальная частота',
             'dictionary_exclude_list': 'Исключить слова'
         },
-        'Основное окно': {
-            'result_auto_update': 'Автоматически обновлять результаты'
+        'Алгоритм сравнения строк': {
+            'diff_lines': 'Построчное сравнение (быстрее)'
+        },
+        'Отображение графа': {
+            'vertex_size_value': 'Размер вершины',
+            'edge_width': 'Ширина стрелок',
+            'graphmodule_graph_scale': 'Масштабирование layout-ов',
+        },
+        'Расчёт гравитации': {
+            'graphmodule_gravity_enabled': 'Включить гравитацию',
+            'graphmodule_timer_interval': 'Частота расчёта гравитации (мс)',
+            'graphmodule_gravity': 'Сила притяжения вершин к центру'
         }
     }
 

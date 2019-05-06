@@ -16,9 +16,14 @@ class TestDescriber(unittest.TestCase):
         self.processor.parse_file('../samples/short.txt', '\n{1}')
         self.processor.upload_db()
         self.processor.do_preprocess()
-        self.processor.do_process()
+        self.processor.do_process(analyze=True)
         self.processor.upload_db()
+        accs, stats = self.processor.accs, self.processor.stats
 
         desc = Describer(self.algorithm, self.processor)
         node_desc = desc.describe_node(self.processor.analyzer[0])
         self.assertGreater(len(node_desc), 0)
+        alg_desc = desc.describe_results(accs, stats)
+        self.assertGreater(len(alg_desc), 0)
+        total_desc = desc.describe_results(accs, all_algs=True)
+        self.assertGreaterEqual(len(total_desc), 0)

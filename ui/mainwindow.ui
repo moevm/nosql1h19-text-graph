@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Text Graph</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">QLabel[objectName*=&quot;Number&quot;]{
 	font-size: 12pt;
@@ -43,158 +47,9 @@
        <attribute name="title">
         <string>Общее</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,1">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <widget class="QGroupBox" name="statsGroupBox">
-            <property name="title">
-             <string>Статистика</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0">
-               <item>
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>Число фрагментов</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="fragmentsNumberLabel">
-                 <property name="accessibleName">
-                  <string>NumberLabel</string>
-                 </property>
-                 <property name="text">
-                  <string>0</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0">
-               <item>
-                <widget class="QLabel" name="label_2">
-                 <property name="text">
-                  <string>Предложений</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="sentencesNumberLabel">
-                 <property name="accessibleName">
-                  <string>NumberLabel</string>
-                 </property>
-                 <property name="text">
-                  <string>0</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0">
-               <item>
-                <widget class="QLabel" name="label_3">
-                 <property name="text">
-                  <string>Слов</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="wordsNumberLabel">
-                 <property name="accessibleName">
-                  <string>NumberLabel</string>
-                 </property>
-                 <property name="text">
-                  <string>0</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,0">
-               <item>
-                <widget class="QLabel" name="label_4">
-                 <property name="text">
-                  <string>Символов</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="symbolsNumberLabel">
-                 <property name="accessibleName">
-                  <string>NumberLabel</string>
-                 </property>
-                 <property name="text">
-                  <string>0</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,0">
-               <item>
-                <widget class="QLabel" name="label_5">
-                 <property name="text">
-                  <string>Предл. на фрагмент</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="sentencesPerFragmentNumberLabel">
-                 <property name="accessibleName">
-                  <string>NumberLabel</string>
-                 </property>
-                 <property name="text">
-                  <string>0</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,0">
-               <item>
-                <widget class="QLabel" name="label_6">
-                 <property name="text">
-                  <string>Слов на предложение</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="wordsPerSentenceNumberLabel">
-                 <property name="accessibleName">
-                  <string>NumberLabel</string>
-                 </property>
-                 <property name="text">
-                  <string>0</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
+         <layout class="QVBoxLayout" name="textBrowserLayout"/>
         </item>
         <item>
          <layout class="QVBoxLayout" name="controlsLayout">
@@ -207,16 +62,6 @@
               </property>
               <property name="text">
                <string>Начать обработку</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="stopProcessButton">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Остановить обработку</string>
               </property>
              </widget>
             </item>
@@ -277,9 +122,11 @@
    <addaction name="separator"/>
    <addaction name="actionChangeFragments"/>
    <addaction name="actionClear"/>
+   <addaction name="actionClearDB"/>
+   <addaction name="separator"/>
+   <addaction name="actionReport"/>
    <addaction name="separator"/>
    <addaction name="actionStartProcess"/>
-   <addaction name="actionStopProcess"/>
    <addaction name="actionUpdateResults"/>
    <addaction name="separator"/>
    <addaction name="actionOpenParams"/>
@@ -314,13 +161,15 @@
     </property>
     <addaction name="actionChangeFragments"/>
     <addaction name="actionClear"/>
+    <addaction name="actionClearDB"/>
+    <addaction name="separator"/>
+    <addaction name="actionReport"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
      <string>Обработка</string>
     </property>
     <addaction name="actionStartProcess"/>
-    <addaction name="actionStopProcess"/>
     <addaction name="actionUpdateResults"/>
    </widget>
    <addaction name="menu"/>
@@ -357,7 +206,7 @@
    </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
-     <normaloff>:/icons/save.png</normaloff>:/icons/save.png</iconset>
+     <normaloff>:/icons/export_db.png</normaloff>:/icons/export_db.png</iconset>
    </property>
    <property name="text">
     <string>Сохранить</string>
@@ -365,7 +214,7 @@
   </action>
   <action name="actionOpen">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
@@ -405,7 +254,10 @@
      <normaloff>:/icons/trash.png</normaloff>:/icons/trash.png</iconset>
    </property>
    <property name="text">
-    <string>Очистить</string>
+    <string>Очистить результаты</string>
+   </property>
+   <property name="toolTip">
+    <string>Очистить результаты</string>
    </property>
   </action>
   <action name="actionStartProcess">
@@ -418,18 +270,6 @@
    </property>
    <property name="text">
     <string>Начать обработку</string>
-   </property>
-  </action>
-  <action name="actionStopProcess">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="../res/pictures.qrc">
-     <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
-   </property>
-   <property name="text">
-    <string>Остановить обработку</string>
    </property>
   </action>
   <action name="actionOpenParams">
@@ -446,7 +286,7 @@
   </action>
   <action name="actionCloseProject">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
@@ -457,12 +297,36 @@
    </property>
   </action>
   <action name="actionUpdateResults">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../res/pictures.qrc">
      <normaloff>:/icons/update.png</normaloff>:/icons/update.png</iconset>
    </property>
    <property name="text">
     <string>Обновить результаты</string>
+   </property>
+  </action>
+  <action name="actionClearDB">
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/boom.png</normaloff>:/icons/boom.png</iconset>
+   </property>
+   <property name="text">
+    <string>Очистить БД</string>
+   </property>
+  </action>
+  <action name="actionReport">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../res/pictures.qrc">
+     <normaloff>:/icons/report.png</normaloff>:/icons/report.png</iconset>
+   </property>
+   <property name="text">
+    <string>Создать отчёт</string>
    </property>
   </action>
  </widget>
@@ -494,22 +358,6 @@
    <hints>
     <hint type="sourcelabel">
      <x>79</x>
-     <y>110</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>stopProcessButton</sender>
-   <signal>clicked()</signal>
-   <receiver>actionStopProcess</receiver>
-   <slot>trigger()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>98</x>
      <y>110</y>
     </hint>
     <hint type="destinationlabel">

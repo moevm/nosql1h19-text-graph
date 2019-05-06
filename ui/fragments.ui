@@ -9,12 +9,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>762</width>
-    <height>444</height>
+    <width>1035</width>
+    <height>560</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Список фрагментов</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../res/pictures.qrc">
+    <normaloff>:/icons/logo_small.png</normaloff>:/icons/logo_small.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">QLabel[objectName*=&quot;Number&quot;]{
@@ -87,6 +91,13 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
+           <widget class="QPushButton" name="openFolderButton">
+            <property name="text">
+             <string>Открыть папку</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="openFileButton">
             <property name="text">
              <string>Открыть файл</string>
@@ -152,6 +163,13 @@
               </widget>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="romanRadioButton">
+             <property name="text">
+              <string>Римские цифры и перенос строки</string>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QRadioButton" name="dontSeparateRadioButton">
@@ -298,6 +316,27 @@
          </layout>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <item>
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Переименовать</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="fragmentLabelEdit"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="renameButton">
+            <property name="text">
+             <string>ОК</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <widget class="QLabel" name="label_5">
           <property name="text">
            <string>Просмотр фрагмента</string>
@@ -322,7 +361,9 @@ p, li { white-space: pre-wrap; }
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/pictures.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>entersRadioButton</sender>

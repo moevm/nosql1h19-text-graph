@@ -1,4 +1,6 @@
-cd ..
+IF NOT EXIST src (
+    cd ..
+)
 call venv\Scripts\activate
 IF EXIST src\ui_compiled (
     rm -rf src\ui_compiled\*

@@ -9,40 +9,56 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>286</width>
-    <height>329</height>
+    <width>340</width>
+    <height>382</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>0</string>
+   <string>Изменить список</string>
   </property>
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QListWidget" name="listWidget"/>
+    <widget class="QGroupBox" name="listGroupBox">
+     <property name="title">
+      <string>Изменение списка</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QListWidget" name="listWidget"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="addLayout">
+        <item>
+         <widget class="QLineEdit" name="settingEdit">
+          <property name="placeholderText">
+           <string>Введите значение</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="addButton">
+          <property name="text">
+           <string>Добавить</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLineEdit" name="settingEdit">
-       <property name="placeholderText">
-        <string>Введите значение</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="addButton">
-       <property name="text">
-        <string>Добавить</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QGroupBox" name="dictGroupBox">
+     <property name="title">
+      <string>Изменение значений</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="buttonsLayout">
      <item>
       <widget class="QPushButton" name="cancelButton">
        <property name="text">

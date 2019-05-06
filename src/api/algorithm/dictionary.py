@@ -1,6 +1,6 @@
 import re
+import copy
 from typing import Dict, List, Tuple, Any
-
 from nltk.corpus import stopwords
 from pymystem3 import Mystem
 
@@ -23,6 +23,10 @@ class DictionaryAlgorithm(AbstractAlgorithm):
     @property
     def name(self):
         return 'Dictionary'
+
+    @property
+    def preprocess_keys(self):
+        return ['tokens', 'top_words']
 
     def check_word(self, word: str) -> bool:
         """
@@ -161,37 +165,84 @@ class DictionaryAlgorithm(AbstractAlgorithm):
             }
         }
 
-    def describe_result(self):
-        return "TODO"  # TODO
+    def analyze(self, res: Dict, acc=None):
+        def add_freq_lists(list1: FreqList, list2: FreqList):
+            total = copy.deepcopy(list1 + list2)
+            total.sort(key=lambda el: el[0])
+            i = 0
+            while i < len(total) - 1:
+                if total[i][0] != total[i+1][0]:
+                    i += 1
+                else:
+                    total[i] = total[i][0], total[i][1] + total[i+1][1]
+                    del total[i+1]
+            return total
+        if acc is None:
+            acc = {
+                'top_words': []
+            }
+        acc['top_words'] = add_freq_lists(acc['top_words'], res['top_words'])
+        return acc
+
+    def analyze_comparison(self, res1, res2, comp_res, acc):
+        return acc
+
+    def describe_result(self, acc):
+        acc['top_words'].sort(key=lambda el: el[1], reverse=True)
+        html_body = f"""
+            <!-- COLLAPSE Таблица слов -->
+            <table border="1" width="100%">
+                <caption>
+                    Наиболее часто встречающиеся слова во фрагментах
+                    [топ-{self.words_num}]
+                </caption>
+                <thead>
+                    <tr>
+                        <th>Слово</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>"""
+        acc['top_words'] = acc['top_words'][:self.words_num]
+        for word, freq in acc['top_words']:
+            html_body += f"""
+                <tr>
+                    <td>{word}</td>
+                    <td>{freq}</td>
+                </tr>"""
+        html_body += """
+            </table>
+            <!-- END COLLAPSE -->"""
+        return html_body
 
     def describe_preprocess(self, prep_dict):
-        text = """
-        <h3>Алгоритм сравнения словарей</h3>
-        """
+        text = ""
         if prep_dict is None or 'top_words' not in prep_dict:
             text += "Результатов нет"
             return text
         text += """
-        <table border="1" width=100%>
-            <caption>Наиболее часто встречающиеся слова:</caption>
-            <thead>
-                <tr>
-                    <th>Слово</th>
-                    <th>Частота</th>
-                </tr>
-            </thead>"""
+        <!-- COLLAPSE Таблица слов -->
+            <table border="1" width=100%>
+                <caption>Наиболее часто встречающиеся слова:</caption>
+                <thead>
+                    <tr>
+                        <th>Слово</th>
+                        <th>Частота</th>
+                    </tr>
+                </thead>"""
         for word, freq in prep_dict['top_words']:
             text += f"""
-            <tr>
-                <td>{word}</td>
-                <td>{freq}</td>
-            </tr>"""
+                <tr>
+                    <td>{word}</td>
+                    <td>{freq}</td>
+                </tr>"""
         text += """
-        </table>"""
+            </table>
+        <!-- END COLLAPSE -->"""
         return text
 
     def describe_comparison(self, comp_dict):
         text = f"""
+        <!-- COLLAPSE Таблица слов -->
         <table border="1">
             <caption>
                 Наиболее часто встречающиеся слова из пересечения
@@ -211,5 +262,6 @@ class DictionaryAlgorithm(AbstractAlgorithm):
                 <td>{int(freq)}</td>
             </tr>"""
         text += """
+        <!-- END COLLAPSE -->
         </table>"""
         return text
