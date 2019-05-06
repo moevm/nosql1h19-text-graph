@@ -75,7 +75,7 @@ class NotSoAbstractAlgorithm(AbstractAlgorithm):
     def compare(self, res1: Dict, res2: Dict) -> Dict:
         intersection, top_words = self.compare_results(
             res1[f"{self.dictParam}"], res2[f"{self.dictParam}"],
-            *args, **kwargs # TODO Что тут не так?
+            *args, **kwargs  # FIXME Что тут не так?
         )
         return {
             "intersection": intersection,
