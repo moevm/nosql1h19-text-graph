@@ -1,9 +1,11 @@
-from typing import Dict
 import copy
+from typing import Dict, List, Tuple, Any
 
 from api.algorithm import AbstractAlgorithm
 from natasha import NamesExtractor, LocationExtractor
 from supremeSettings import SupremeSettings
+
+FrqList = [Tuple[Any, int]]
 
 
 def sumarize_data(dict1: Dict, dict2: Dict):
@@ -129,7 +131,7 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
 
         return avg, words[:self.words_num]
 
-    def preprocess(self, text: str) -> Dict:
+    def preprocess(self, text: str):
         self.nameMatches = self.nameExtractor(text)
         self.locationMatches = self.locationExtractor(text)
 
@@ -152,8 +154,8 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
         pass
 
     def analyze(self, res: Dict, acc=None):
-        def add_freq_lists(list1: Dict, list2: Dict):
-            total = copy.deepcopy(list1 + list2)
+        def add_freq_lists(list1: FrqList, list2: FrqList):
+            total = copy.deepcopy(list1 + list2)  # TODO проверить типы
             total.sort(key=lambda el: el[0])
             i = 0
             while i < len(total) - 1:
