@@ -1,4 +1,5 @@
 from typing import Dict
+import copy
 
 from api.algorithm import AbstractAlgorithm
 from natasha import NamesExtractor, LocationExtractor
@@ -150,7 +151,29 @@ class ProperNamesAlgorithm(AbstractAlgorithm):
         }
         pass
 
-    def describe_result(self) -> str:
+    def analyze(self, res: Dict, acc=None):
+        def add_freq_lists(list1: Dict, list2: Dict):
+            total = copy.deepcopy(list1 + list2)
+            total.sort(key=lambda el: el[0])
+            i = 0
+            while i < len(total) - 1:
+                if total[i][0] != total[i+1][0]:
+                    i += 1
+                else:
+                    total[i] = total[i][0], total[i][1] + total[i+1][1]
+                    del total[i+1]
+            return total
+        if acc is None:
+            acc = {
+                'top_proper_names': []
+            }
+        acc['top_proper_names'] = add_freq_lists(acc['top_proper_names'], res['top_proper_names'])
+        return acc
+
+    def analyze_comparison(self, res1, res2, comp_res, acc):
+        return acc
+
+    def describe_result(self, acc) -> str:
         # TODO Describe_result_proper
         pass
 
