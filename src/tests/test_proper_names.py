@@ -63,9 +63,3 @@ class ProperNamesAlgorithmTest(unittest.TestCase):
 
     def test_preprocess(self):
         self.assertEqual(self.algorithm.preprocess(self.text), self.proper_names_form_text)
-
-    def test_html_extract(self):
-        self.assertEqual(self.proper_html, self.algorithm.extract_html(self.proper_names_form_text["top_proper_names"]))
-
-    def test_preprocess_describe(self):
-        self.assertEqual("<div>" + self.proper_html, self.algorithm.describe_preprocess(self.algorithm.preprocess(self.text)))
