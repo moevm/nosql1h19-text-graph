@@ -3,7 +3,7 @@ import numpy as np
 
 from .abstract import AbstractReportItem
 from api import Describer, Plotter
-from api.graph_algs import centrality_algs
+from api.graph_algs import centrality_algs, comm_algs
 
 
 def random_color():
@@ -23,7 +23,7 @@ class AlgorithmReportItem(AbstractReportItem):
 
 class AlgortithmCentralityItem(AbstractReportItem):
     def __init__(self, processor, algorithm, parent=None):
-        self.name = f'[{algorithm.name}]: Центральные алгоритмы'
+        self.name = f'[{algorithm.name}]: Алгоритмы центральности'
         self.algorithm = algorithm
         self.settings = {'algorithms': {}}
         self.gui_settings = {
@@ -46,6 +46,37 @@ class AlgortithmCentralityItem(AbstractReportItem):
         for alg in algs:
             results[alg.name] = alg.exec_query()
         return describer.describe_centrality_results(results)
+
+
+class AlgortithmCommunityItem(AbstractReportItem):
+    def __init__(self, processor, algorithm, parent=None):
+        self.name = f'[{algorithm.name}]: Разбиение на сообщества'
+        self.algorithm = algorithm
+        self.settings = {
+            'algorithms': {},
+            'min_val': 0.
+        }
+        self.gui_settings = {
+            'Выбор алгоритмов': {
+                'algorithms': 'Алгоритмы',
+                'min_val': 'Минимальное значение связи [0-1]'
+            }
+        }
+        self.comm_algs = []
+        for graph_alg in comm_algs:
+            alg = graph_alg(processor, algorithm)
+            self.settings['algorithms'][alg.name] = True
+            self.comm_algs.append(alg)
+        super().__init__(processor, parent)
+
+    def create_html(self):
+        algs = [alg for alg in self.comm_algs
+                if self.settings['algorithms'][alg.name]]
+        describer = Describer(self.algorithm, self.processor)
+        results = {}
+        for alg in algs:
+            results[alg.name] = alg.exec_query()
+        return describer.describe_community_results(results)
 
 
 class AlgorithmMatrixGraph(AbstractReportItem):
@@ -100,8 +131,10 @@ class AlgorithmReportFactory:
             matr_graph = AlgorithmMatrixGraph(*args)
             inter_graph = AlgorithmIntersectionGraph(*args)
             centr_item = AlgortithmCentralityItem(*args)
+            comm_item = AlgortithmCommunityItem(*args)
 
-            alg_items = [report_item, matr_graph, inter_graph, centr_item]
+            alg_items = [report_item, matr_graph, inter_graph, centr_item,
+                         comm_item]
             color = random_color()
             [item.setBackground(QBrush(color)) for item in alg_items]
             items.extend(alg_items)

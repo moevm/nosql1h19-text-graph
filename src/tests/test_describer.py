@@ -3,7 +3,7 @@ from api import Describer
 from tests.config import Config as TestConfig
 from api.database import DataBaseConnection
 from .test_processor import _fill_db
-from api.graph_algs import CentralityDispatcher
+from api.graph_algs import GraphAlgDispatcher
 
 
 class TestDescriber(unittest.TestCase):
@@ -27,7 +27,16 @@ class TestDescriber(unittest.TestCase):
         processor = _fill_db()
         algorithm = processor.algorithms[0]
         desc = Describer(algorithm, processor)
-        disp = CentralityDispatcher(processor, algorithm)
-        results = disp.dispatch()
+        disp = GraphAlgDispatcher(processor, algorithm)
+        results = disp.dispatch_centrality()
         centr_desc = desc.describe_centrality_results(results)
         self.assertGreater(len(centr_desc), 0)
+
+    def test_describe_community(self):
+        processor = _fill_db()
+        algorithm = processor.algorithms[0]
+        desc = Describer(algorithm, processor)
+        disp = GraphAlgDispatcher(processor, algorithm)
+        results = disp.dispatch_community()
+        comm_desc = desc.describe_community_results(results)
+        self.assertGreater(len(comm_desc), 0)

@@ -54,7 +54,8 @@ class TestTextProcessor(unittest.TestCase):
 
     def test_get_matrix(self):
         processor = _fill_db()
-        matrix_full, head_full = processor.get_matrix('Dictionary')
+        matrix_full, head_full = processor.get_matrix('Dictionary',
+                                                      sort=True)
         self.assertEqual(len(matrix_full), len(head_full))
         for row in matrix_full:
             self.assertGreaterEqual(sum(row), 1)

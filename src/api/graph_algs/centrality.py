@@ -3,10 +3,10 @@ from abc import ABC, abstractmethod, abstractproperty
 from typing import List
 
 
-__all__ = ['centrality_algs', 'AbstractCentralityGraphAlg']
+__all__ = ['centrality_algs', 'AbstractGraphAlg']
 
 
-class AbstractCentralityGraphAlg(ABC):
+class AbstractGraphAlg(ABC):
     def __init__(self, processor, algorithm, min_val=0):
         self.processor = processor
         self.algorithm = algorithm
@@ -16,10 +16,10 @@ class AbstractCentralityGraphAlg(ABC):
         return 'MATCH (n:TextNode) RETURN id(n) as id'
 
     def _rel_query(self):
-        # TODO А нужен ли здесь min_val?
         return f"""
             MATCH (n:TextNode)-[r:ALG]-(n2:TextNode)
             WHERE r.algorithm_name = '{self.algorithm.name}'
+                AND r.intersection > {self.min_val}
             RETURN id(n) as source, id(n2) as target, r.intersection as weight
         """
 
@@ -43,7 +43,7 @@ class AbstractCentralityGraphAlg(ABC):
         return res
 
 
-class AverageIntersectionCentrality(AbstractCentralityGraphAlg):
+class AverageIntersectionCentrality(AbstractGraphAlg):
     @property
     def name(self):
         return "Среднее пересечение"
@@ -61,7 +61,7 @@ class AverageIntersectionCentrality(AbstractCentralityGraphAlg):
         """
 
 
-class EigenvectorCentrality(AbstractCentralityGraphAlg):
+class EigenvectorCentrality(AbstractGraphAlg):
     @property
     def name(self):
         return "Эйгенвектор"
@@ -84,7 +84,7 @@ class EigenvectorCentrality(AbstractCentralityGraphAlg):
         """ % (self._node_query(), self._rel_query())
 
 
-class PageRankCentrality(AbstractCentralityGraphAlg):
+class PageRankCentrality(AbstractGraphAlg):
     @property
     def name(self):
         return "PageRank"
@@ -107,7 +107,7 @@ class PageRankCentrality(AbstractCentralityGraphAlg):
         """ % (self._node_query(), self._rel_query())
 
 
-class ArticleRankCentrality(AbstractCentralityGraphAlg):
+class ArticleRankCentrality(AbstractGraphAlg):
     @property
     def name(self):
         return "ArticleRank"
@@ -130,7 +130,7 @@ class ArticleRankCentrality(AbstractCentralityGraphAlg):
         """ % (self._node_query(), self._rel_query())
 
 
-class BeetweennessCentrality(AbstractCentralityGraphAlg):
+class BeetweennessCentrality(AbstractGraphAlg):
     @property
     def name(self):
         return "Betweenness"
@@ -152,7 +152,7 @@ class BeetweennessCentrality(AbstractCentralityGraphAlg):
         """ % (self._node_query(), self._rel_query())
 
 
-class ClosenessCentrality(AbstractCentralityGraphAlg):
+class ClosenessCentrality(AbstractGraphAlg):
     @property
     def name(self):
         return "Closeness"
@@ -173,7 +173,7 @@ class ClosenessCentrality(AbstractCentralityGraphAlg):
         """ % (self._node_query(), self._rel_query())
 
 
-class HarmonicCentrality(AbstractCentralityGraphAlg):
+class HarmonicCentrality(AbstractGraphAlg):
     @property
     def name(self):
         return "Harmonic Closeness"

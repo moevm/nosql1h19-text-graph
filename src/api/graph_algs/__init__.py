@@ -1,2 +1,3 @@
 from .centrality import *
-from .dispatcher import CentralityDispatcher
+from .dispatcher import *
+from .community import *
