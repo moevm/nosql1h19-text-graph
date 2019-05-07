@@ -7,6 +7,18 @@ from PyQt5.QtWidgets import QApplication
 import sys
 
 
+def _fill_db():
+    processor = TextProcessor([DictionaryAlgorithm, DummyAlgorithm])
+    processor.clear_db()
+    processor.analyzer.set_separator(r'\n')
+    processor.parse_file('../samples/short.txt', '\n{1}')
+    processor.upload_db()
+    processor.do_preprocess()
+    processor.do_process(analyze=True)
+    processor.upload_db()
+    return processor
+
+
 class TestTextProcessor(unittest.TestCase):
     """Тестирование основного класса API"""
 
@@ -19,17 +31,6 @@ class TestTextProcessor(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         pass
-
-    def _fill_db(self):
-        processor = TextProcessor([DictionaryAlgorithm, DummyAlgorithm])
-        processor.clear_db()
-        processor.analyzer.set_separator(r'\n')
-        processor.parse_file('../samples/short.txt', '\n{1}')
-        processor.upload_db()
-        processor.do_preprocess()
-        processor.do_process()
-        processor.upload_db()
-        return processor
 
     def test_parse_file(self):
         processor = TextProcessor([DictionaryAlgorithm])
@@ -44,7 +45,7 @@ class TestTextProcessor(unittest.TestCase):
         self.assertIsNotNone(stats)
 
     def test_get_node_id_list(self):
-        processor = self._fill_db()
+        processor = _fill_db()
         head_full, res = processor.get_node_id_list('Dictionary')
         head_part, res = processor.get_node_id_list('Dictionary',
                                                     exclude_zeros=True)
@@ -52,7 +53,7 @@ class TestTextProcessor(unittest.TestCase):
         self.assertLessEqual(len(head_part), len(head_full))
 
     def test_get_matrix(self):
-        processor = self._fill_db()
+        processor = _fill_db()
         matrix_full, head_full = processor.get_matrix('Dictionary')
         self.assertEqual(len(matrix_full), len(head_full))
         for row in matrix_full:

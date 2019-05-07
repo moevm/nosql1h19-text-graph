@@ -3,6 +3,7 @@ import numpy as np
 
 from .abstract import AbstractReportItem
 from api import Describer, Plotter
+from api.graph_algs import centrality_algs
 
 
 def random_color():
@@ -20,15 +21,31 @@ class AlgorithmReportItem(AbstractReportItem):
         return describer.describe_results()
 
 
-class AverageIntersectionItem(AbstractReportItem):
+class AlgortithmCentralityItem(AbstractReportItem):
     def __init__(self, processor, algorithm, parent=None):
-        self.name = f'[{algorithm.name}]: Среднее пересечение по фрагментам'
+        self.name = f'[{algorithm.name}]: Центральные алгоритмы'
         self.algorithm = algorithm
+        self.settings = {'algorithms': {}}
+        self.gui_settings = {
+            'Выбор алгоритмов': {
+                'algorithms': 'Алгоритмы'
+            }
+        }
+        self.graph_algs = []
+        for graph_alg in centrality_algs:
+            alg = graph_alg(processor, algorithm)
+            self.settings['algorithms'][alg.name] = True
+            self.graph_algs.append(alg)
         super().__init__(processor, parent)
 
     def create_html(self):
+        algs = [alg for alg in self.graph_algs
+                if self.settings['algorithms'][alg.name]]
         describer = Describer(self.algorithm, self.processor)
-        return describer.describe_intersection_per_fragment()
+        results = {}
+        for alg in algs:
+            results[alg.name] = alg.exec_query()
+        return describer.describe_centrality_results(results)
 
 
 class AlgorithmMatrixGraph(AbstractReportItem):
@@ -78,16 +95,13 @@ class AlgorithmReportFactory:
     def get_report_items(self):
         items = []
         for algorithm in self.processor.algorithms:
-            report_item = AlgorithmReportItem(self.processor, algorithm,
-                                              self.item_parent)
-            inter_item = AverageIntersectionItem(self.processor, algorithm,
-                                                 self.item_parent)
-            matr_graph = AlgorithmMatrixGraph(self.processor, algorithm,
-                                              self.item_parent)
-            inter_graph = AlgorithmIntersectionGraph(self.processor, algorithm,
-                                                     self.item_parent)
+            args = self.processor, algorithm, self.item_parent
+            report_item = AlgorithmReportItem(*args)
+            matr_graph = AlgorithmMatrixGraph(*args)
+            inter_graph = AlgorithmIntersectionGraph(*args)
+            centr_item = AlgortithmCentralityItem(*args)
 
-            alg_items = [report_item, inter_item, matr_graph, inter_graph]
+            alg_items = [report_item, matr_graph, inter_graph, centr_item]
             color = random_color()
             [item.setBackground(QBrush(color)) for item in alg_items]
             items.extend(alg_items)

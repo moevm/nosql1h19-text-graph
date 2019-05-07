@@ -1,11 +1,11 @@
-from neomodel import db
 import json
+import pandas as pd
+from functools import reduce
 
 from logger import log
 from api.algorithm import AbstractAlgorithm
 from api import TextProcessor
 from models import TextNode
-from ui.misc import get_color_by_weight, get_foreground_color
 
 
 def encapsulate_html(body):
@@ -119,45 +119,49 @@ class Describer:
             html_body = encapsulate_html(html_body)
         return html_body
 
-    def describe_intersection_per_fragment(self):
-        query = f"""
-        MATCH (n:TextNode)
-        OPTIONAL MATCH (n)-[r:ALG]-(n2:TextNode)
-        WHERE r.algorithm_name='{self.algorithm.name}'
-        WITH avg(r.intersection) as intersection, n as n
-        RETURN n.order_id, n.label, CASE intersection WHEN null THEN 0
-            ELSE intersection END
-        ORDER BY n.order_id
-        """
-        res, meta = db.cypher_query(query)
+    def describe_centrality_results(self, results):
+        from ui.misc import get_color_by_weight, get_foreground_color
+
+        def reduce_func(a, b):
+            return a.merge(b)
+
+        dfs = []
+        for name, res in results.items():
+            df = pd.DataFrame(res)
+            df.columns = 'order_id', 'label', name
+            df = df.set_index('order_id')
+            dfs.append(df)
+        df = reduce(reduce_func, dfs)
+
         html_body = f"""
-            <h2>Среднее пересечение для каждого фрагмента</h2>
+            <h2>Алгоритмы центральности</h2>
             <table border="1" width=100%>
                 <thead>
                     <tr>
                         <th>Номер</th>
                         <th>Название</th>
-                        <th>Среднее пересечение</th>
-                    </th>
-                </thead>
         """
-        inters = [r[2] for r in res]
-        max_inter = max(inters)
-        min_inter = min(inters)
-        for order_id, label, intersection in res:
-            color_weight = (max_inter - intersection) / (max_inter - min_inter)
-            bg_color = get_color_by_weight(color_weight)
-            fg_color = get_foreground_color(bg_color)
-            html_body += f"""
-                <tr>
-                    <td>{order_id}</td>
-                    <td>{label}</td>
-                    <td bgcolor='{bg_color.name()}' color='{fg_color.name()}'>
-                        {intersection*100:.2f}%
+        weights = []
+        for name in df.columns[1:]:
+            html_body += f"<th>{name}</th>"
+            weights.append((max(df[name]), min(df[name])))
+        html_body += """
+                    </tr>
+                </thead>"""
+        for row in df.itertuples():
+            html_body += "<tr>"
+            for elem in row[:2]:
+                html_body += f"<td>{elem}</td>"
+            for elem, weight in zip(row[2:], weights):
+                max_, min_ = weight
+                color_weight = (max_ - elem) / (max_ - min_)
+                bg_color = get_color_by_weight(color_weight)
+                fg_color = get_foreground_color(bg_color)
+                html_body += f"""
+                    <td bgcolor={bg_color.name()} color={fg_color.name()}>
+                        {elem}
                     </td>
-                </tr>
-            """
-        html_body += f"""
-            </table>
-        """
+                """
+            html_body += "</tr>"
+        html_body += "</table>"
         return html_body
