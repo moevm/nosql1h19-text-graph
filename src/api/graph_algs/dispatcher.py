@@ -16,13 +16,15 @@ class GraphAlgDispatcher:
     def dispatch_community(self, *args, **kwargs):
         return self._dispatch(comm_algs, *args, **kwargs)
 
-    def _dispatch(self, algs, test_alg_func=None):
+    def _dispatch(self, algs, _test_alg_func=None, *args, **kwargs):
         def test_alg_func(n):
-            return True if test_alg_func is None \
-                else test_alg_func
+            if _test_alg_func is None:
+                return True
+            else:
+                return _test_alg_func(n)
         results = {}
         for alg_cls in algs:
-            alg = alg_cls(self.processor, self.algorithm)
+            alg = alg_cls(self.processor, self.algorithm, *args, **kwargs)
             if test_alg_func(alg):
                 results[alg.name] = alg.exec_query()
         return results

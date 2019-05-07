@@ -3,7 +3,7 @@ import numpy as np
 
 from .abstract import AbstractReportItem
 from api import Describer, Plotter
-from api.graph_algs import centrality_algs, comm_algs
+from api.graph_algs import centrality_algs, comm_algs, GraphAlgDispatcher
 
 
 def random_color():
@@ -38,13 +38,15 @@ class AlgortithmCentralityItem(AbstractReportItem):
             self.graph_algs.append(alg)
         super().__init__(processor, parent)
 
+    def _test_func(self, graph_alg):
+        return self.settings['algorithms'][graph_alg.name]
+
     def create_html(self):
         algs = [alg for alg in self.graph_algs
                 if self.settings['algorithms'][alg.name]]
         describer = Describer(self.algorithm, self.processor)
-        results = {}
-        for alg in algs:
-            results[alg.name] = alg.exec_query()
+        dispatcher = GraphAlgDispatcher(self.processor, self.algorithm)
+        results = dispatcher.dispatch_centrality(self._test_func)
         return describer.describe_centrality_results(results)
 
 
@@ -69,13 +71,16 @@ class AlgortithmCommunityItem(AbstractReportItem):
             self.comm_algs.append(alg)
         super().__init__(processor, parent)
 
+    def _test_func(self, graph_alg):
+        return self.settings['algorithms'][graph_alg.name]
+
     def create_html(self):
         algs = [alg for alg in self.comm_algs
                 if self.settings['algorithms'][alg.name]]
         describer = Describer(self.algorithm, self.processor)
-        results = {}
-        for alg in algs:
-            results[alg.name] = alg.exec_query()
+        dispatcher = GraphAlgDispatcher(self.processor, self.algorithm)
+        results = dispatcher.dispatch_community(
+            self._test_func, min_val=self.settings['min_val'])
         return describer.describe_community_results(results)
 
 
