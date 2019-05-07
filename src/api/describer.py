@@ -123,15 +123,15 @@ class Describer:
         from ui.misc import get_color_by_weight, get_foreground_color
 
         def reduce_func(a, b):
-            return a.merge(b)
+            return a.merge(b, on=['order_id', 'label'])
 
         dfs = []
         for name, res in results.items():
             df = pd.DataFrame(res)
             df.columns = 'order_id', 'label', name
-            df = df.set_index('order_id')
             dfs.append(df)
         df = reduce(reduce_func, dfs)
+        df = df.set_index('order_id')
 
         html_body = f"""
             <h2>Алгоритмы центральности</h2>

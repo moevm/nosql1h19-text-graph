@@ -3,8 +3,7 @@ from abc import ABC, abstractmethod, abstractproperty
 from typing import List
 
 
-__all__ = ['centrality_algs', 'AbstractCentralityGraphAlg',
-           'AverageIntersectionCentrality', 'EigenvectorCentrality']
+__all__ = ['centrality_algs', 'AbstractCentralityGraphAlg']
 
 
 class AbstractCentralityGraphAlg(ABC):
@@ -85,4 +84,117 @@ class EigenvectorCentrality(AbstractCentralityGraphAlg):
         """ % (self._node_query(), self._rel_query())
 
 
-centrality_algs = [EigenvectorCentrality, AverageIntersectionCentrality]
+class PageRankCentrality(AbstractCentralityGraphAlg):
+    @property
+    def name(self):
+        return "PageRank"
+
+    @property
+    def query(self):
+        return """
+            CALL algo.pageRank.stream("%s", "%s", {
+                graph: 'cypher',
+                direction: 'BOTH',
+                weightProperty: 'weight',
+                write: false
+            })
+            YIELD nodeId, score
+
+            RETURN algo.asNode(nodeId).order_id as order_id,
+                algo.asNode(nodeId).label AS label,
+                round(score * 10000) / 10000
+            ORDER BY score DESC
+        """ % (self._node_query(), self._rel_query())
+
+
+class ArticleRankCentrality(AbstractCentralityGraphAlg):
+    @property
+    def name(self):
+        return "ArticleRank"
+
+    @property
+    def query(self):
+        return """
+            CALL algo.articleRank.stream("%s", "%s", {
+                graph: 'cypher',
+                direction: 'BOTH',
+                weightProperty: 'weight',
+                write: false
+            })
+            YIELD nodeId, score
+
+            RETURN algo.asNode(nodeId).order_id as order_id,
+                algo.asNode(nodeId).label AS label,
+                round(score * 10000) / 10000
+            ORDER BY score DESC
+        """ % (self._node_query(), self._rel_query())
+
+
+class BeetweennessCentrality(AbstractCentralityGraphAlg):
+    @property
+    def name(self):
+        return "Betweenness"
+
+    @property
+    def query(self):
+        return """
+            CALL algo.betweenness.stream("%s", "%s", {
+                graph: 'cypher',
+                direction: 'BOTH',
+                write: false
+            })
+            YIELD nodeId, centrality as score
+
+            RETURN algo.asNode(nodeId).order_id as order_id,
+                algo.asNode(nodeId).label AS label,
+                round(score * 10000) / 10000
+            ORDER BY score DESC
+        """ % (self._node_query(), self._rel_query())
+
+
+class ClosenessCentrality(AbstractCentralityGraphAlg):
+    @property
+    def name(self):
+        return "Closeness"
+
+    @property
+    def query(self):
+        return """
+            CALL algo.closeness.stream("%s", "%s", {
+                graph: 'cypher',
+                write: false
+            })
+            YIELD nodeId, centrality as score
+
+            RETURN algo.asNode(nodeId).order_id as order_id,
+                algo.asNode(nodeId).label AS label,
+                round(score * 10000) / 10000
+            ORDER BY score DESC
+        """ % (self._node_query(), self._rel_query())
+
+
+class HarmonicCentrality(AbstractCentralityGraphAlg):
+    @property
+    def name(self):
+        return "Harmonic Closeness"
+
+    @property
+    def query(self):
+        return """
+            CALL algo.closeness.harmonic.stream("%s", "%s", {
+                graph: 'cypher',
+                write: false
+            })
+            YIELD nodeId, centrality as score
+
+            RETURN algo.asNode(nodeId).order_id as order_id,
+                algo.asNode(nodeId).label AS label,
+                round(score * 10000) / 10000
+            ORDER BY score DESC
+        """ % (self._node_query(), self._rel_query())
+
+
+centrality_algs = [EigenvectorCentrality, AverageIntersectionCentrality,
+                   PageRankCentrality, ArticleRankCentrality,
+                   BeetweennessCentrality, ClosenessCentrality,
+                   HarmonicCentrality]
