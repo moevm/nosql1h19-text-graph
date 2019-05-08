@@ -3,6 +3,9 @@ from neomodel import db, config
 from logger import log
 
 
+__all__ = ['DataBaseConnection']
+
+
 class DataBaseConnection:
     """
         Обертка над подключением к БД в neomodel

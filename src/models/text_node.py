@@ -6,6 +6,9 @@ import re
 from models.text_relation import TextRelation
 
 
+__all__ = ['TextNode']
+
+
 class TextNode(StructuredNode):
     order_id = IntegerProperty(required=True, unique_index=True)
     label = StringProperty(required=True)

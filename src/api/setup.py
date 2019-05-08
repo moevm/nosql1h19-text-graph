@@ -1,5 +1,7 @@
 from logger import log
 
+__all__ = ['do_setup']
+
 
 def do_setup():
     log.debug(f'Starting nltk setup')

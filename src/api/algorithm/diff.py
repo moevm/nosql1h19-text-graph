@@ -3,6 +3,9 @@ import diff_match_patch as dmp_module
 from supremeSettings import SupremeSettings
 
 
+__all__ = ['DiffAlgorithm']
+
+
 class DiffAlgorithm(AbstractAlgorithm):
     def __init__(self):
         self.dmp = dmp_module.diff_match_patch()

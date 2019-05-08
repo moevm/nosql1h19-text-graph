@@ -1,6 +1,9 @@
 from neomodel import db
 
 
+__all__ = ['Exporter']
+
+
 class Exporter:
     @staticmethod
     def import_db(filename):

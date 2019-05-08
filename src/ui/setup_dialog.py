@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import QThread, pyqtSignal
 
-from ui_compiled.setup_dialog import Ui_SetupDialog
+__all__ = ['LoadingThread']
 
 
 class LoadingThread(QThread):

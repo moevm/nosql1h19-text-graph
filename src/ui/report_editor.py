@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QFontComboBox, QComboBox, \
-        QApplication, QFileDialog, QDialog, QColorDialog
+        QApplication, QFileDialog, QDialog, QColorDialog, QListWidget
 from PyQt5.QtGui import QFontDatabase, QTextDocumentWriter, QTextCharFormat, \
-        QFont, QTextCursor, QTextListFormat, QTextFormat, QFontInfo
+        QFont, QTextCursor, QTextListFormat, QTextFormat, QFontInfo, \
+        QMouseEvent
 from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
 from PyQt5.QtCore import Qt
 import webbrowser
@@ -15,6 +16,8 @@ from ui.report import AlgorithmReportFactory, StatsReport, LenghtDispGraph
 from api import encapsulate_html
 from supremeSettings import SupremeSettings
 
+
+__all__ = ['ReportEditor']
 
 _report_classes = [StatsReport, LenghtDispGraph]
 
@@ -50,6 +53,14 @@ class ReportEditor(QMainWindow, Ui_ReportEditorWindow):
         for report_item in items:
             self._report_items[report_item.name] = report_item
             self.availableList.addItem(report_item)
+        self.availableList.mousePressEvent = self._av_list_mouse_press_event
+
+    def _av_list_mouse_press_event(self, event: QMouseEvent):
+        if event.button() == Qt.RightButton:
+            item = self.availableList.itemAt(event.pos())
+            if hasattr(item, 'settings'):
+                item.change_settings()
+        QListWidget.mousePressEvent(self.availableList, event)
 
     def _create_report(self):
         self.textEdit.clear()

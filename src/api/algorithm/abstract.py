@@ -2,6 +2,9 @@ from abc import ABC, abstractmethod, abstractproperty
 from typing import Dict
 
 
+__all__ = ["AbstractAlgorithm"]
+
+
 class AbstractAlgorithm(ABC):
     @abstractmethod
     def preprocess(self, text: str) -> Dict:

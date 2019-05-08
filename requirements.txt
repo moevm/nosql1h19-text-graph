@@ -8,4 +8,5 @@ fa2
 diff-match-patch
 networkx
 matplotlib
+pandas
 pdfkit

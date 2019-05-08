@@ -10,6 +10,9 @@ from supremeSettings import SupremeSettings
 FreqList = List[Tuple[int, Any]]
 
 
+__all__ = ['DictionaryAlgorithm']
+
+
 class DictionaryAlgorithm(AbstractAlgorithm):
     def __init__(self):
         self.stem = Mystem()

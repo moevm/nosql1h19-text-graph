@@ -5,6 +5,9 @@ from datetime import datetime
 from loading_wrapper import LoadingThread
 
 
+__all__ = ['LoadingDialog', 'LoadingWrapper']
+
+
 def format_time(time):
     return f"{time.hour:02}:{time.minute:02}:{time.second:02}"
 

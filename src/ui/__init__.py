@@ -1,8 +1,8 @@
-from .login_window import LoginWindow
-from .exception_dialog import ExceptionDialog
-from .results_window import MainWindow
-from .fragments_window import FragmentsWindow
-from .loading_dialog import LoadingDialog, LoadingWrapper
-from .graph_window import GraphWindow
-from .settings import SettingsDialog
-from .report_editor import ReportEditor
+from .login_window import *
+from .exception_dialog import *
+from .results_window import *
+from .fragments_window import *
+from .loading_dialog import *
+from .graph_window import *
+from .settings import *
+from .report_editor import *

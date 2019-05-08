@@ -1,8 +1,20 @@
+import json
+import pandas as pd
+import numpy as np
+from functools import reduce
+from PyQt5.QtGui import QColor
+
 from logger import log
 from api.algorithm import AbstractAlgorithm
 from api import TextProcessor
 from models import TextNode
-import json
+
+
+__all__ = ['Describer', 'encapsulate_html']
+
+
+def random_color():
+    return QColor.fromRgbF(*[np.random.random() for _ in range(3)])
 
 
 def encapsulate_html(body):
@@ -112,4 +124,101 @@ class Describer:
                 html_body += f'<h2>Алгоритм {self.algorithm.name}</h2>'
                 acc = accs[self.processor.algorithms.index(self.algorithm)]
                 html_body += self.algorithm.describe_result(acc)
-        return encapsulate_html(html_body)
+        if all_algs:
+            html_body = encapsulate_html(html_body)
+        return html_body
+
+    def describe_community_results(self, results):
+        from ui.misc import get_foreground_color
+        df = self._make_results_df(results)
+
+        html_body = f"""
+            <h2>Алгоритмы разбиения на сообщества ({self.algorithm.name})</h2>
+            <table border="1" width=100%>
+                <thead>
+                    <tr>
+                        <th>Номер</th>
+                        <th>Название</th>
+        """
+        communities = []
+        for name in df.columns[1:]:
+            html_body += f"<th>{name}</th>"
+            communities.append({})
+        html_body += """
+                    </tr>
+                </thead>"""
+        for row in df.itertuples():
+            html_body += "<tr>"
+            for elem in row[:2]:
+                html_body += f"<td>{elem}</td>"
+            for index, elem in enumerate(row[2:]):
+                try:
+                    bg_color = communities[index][elem]
+                except KeyError:
+                    bg_color = communities[index][elem] = random_color()
+                fg_color = get_foreground_color(bg_color)
+                html_body += f"""
+                    <td bgcolor="{bg_color.name()}">
+                        <span style="color:{fg_color.name()}">
+                            {elem}
+                        </span>
+                    </td>
+                """
+            html_body += "</tr>"
+        html_body += "</table>"
+        return html_body
+
+    def describe_centrality_results(self, results):
+        from ui.misc import get_color_by_weight, get_foreground_color
+        df = self._make_results_df(results)
+
+        html_body = f"""
+            <h2>Алгоритмы центральности ({self.algorithm.name})</h2>
+            <table border="1" width=100%>
+                <thead>
+                    <tr>
+                        <th>Номер</th>
+                        <th>Название</th>
+        """
+        weights = []
+        for name in df.columns[1:]:
+            html_body += f"<th>{name}</th>"
+            weights.append((max(df[name]), min(df[name])))
+        html_body += """
+                    </tr>
+                </thead>"""
+        for row in df.itertuples():
+            html_body += "<tr>"
+            for elem in row[:2]:
+                html_body += f"<td>{elem}</td>"
+            for elem, weight in zip(row[2:], weights):
+                max_, min_ = weight
+                if max_ != min_:
+                    color_weight = (max_ - elem) / (max_ - min_)
+                else:
+                    color_weight = 0
+                bg_color = get_color_by_weight(color_weight)
+                fg_color = get_foreground_color(bg_color)
+                html_body += f"""
+                    <td bgcolor="{bg_color.name()}">
+                        <span style="color:{fg_color.name()}">
+                            {elem}
+                        </span>
+                    </td>
+                """
+            html_body += "</tr>"
+        html_body += "</table>"
+        return html_body
+
+    def _make_results_df(self, results):
+        def reduce_func(a, b):
+            return a.merge(b, on=['order_id', 'label'])
+
+        dfs = []
+        for name, res in results.items():
+            df = pd.DataFrame(res)
+            df.columns = 'order_id', 'label', name
+            dfs.append(df)
+        df = reduce(reduce_func, dfs)
+        df = df.set_index('order_id')
+        return df

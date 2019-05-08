@@ -9,6 +9,9 @@ from supremeSettings import SupremeSettings
 import numpy as np
 
 
+__all__ = ['GraphWindow']
+
+
 class GraphWindow(QMainWindow, Ui_GraphWindow):
     def __init__(self, processor: TextProcessor,
                  algorithm=None, parent=None):
