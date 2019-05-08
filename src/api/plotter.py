@@ -7,6 +7,9 @@ import base64
 from neomodel import db
 
 
+__all__ = ['Plotter']
+
+
 class Plotter:
     def __init__(self, processor, algorithm=None):
         self.processor = processor

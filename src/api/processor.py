@@ -8,6 +8,8 @@ from supremeSettings import SupremeSettings
 from models import TextNode, GlobalResults
 
 
+__all__ = ['TextProcessor']
+
 _algorithm_classes = [DictionaryAlgorithm, DiffAlgorithm]
 
 
@@ -130,6 +132,17 @@ class TextProcessor:
                 node.save()
                 self.check_percent(index)
             self.proc._clear_results()
+            self.loadingDone.emit()
+
+    class AddFragmentsThread(LoadingThread):
+        def __init__(self, proc, file_name, regex, parent=None):
+            super().__init__(parent)
+            self.operation = 'Добавление фрагментов'
+            self.proc = proc
+            self.args = [file_name, regex]
+
+        def run(self):
+            self.proc.parse_file(*self.args)
             self.loadingDone.emit()
 
     def __init__(self, algorithm_classes=None):

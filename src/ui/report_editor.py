@@ -17,6 +17,8 @@ from api import encapsulate_html
 from supremeSettings import SupremeSettings
 
 
+__all__ = ['ReportEditor']
+
 _report_classes = [StatsReport, LenghtDispGraph]
 
 

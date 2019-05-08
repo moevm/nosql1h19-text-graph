@@ -5,6 +5,9 @@ from loading_wrapper import LoadingThread
 from logger import log
 
 
+__all__ = ['FragmentsAnalyzer']
+
+
 class FragmentsAnalyzer:
     """Класс, выполняющий разбиение файлов на фрагменты и аггрегирующий
     эти фрагменты (т.е. ссылки на модели neomodel).

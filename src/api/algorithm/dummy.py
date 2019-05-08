@@ -2,6 +2,10 @@ import numpy as np
 from api.algorithm import AbstractAlgorithm
 from typing import Dict
 
+
+__all__ = ['DummyAlgorithm']
+
+
 class DummyAlgorithm(AbstractAlgorithm):
     def preprocess(self, text: str) -> Dict:
         return {

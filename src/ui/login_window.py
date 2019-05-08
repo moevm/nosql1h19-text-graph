@@ -4,6 +4,9 @@ from ui_compiled.login import Ui_LoginWindow
 from api.database import DataBaseConnection
 
 
+__all__ = ['LoginWindow']
+
+
 class LoginWindow(QMainWindow, Ui_LoginWindow):
     loginSuccesful = pyqtSignal()
 

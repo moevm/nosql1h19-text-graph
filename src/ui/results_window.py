@@ -2,13 +2,15 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog
 
 from api import TextProcessor, Describer, Exporter
 from supremeSettings import SupremeSettings
-
 from ui_compiled.mainwindow import Ui_MainWindow
 from ui.widgets import FragmentsList, AlgorithmResults, TextBrowser
 from .fragments_window import FragmentsWindow
 from .loading_dialog import LoadingWrapper
 from .report_editor import ReportEditor
 from .settings import SettingsDialog
+
+
+__all__ = ['MainWindow']
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):

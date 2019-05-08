@@ -1,9 +1,12 @@
 from PyQt5.QtWidgets import QDialog, QLineEdit, QSpinBox, QDoubleSpinBox, \
-        QCheckBox, QBoxLayout, QLabel, QGroupBox, QPushButton, QSpacerItem
+        QCheckBox, QBoxLayout, QLabel, QGroupBox, QPushButton
 from PyQt5.QtCore import pyqtSignal
 from ui_compiled.settings import Ui_SettingsDialog
 from ui.widgets import SettingsListDialog
 from supremeSettings import SupremeSettings
+
+
+__all__ = ['GuiSettingsDialog', 'SettingsDialog']
 
 
 class GuiSettingsDialog(QDialog, Ui_SettingsDialog):

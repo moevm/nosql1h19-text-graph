@@ -10,6 +10,9 @@ from api import TextProcessor
 from models import TextNode
 
 
+__all__ = ['Describer', 'encapsulate_html']
+
+
 def random_color():
     return QColor.fromRgbF(*[np.random.random() for _ in range(3)])
 
