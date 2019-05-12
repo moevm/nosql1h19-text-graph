@@ -5,6 +5,9 @@ import traceback
 import sys
 
 
+__all__ = ['ExceptionDialog']
+
+
 class ExceptionDialog(QDialog, Ui_ExceptionDialog):
     def __init__(self, type_, value, traceback_, parent=None):
         super().__init__(parent)

@@ -1,4 +1,7 @@
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from PyQt5.QtCore import pyqtSignal, QThread
+
+
+__all__ = ['LoadingThread']
 
 
 class LoadingThread(QThread):
@@ -32,5 +35,3 @@ class LoadingThread(QThread):
 
     def run(self, *args, **kwargs):
         raise NotImplementedError(f'{self.run} is not implemented')
-
-

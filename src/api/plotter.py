@@ -7,13 +7,17 @@ import base64
 from neomodel import db
 
 
+__all__ = ['Plotter']
+
+
 class Plotter:
     def __init__(self, processor, algorithm=None):
         self.processor = processor
         self.algorithm = algorithm
 
     def algorithm_matrix(self, min_val=0):
-        matrix, head = self.processor.get_matrix(self.algorithm.name)
+        matrix, head = self.processor.get_matrix(self.algorithm.name,
+                                                 sort=True)
         head = self.processor.get_node_label_list(head)
         return Plotter.save_to_matrix(matrix, head, min_val)
 

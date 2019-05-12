@@ -13,20 +13,10 @@ from ui.widgets import FragmentsList
 from models import TextNode
 
 
+__all__ = ['FragmentsWindow']
+
+
 class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
-    # TODO Пересмотреть структуру, чтобы можно было вывести прогресс
-    # FIXME Мб треды перетащить в TextProcessor всё же?
-    class AddFragmentsThread(LoadingThread):
-        def __init__(self, proc, file_name, regex, parent=None):
-            super().__init__(parent)
-            self.operation = 'Добавление фрагментов'
-            self.proc = proc
-            self.args = [file_name, regex]
-
-        def run(self):
-            self.proc.parse_file(*self.args)
-            self.loadingDone.emit()
-
     class AddFragmentsFolderThread(LoadingThread):
         def __init__(self, proc, folder, regex, parent=None):
             super().__init__(parent)
@@ -159,12 +149,11 @@ class FragmentsWindow(QMainWindow, Ui_FragmentsWindow):
                 if self.sepRegExEdit.text() != '.*' else None
         if len(self.file_name) > 0:
             if not self.folder:
-                self.thread = self.AddFragmentsThread(self.processor,
-                                                      self.file_name, regex)
+                self.thread = self.processor.AddFragmentsThread(
+                    self.processor, self.file_name, regex)
             else:
-                self.thread = self.AddFragmentsFolderThread(self.processor,
-                                                            self.file_name,
-                                                            regex)
+                self.thread = self.AddFragmentsFolderThread(
+                    self.processor, self.file_name, regex)
             self.loading = LoadingWrapper(self.thread)
             self.loading.loadingDone.connect(self.fragments_list.update)
             self.loading.start()

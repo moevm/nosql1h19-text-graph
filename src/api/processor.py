@@ -8,6 +8,8 @@ from supremeSettings import SupremeSettings
 from models import TextNode, GlobalResults
 
 
+__all__ = ['TextProcessor']
+
 _algorithm_classes = [DictionaryAlgorithm, DiffAlgorithm]
 
 
@@ -132,6 +134,17 @@ class TextProcessor:
             self.proc._clear_results()
             self.loadingDone.emit()
 
+    class AddFragmentsThread(LoadingThread):
+        def __init__(self, proc, file_name, regex, parent=None):
+            super().__init__(parent)
+            self.operation = 'Добавление фрагментов'
+            self.proc = proc
+            self.args = [file_name, regex]
+
+        def run(self):
+            self.proc.parse_file(*self.args)
+            self.loadingDone.emit()
+
     def __init__(self, algorithm_classes=None):
         super().__init__()
         self.algorithms: List[AbstractAlgorithm] = []  # Включенные
@@ -254,7 +267,8 @@ class TextProcessor:
             return None, None
         return head, res
 
-    def get_matrix(self, algorithm_name: str, exclude_zeros=False, min_val=0):
+    def get_matrix(self, algorithm_name: str, exclude_zeros=False, min_val=0,
+                   sort=False):
         """Получить матрицу инцидентности для алгоритма
 
         :param algorithm_name: имя алгоритма
@@ -280,7 +294,20 @@ class TextProcessor:
         for i in range(len(matrix)):
             matrix[i][i] = 1
 
+        if sort:
+            matrix, head = self._sort_matrix(matrix, head)
         return matrix, head
+
+    def _sort_matrix(self, matrix, head):
+        new_head = [x for _, x in sorted(zip(matrix, head),
+                                         key=lambda p: sum(p[0]),
+                                         reverse=True)]
+        new_matrix = [[0 for _ in range(len(head))]
+                      for _ in range(len(head))]
+        for i in range(len(head)):
+            for j in range(len(head)):
+                new_matrix[i][j] = matrix[new_head[i]][new_head[j]]
+        return new_matrix, new_head
 
     def get_node_list(self, head):
         """Получение """

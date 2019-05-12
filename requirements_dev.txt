@@ -4,3 +4,6 @@ pudb
 snakeviz
 coverage
 PyQt5-stubs
+python-languange-server
+pylama
+autopep8
