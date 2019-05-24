@@ -6,4 +6,5 @@ coverage
 PyQt5-stubs
 python-languange-server
 pylama
+pylint
 autopep8
