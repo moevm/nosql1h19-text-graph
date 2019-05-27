@@ -13,6 +13,7 @@ services:
             - NEO4j_dbms_directories_import="/"
         volumes:
             - "./neo4j_plugins:/plugins"
+            - "/:/import/media/qtuser/pc"
     app:
         build: .
         user: qtuser
