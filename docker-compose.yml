@@ -1,0 +1,27 @@
+version: "3"
+services:
+    neo4j:
+        image: neo4j:latest
+        ports:
+            - "7474:7474"
+            - "7687:7687"
+        environment:
+            - NEO4J_AUTH=neo4j/kinix951
+            - NEO4J_apoc_export_file_enabled=true
+            - NEO4J_apoc_import_file_enabled=true
+            - NEO4J_apoc_import_file_use_neo4j_config=true
+            - NEO4J_dbms_directories_import=/
+            - NEO4J_dbms_security_procedures_whitelist=apoc.*
+        volumes:
+            - "./neo4j_plugins:/plugins"
+            - "/:/media/qtuser/pc"
+    app:
+        build: .
+        user: qtuser
+        depends_on:
+            - neo4j
+        environment:
+            - DISPLAY=:0
+        volumes:
+            - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+            - "/:/media/qtuser/pc"
